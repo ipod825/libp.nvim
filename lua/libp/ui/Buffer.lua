@@ -2,7 +2,7 @@ local M = require("libp.datatype.Class"):EXTEND()
 local global = require("libp.global")("libp")
 local functional = require("libp.functional")
 local a = require("plenary.async")
-local Job = require("libp.job")
+local Job = require("libp.Job")
 local log = require("libp.log")
 
 global.buffers = global.buffers or {}
@@ -158,11 +158,7 @@ function M:add_key_map(mode, key, fn)
 		self.id,
 		mode,
 		key,
-		('%slua require("libp.ui.Buffer").execut_mapping("%s", "%s")<cr>'):format(
-			prefix,
-			mode,
-			key:gsub("^<", "<lt>")
-		),
+		('%slua require("libp.ui.Buffer").execut_mapping("%s", "%s")<cr>'):format(prefix, mode, key:gsub("^<", "<lt>")),
 		{}
 	)
 

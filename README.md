@@ -15,12 +15,11 @@ Use you preferred package manager. Below we use [packer.nvim](https://github.com
 ```lua
 use {'nvim-lua/plenary.nvim'}
 use {'ipod825/libp.nvim'}
-use {'ipod825/igit.nvim'}
 ```
 or
 
 ```lua
-use {'ipod825/igit.nvim', requires={'nvim-lua/plenary.nvim', 'ipod825/libp.nvim'}}
+use {'ipod825/libp.nvim', requires={'nvim-lua/plenary.nvim'}
 ```
 
 ## Modules

@@ -1,5 +1,5 @@
 require("plenary.async").tests.add_to_env()
-local Job = require("libp.job")
+local Job = require("libp.Job")
 local a = require("plenary.async")
 local Set = require("libp.datatype.Set")
 local log = require("libp.log")
