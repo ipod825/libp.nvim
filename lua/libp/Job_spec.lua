@@ -85,6 +85,47 @@ describe("start", function()
 		assert.are.same({ "/tmp" }, job:stdoutput())
 	end)
 
+	describe("stderr_dump_level", function()
+		local stub
+		before_each(function()
+			stub = require("luassert.stub")(vim, "notify")
+		end)
+		after_each(function()
+			stub:revert()
+		end)
+
+		a.it("No stderr output with no error", function()
+			Job({
+				cmds = { "ls" },
+			}):start()
+			assert(not stub:called())
+		end)
+
+		a.it("Output to stderr on error", function()
+			Job({
+				cmds = { "ls", "no_such_file" },
+			}):start()
+			assert(stub:called())
+		end)
+
+		a.it("Does not output to stderr on error when silent", function()
+			Job({
+				cmds = { "ls", "no_such_file" },
+				stderr_dump_level = Job.StderrDumpLevel.SILENT,
+			}):start()
+			assert(not stub:called())
+		end)
+
+		pending("Always outputs stderr is stderr_dump_level is ALWAYS", function()
+			Job({
+				-- todo: find a command that outputs to stderr while exit 0
+				cmds = { "" },
+				stderr_dump_level = Job.StderrDumpLevel.ALWAYS,
+			}):start()
+			assert(stub:called())
+		end)
+	end)
+
 	a.it("Takes customized on_stdout", function()
 		local results
 		local job

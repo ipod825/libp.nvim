@@ -33,11 +33,13 @@ end
 
 local State = { NOT_STARTED = 1, RUNNING = 2, FINISHED = 3 }
 
+M.StderrDumpLevel = { SILENT = 1, ON_ERROR = 2, ALWAYS = 3 }
+
 function M:init(opts)
 	vim.validate({
 		on_stdout = { opts.on_stdout, "function", true },
 		on_stdout_buffer_size = { opts.on_stdout_buffer_size, "number", true },
-		silent = { opts.silent, "boolean", true },
+		stderr_dump_level = { opts.stderr_dump_level, "number", true },
 		cwd = { opts.cwd, "string", true },
 		env = { opts.env, "table", true },
 		detached = { opts.detached, "boolean", true },
@@ -56,6 +58,7 @@ function M:init(opts)
 	-- Only invokes on_stdout once a while.
 	opts.on_stdout_buffer_size = opts.on_stdout_buffer_size or 5000
 
+	opts.stderr_dump_level = opts.stderr_dump_level or M.StderrDumpLevel.ON_ERROR
 	self.opts = opts
 end
 
@@ -116,7 +119,7 @@ M.start = a.wrap(function(self, callback)
 		close_pipe(stderr)
 
 		if exit_code ~= 0 then
-			if not opts.silent and not self.was_killed then
+			if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
 				vim.notify(("Error message from\n%s\n\n%s"):format(table.concat(opts.cmds, " "), stderr_lines))
 			end
 		elseif opts.on_stdout then
@@ -125,7 +128,7 @@ M.start = a.wrap(function(self, callback)
 				opts.on_stdout(stdout_lines)
 			end
 
-			if not opts.silent and #stderr_lines > 0 then
+			if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_lines > 0 then
 				vim.notify(stderr_lines)
 			end
 		end
