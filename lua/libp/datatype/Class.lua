@@ -57,4 +57,16 @@ function M:SUPER()
 	})
 end
 
+-- Returns whether the instance is an instantion of the class.
+function M:IS(class)
+	local mt = getmetatable(self)
+	while mt do
+		if mt == class then
+			return true
+		end
+		mt = getmetatable(mt)
+	end
+	return false
+end
+
 return M
