@@ -428,6 +428,17 @@ describe("get_completion_list", function()
 		assert.are.same({
 			"--flag",
 		}, parser:get_completion_list("", "--"))
+		assert.are.same({
+			"sub",
+			"sub2",
+		}, parser:get_completion_list("s", "s"))
+		assert.are.same({
+			"sub",
+			"sub2",
+		}, parser:get_completion_list("su", "su"))
+		-- Kind of an edge case. "sub" is successfully parsed. So can't complete
+		-- commands at same level.
+		assert.are.same({}, parser:get_completion_list("sub", "sub"))
 	end)
 
 	it("Returns sub-flags", function()

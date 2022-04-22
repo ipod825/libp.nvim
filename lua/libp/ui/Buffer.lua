@@ -33,7 +33,6 @@ end
 
 function M:init(opts)
 	vim.validate({
-		-- id = { opts.id, "number", true },
 		filename = { opts.filename, "string", true },
 		content = { opts.content, { "function", "table" } },
 		buf_enter_reload = { opts.buf_enter_reload, "boolean", true },

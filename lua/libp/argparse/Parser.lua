@@ -138,7 +138,7 @@ end
 function M:get_completion_list_internal(args, hint)
 	local full_parsed_res, err = self:parse_internal(args)
 
-	local parser
+	local parser = self
 	for i = 1, #full_parsed_res do
 		parser = parser and parser.sub_parsers[full_parsed_res[i][1]] or self
 	end
