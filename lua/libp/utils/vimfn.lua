@@ -16,4 +16,12 @@ function M.all_rows()
 	return 1, vim.fn.line("$")
 end
 
+function M.first_visible_line()
+	return vim.fn.line("w0")
+end
+
+function M.last_visible_line()
+	return vim.fn.line("w$")
+end
+
 return M

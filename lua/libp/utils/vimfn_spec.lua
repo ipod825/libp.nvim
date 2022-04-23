@@ -20,11 +20,28 @@ describe("visual_rows", function()
 	end)
 end)
 
+describe("first_visible_line", function()
+	it("Returns seleted row beg and end", function()
+		local content = {}
+		for i = 1, 2 * vim.o.lines do
+			table.insert(content, tostring(i))
+		end
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, content)
+
+		assert.are.same(1, vimfn.first_visible_line())
+		assert.are.same(vim.o.lines - 2, vimfn.last_visible_line())
+
+		vim.cmd("normal! ")
+		assert.are.same(2, vimfn.first_visible_line())
+		assert.are.same(vim.o.lines - 1, vimfn.last_visible_line())
+	end)
+end)
+
 describe("all_rows", function()
 	it("Returns 1, line('$')", function()
 		vim.api.nvim_buf_set_lines(0, 0, -1, false, { "1", "2", "3" })
 
-		row_beg, row_end = vimfn.all_rows()
+		local row_beg, row_end = vimfn.all_rows()
 		assert.are.same(1, row_beg)
 		assert.are.same(3, row_end)
 	end)
