@@ -65,22 +65,6 @@ describe("trim", function()
 	end)
 end)
 
-describe("startswith", function()
-	it("Returns true if the string starts with pattern", function()
-		local a = "abc def"
-		assert.is_truthy(a:startswith("abc"))
-		assert.is_falsy(a:startswith("def"))
-	end)
-end)
-
-describe("endsswith", function()
-	it("Returns true if the string endss with pattern", function()
-		local a = "abc def"
-		assert.is_truthy(a:endswith("def"))
-		assert.is_falsy(a:endswith("abc"))
-	end)
-end)
-
 describe("unquote", function()
 	it("Returns empty string for empty string", function()
 		assert.are.same("", (""):unquote())

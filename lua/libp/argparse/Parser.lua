@@ -160,7 +160,7 @@ function M:get_completion_list_internal(args, hint)
 		res = res
 			:to_iter()
 			:filter(function(e)
-				return e:startswith(hint)
+				return vim.startswith(e, hint)
 			end)
 			:collect()
 	end
