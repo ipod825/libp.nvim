@@ -116,11 +116,19 @@ describe("start", function()
 			assert(not stub:called())
 		end)
 
-		pending("Always outputs stderr is stderr_dump_level is ALWAYS", function()
+		a.it("Always outputs stderr is stderr_dump_level is ALWAYS", function()
 			Job({
-				-- todo: find a command that outputs to stderr while exit 0
-				cmds = { "" },
+				cmds = { "echoerr" },
 				stderr_dump_level = Job.StderrDumpLevel.ALWAYS,
+				env = {
+					PATH = ("%s:%s/scripts"):format(
+						os.getenv("PATH"),
+						vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
+					),
+				},
+				on_stdout = function(lines)
+					log.warn(lines)
+				end,
 			}):start()
 			assert(stub:called())
 		end)
