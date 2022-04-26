@@ -58,13 +58,6 @@ describe("split_trim", function()
 	end)
 end)
 
-describe("trim", function()
-	it("Trims spaces", function()
-		local a = " def "
-		assert.are.same("def", a:trim())
-	end)
-end)
-
 describe("unquote", function()
 	it("Returns empty string for empty string", function()
 		assert.are.same("", (""):unquote())

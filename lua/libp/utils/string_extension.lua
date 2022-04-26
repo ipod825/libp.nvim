@@ -1,14 +1,10 @@
 local String = getmetatable("").__index
 local log = require("libp.log")
 
-function String:trim()
-	return (self:gsub("^%s*(.-)%s*$", "%1"))
-end
-
 function String:split_trim(sep)
 	local res = {}
 	for _, s in ipairs(self:split(sep)) do
-		table.insert(res, s:trim())
+		table.insert(res, vim.trim(s))
 	end
 	return res
 end
