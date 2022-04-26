@@ -1,4 +1,5 @@
 local vimfn = require("libp.utils.vimfn")
+local stub = require("luassert.stub")
 
 describe("visual_rows", function()
 	it("Returns seleted row beg and end", function()
@@ -11,12 +12,12 @@ describe("visual_rows", function()
 		-- assert.are.same(1, row_beg)
 		-- assert.are.same(3, row_end)
 
-		local stub = require("luassert.stub")(vimfn, "visual_rows")
-		stub.by_default.returns(1, 3)
+		local visual_rows = stub(vimfn, "visual_rows")
+		visual_rows.by_default.returns(1, 3)
 		local row_beg, row_end = vimfn.visual_rows()
 		assert.are.same(1, row_beg)
 		assert.are.same(3, row_end)
-		stub:revert()
+		visual_rows:revert()
 	end)
 end)
 

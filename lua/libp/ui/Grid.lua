@@ -1,6 +1,4 @@
 local M = require("libp.datatype.Class"):EXTEND()
-local Buffer = require("libp.ui.Buffer")
-local a = require("plenary.async")
 local log = require("libp.log")
 
 function M:init(opts, root)

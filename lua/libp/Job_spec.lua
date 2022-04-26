@@ -2,6 +2,7 @@ require("plenary.async").tests.add_to_env()
 local Job = require("libp.Job")
 local a = require("plenary.async")
 local Set = require("libp.datatype.Set")
+local spy = require("luassert.spy")
 local log = require("libp.log")
 
 describe("start", function()
@@ -86,26 +87,26 @@ describe("start", function()
 	end)
 
 	describe("stderr_dump_level", function()
-		local stub
+		local notify
 		before_each(function()
-			stub = require("luassert.stub")(vim, "notify")
+			notify = spy.on(vim, "notify")
 		end)
 		after_each(function()
-			stub:revert()
+			notify:clear()
 		end)
 
 		a.it("No stderr output with no error", function()
 			Job({
 				cmds = { "ls" },
 			}):start()
-			assert(not stub:called())
+			assert.spy(notify).was_not_called()
 		end)
 
 		a.it("Output to stderr on error", function()
 			Job({
 				cmds = { "ls", "no_such_file" },
 			}):start()
-			assert(stub:called())
+			assert.spy(notify).was_called()
 		end)
 
 		a.it("Does not output to stderr on error when silent", function()
@@ -113,7 +114,7 @@ describe("start", function()
 				cmds = { "ls", "no_such_file" },
 				stderr_dump_level = Job.StderrDumpLevel.SILENT,
 			}):start()
-			assert(not stub:called())
+			assert.spy(notify).was_not_called()
 		end)
 
 		a.it("Always outputs stderr is stderr_dump_level is ALWAYS", function()
@@ -130,7 +131,7 @@ describe("start", function()
 					log.warn(lines)
 				end,
 			}):start()
-			assert(stub:called())
+			assert.spy(notify).was_called()
 		end)
 	end)
 
