@@ -120,7 +120,10 @@ M.start = a.wrap(function(self, callback)
 
 		if exit_code ~= 0 then
 			if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
-				vim.notify(("Error message from\n%s\n\n%s"):format(table.concat(opts.cmds, " "), stderr_lines))
+				vim.notify(
+					("Error message from\n%s\n\n%s"):format(table.concat(opts.cmds, " "), stderr_lines),
+					vim.log.levels.WARN
+				)
 			end
 		elseif opts.on_stdout then
 			stdout_lines = eof_has_new_line and vim.list_slice(stdout_lines, 1, #stdout_lines - 1) or stdout_lines
@@ -129,7 +132,7 @@ M.start = a.wrap(function(self, callback)
 			end
 
 			if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_lines > 0 then
-				vim.notify(stderr_lines)
+				vim.notify(stderr_lines, vim.log.levels.WARN)
 			end
 		end
 
@@ -150,7 +153,7 @@ M.start = a.wrap(function(self, callback)
 
 	if type(self.pid) == "string" then
 		stderr_lines = stderr_lines .. ("Command not found: %s"):format(cmd)
-		vim.notify(stderr_lines)
+		vim.notify(stderr_lines, vim.log.levels.ERROR)
 		return -1
 	else
 		self.stdout:read_start(vim.schedule_wrap(on_stdout))

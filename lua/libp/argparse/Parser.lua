@@ -120,7 +120,7 @@ function M:parse(str)
 	end
 
 	if err_msg then
-		vim.notify(("error: %s"):format(err_msg))
+		vim.notify(("error: %s"):format(err_msg), vim.log.levels.ERROR)
 		return nil
 	end
 
