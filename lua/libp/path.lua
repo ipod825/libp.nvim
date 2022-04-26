@@ -8,7 +8,7 @@ function M.join(...)
 end
 
 function M.find_directory(anchor, dir)
-	vim.validate({ anchor = { anchor, "string" }, dir = { dir, { "string", "table" }, true } })
+	vim.validate({ anchor = { anchor, "s" }, dir = { dir, { "s", "t" }, true } })
 	if type(dir) == "string" then
 		dir = { dir }
 	end
@@ -39,14 +39,14 @@ function M.find_directory(anchor, dir)
 end
 
 function M.dirname(str)
-	vim.validate({ std = { str, "string" } })
+	vim.validate({ std = { str, "s" } })
 	local pat = ("%s[^%s]*$"):format(path_sep, path_sep)
 	local name = str:gsub(pat, "")
 	return name
 end
 
 function M.basename(str)
-	vim.validate({ std = { str, "string" } })
+	vim.validate({ std = { str, "s" } })
 	local pat = (".*%s([^%s]+)%s?"):format(path_sep, path_sep, path_sep)
 	local name = str:gsub(pat, "%1")
 	return name

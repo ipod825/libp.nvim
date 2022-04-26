@@ -3,7 +3,7 @@ local a = require("plenary.async")
 local log = require("libp.log")
 
 function M:init(filename)
-	vim.validate({ filename = { filename, "string" } })
+	vim.validate({ filename = { filename, "s" } })
 
 	if vim.fn.bufexists(filename) > 0 then
 		self.id = vim.fn.bufadd(filename)

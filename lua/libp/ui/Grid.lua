@@ -6,10 +6,10 @@ local log = require("libp.log")
 function M:init(opts, root)
 	opts = opts or {}
 	vim.validate({
-		relative = { opts.relative, "string", true },
-		width = { opts.width, "number", true },
-		height = { opts.height, "number", true },
-		row = { opts.row, "number", true },
+		relative = { opts.relative, "s", true },
+		width = { opts.width, "n", true },
+		height = { opts.height, "n", true },
+		row = { opts.row, "n", true },
 		col = { opts.col, "number", true },
 		zindex = { opts.zindex, "number", true },
 		focusable = { opts.focusable, "boolean", true },
@@ -34,8 +34,8 @@ end
 function M:add_row(opts)
 	opts = opts or {}
 	vim.validate({
-		height = { opts.height, "number", true },
-		focusable = { opts.focusable, "boolean", true },
+		height = { opts.height, "n", true },
+		focusable = { opts.focusable, "b", true },
 	})
 
 	local height = opts.height
@@ -58,8 +58,8 @@ end
 function M:add_column(opts)
 	opts = opts or {}
 	vim.validate({
-		width = { opts.width, "number", true },
-		focusable = { opts.focusable, "boolean", true },
+		width = { opts.width, "n", true },
+		focusable = { opts.focusable, "b", true },
 	})
 
 	local width = opts.width

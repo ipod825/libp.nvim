@@ -10,7 +10,7 @@ local M = {
 }
 
 function M.center_align_text(content, total_width)
-	vim.validate({ content = { content, "table" }, total_width = { total_width, "number" } })
+	vim.validate({ content = { content, "t" }, total_width = { total_width, "n" } })
 	local num_pads = #content + 1
 	local pad_width = total_width
 	local content_width = 0

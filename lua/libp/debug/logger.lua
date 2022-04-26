@@ -6,7 +6,7 @@ local join = function(...)
 end
 
 function M:init(opts)
-	vim.validate({ log_file = { opts.log_file, "string" } })
+	vim.validate({ log_file = { opts.log_file, "s" } })
 	self:config(opts)
 	self.log_date_format = "%F %H:%M:%S"
 	self.format_func = function(arg)

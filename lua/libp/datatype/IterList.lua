@@ -4,9 +4,9 @@ local List = require("libp.datatype.List")
 M.iter = {}
 function M:init(opts)
 	vim.validate({
-		next_fn = { opts.next_fn, "function" },
-		invariant = { opts.invariant, "table", true },
-		control = { opts.controle, "number", true },
+		next_fn = { opts.next_fn, "f" },
+		invariant = { opts.invariant, "t", true },
+		control = { opts.controle, "n", true },
 	})
 
 	self.next_fn = opts.next_fn

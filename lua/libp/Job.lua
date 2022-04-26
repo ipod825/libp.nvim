@@ -15,7 +15,7 @@ local function close_pipe(pipe)
 end
 
 local function transform_env(env)
-	vim.validate({ env = { env, "table", true } })
+	vim.validate({ env = { env, "t", true } })
 	if not env then
 		return
 	end
@@ -37,10 +37,10 @@ M.StderrDumpLevel = { SILENT = 1, ON_ERROR = 2, ALWAYS = 3 }
 
 function M:init(opts)
 	vim.validate({
-		on_stdout = { opts.on_stdout, "function", true },
-		on_stdout_buffer_size = { opts.on_stdout_buffer_size, "number", true },
-		stderr_dump_level = { opts.stderr_dump_level, "number", true },
-		cwd = { opts.cwd, "string", true },
+		on_stdout = { opts.on_stdout, "f", true },
+		on_stdout_buffer_size = { opts.on_stdout_buffer_size, "n", true },
+		stderr_dump_level = { opts.stderr_dump_level, "n", true },
+		cwd = { opts.cwd, "s", true },
 		env = { opts.env, "table", true },
 		detached = { opts.detached, "boolean", true },
 	})

@@ -32,7 +32,7 @@ local function convert_type(value, type)
 end
 
 function M:init(prog)
-	vim.validate({ prog = { prog, "string", true } })
+	vim.validate({ prog = { prog, "s", true } })
 	self.prog = prog or ""
 	self.sub_parsers = {}
 	self.arg_props = {
@@ -56,7 +56,7 @@ function M:add_subparser(prog)
 end
 
 function M:add_argument(provided_name, opts)
-	vim.validate({ provided_name = { provided_name, "string" }, opts = { opts, "table", true } })
+	vim.validate({ provided_name = { provided_name, "s" }, opts = { opts, "t", true } })
 	opts = opts or {}
 
 	local arg, arg_type = arg_and_type(provided_name)
@@ -75,7 +75,7 @@ function M:add_argument(provided_name, opts)
 end
 
 function M:is_parsed_args_invalid(parsed_res, check_positional)
-	vim.validate({ parsed_res = { parsed_res, "table" }, check_positional = { check_positional, "boolean", true } })
+	vim.validate({ parsed_res = { parsed_res, "t" }, check_positional = { check_positional, "b", true } })
 	local arg_props = check_positional
 			and vim.tbl_extend(
 				"error",
@@ -106,7 +106,7 @@ function M:is_parsed_args_invalid(parsed_res, check_positional)
 end
 
 function M:parse(str)
-	vim.validate({ str = { str, "string" } })
+	vim.validate({ str = { str, "s" } })
 	local tokens = tokenize(str)
 	if not tokens then
 		return nil

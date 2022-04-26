@@ -3,7 +3,7 @@ local M = require("libp.argparse.Parser"):EXTEND()
 local tokenize = require("libp.argparse.tokenizer").tokenize
 
 function M:parse(str)
-	vim.validate({ str = { str, "string" } })
+	vim.validate({ str = { str, "s" } })
 	return self:parse_internal(tokenize(str))
 end
 

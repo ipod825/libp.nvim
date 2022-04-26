@@ -6,10 +6,10 @@ local a = require("plenary.async")
 
 function M:init(opts)
 	vim.validate({
-		title = { opts.title, { "string", "table" }, true },
-		content = { opts.content, "table" },
-		fwin_cfg = { opts.fwin_cfg, "table", true },
-		cursor_offset = { opts.cursor_offset, "table", true },
+		title = { opts.title, { "s", "t" }, true },
+		content = { opts.content, "t" },
+		fwin_cfg = { opts.fwin_cfg, "t", true },
+		cursor_offset = { opts.cursor_offset, "t", true },
 		wo = { opts.wo, "table", true },
 		on_select = { opts.on_select, "function", true },
 	})

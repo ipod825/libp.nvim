@@ -2,10 +2,10 @@ local M = require("libp.ui.Menu"):EXTEND()
 
 function M:init(opts)
 	vim.validate({
-		title = { opts.title, "string", true },
-		content = { opts.content, { "table", "string" } },
-		fwin_cfg = { opts.fwin_cfg, "table", true },
-		wo = { opts.wo, "table", true },
+		title = { opts.title, "s", true },
+		content = { opts.content, { "t", "s" } },
+		fwin_cfg = { opts.fwin_cfg, "t", true },
+		wo = { opts.wo, "t", true },
 	})
 
 	opts.title = opts.title or "!"

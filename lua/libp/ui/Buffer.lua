@@ -13,7 +13,7 @@ end
 
 function M.get_or_new(opts)
 	vim.validate({
-		filename = { opts.filename, "string" },
+		filename = { opts.filename, "s" },
 	})
 
 	local id = vim.fn.bufnr(opts.filename)
@@ -22,8 +22,8 @@ end
 
 function M.open_or_new(opts)
 	vim.validate({
-		open_cmd = { opts.open_cmd, "string" },
-		filename = { opts.filename, "string" },
+		open_cmd = { opts.open_cmd, "s" },
+		filename = { opts.filename, "s" },
 	})
 
 	vim.cmd(("%s %s"):format(opts.open_cmd, opts.filename))
@@ -33,10 +33,10 @@ end
 
 function M:init(opts)
 	vim.validate({
-		filename = { opts.filename, "string", true },
-		content = { opts.content, { "function", "table" } },
-		buf_enter_reload = { opts.buf_enter_reload, "boolean", true },
-		mappings = { opts.mappings, "table", true },
+		filename = { opts.filename, "s", true },
+		content = { opts.content, { "f", "t" } },
+		buf_enter_reload = { opts.buf_enter_reload, "b", true },
+		mappings = { opts.mappings, "t", true },
 		b = { opts.b, "table", true },
 		bo = { opts.bo, "table", true },
 	})
@@ -121,8 +121,8 @@ function M:mapfn(mappings)
 	self.mapping_handles = self.mapping_handles or {}
 	for mode, mode_mappings in pairs(mappings) do
 		vim.validate({
-			mode = { mode, "string" },
-			mode_mappings = { mode_mappings, "table" },
+			mode = { mode, "s" },
+			mode_mappings = { mode_mappings, "t" },
 		})
 		self.mapping_handles[mode] = self.mapping_handles[mode] or {}
 		for key, fn in pairs(mode_mappings) do
@@ -133,9 +133,9 @@ end
 
 function M:add_key_map(mode, key, fn)
 	vim.validate({
-		mode = { mode, "string" },
-		key = { key, "string" },
-		fn = { fn, { "function", "table" } },
+		mode = { mode, "s" },
+		key = { key, "s" },
+		fn = { fn, { "f", "t" } },
 	})
 
 	local modify_buffer = true
@@ -210,9 +210,9 @@ end
 
 function M:edit(opts)
 	vim.validate({
-		get_items = { opts.get_items, "function" },
-		update = { opts.update, "function" },
-		fill_lines = { opts.fill_lines, "function", true },
+		get_items = { opts.get_items, "f" },
+		update = { opts.update, "f" },
+		fill_lines = { opts.fill_lines, "f", true },
 	})
 	self.ctx.edit = vim.tbl_extend("error", opts, { ori_items = opts.get_items() })
 	vim.bo.buftype = "acwrite"
@@ -235,8 +235,8 @@ end
 function M:unmapfn(mappings)
 	for mode, mode_mappings in pairs(mappings) do
 		vim.validate({
-			mode = { mode, "string" },
-			mode_mappings = { mode_mappings, "table" },
+			mode = { mode, "s" },
+			mode_mappings = { mode_mappings, "t" },
 		})
 		for key, _ in pairs(mode_mappings) do
 			vim.keymap.del(mode, key, { buffer = self.id })
@@ -277,7 +277,7 @@ function M:delay_reload()
 end
 
 function M:set_content(content)
-	vim.validate({ content = { content, { "function", "table" } } })
+	vim.validate({ content = { content, { "f", "t" } } })
 	self.content = content
 	self:reload()
 end

@@ -4,10 +4,10 @@ local log = require("libp.log")
 function M:init(buffer, opts)
 	opts = opts or {}
 	vim.validate({
-		buffer = { buffer, "table" },
-		buf_id = { buffer.id, "number" },
-		wo = { opts.wo, "table", true },
-		focus_on_open = { opts.focus_on_open, "boolean", true },
+		buffer = { buffer, "t" },
+		buf_id = { buffer.id, "n" },
+		wo = { opts.wo, "t", true },
+		focus_on_open = { opts.focus_on_open, "b", true },
 	})
 
 	self.focus_on_open = opts.focus_on_open
@@ -16,7 +16,7 @@ function M:init(buffer, opts)
 end
 
 function M:open(fwin_cfg)
-	vim.validate({ fwin_cfg = { fwin_cfg, "table" } })
+	vim.validate({ fwin_cfg = { fwin_cfg, "t" } })
 	self.id = vim.api.nvim_open_win(self.buffer.id, self.focus_on_open, fwin_cfg)
 	for k, v in pairs(self.wo) do
 		vim.api.nvim_win_set_option(self.id, k, v)
