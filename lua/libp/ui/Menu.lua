@@ -71,7 +71,7 @@ end
 function M:show()
 	local w = Window(self.buffer, { focus_on_open = true, wo = self.wo })
 	local w_id = w:open(self.fwin_cfg)
-	vim.w._is_libp_window = true
+	vim.w._is_libp_menu = true
 	vim.api.nvim_win_set_cursor(w_id, { #self.title + 1, 0 })
 	vim.api.nvim_create_autocmd("CursorMoved", {
 		buffer = self.buffer.id,
@@ -103,7 +103,7 @@ function M.will_select_from_menu(run_before_selection)
 	run_before_selection = run_before_selection or functional.nop
 
 	select_from_menu = function()
-		if not vim.w._is_libp_window then
+		if not vim.w._is_libp_menu then
 			timer:start(
 				10,
 				0,
