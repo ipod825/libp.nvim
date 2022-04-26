@@ -24,7 +24,7 @@ function M:open(fwin_cfg)
 	return self.id
 end
 
-function M:on_close()
+function M:close()
 	if vim.api.nvim_win_is_valid(self.id) then
 		vim.api.nvim_win_close(self.id, false)
 		if not vim.api.nvim_buf_is_valid(self.buffer.id) then

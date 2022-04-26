@@ -94,7 +94,7 @@ end
 
 function M:close()
 	if self.window then
-		self.window:on_close()
+		self.window:close()
 	else
 		for _, child in ipairs(self.children) do
 			child:close()
