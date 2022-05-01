@@ -127,9 +127,6 @@ describe("start", function()
 						vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
 					),
 				},
-				on_stdout = function(lines)
-					log.warn(lines)
-				end,
 			}):start()
 			assert.spy(notify).was_called()
 		end)
