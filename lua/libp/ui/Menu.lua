@@ -115,7 +115,13 @@ function M.will_select_from_menu(run_before_selection)
 			timer:stop()
 			timer:close()
 			run_before_selection()
-			Buffer.execut_mapping("n", "<cr>")
+			-- Not sure why nvim_input('<cr>') doesn't work here.
+			for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, "n")) do
+				if m.lhs == "<CR>" then
+					m.callback()
+					break
+				end
+			end
 		end
 	end
 	select_from_menu()

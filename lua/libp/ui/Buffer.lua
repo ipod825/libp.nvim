@@ -118,13 +118,11 @@ function M:mapfn(mappings)
 	if not mappings then
 		return
 	end
-	self.mapping_handles = self.mapping_handles or {}
 	for mode, mode_mappings in pairs(mappings) do
 		vim.validate({
 			mode = { mode, "s" },
 			mode_mappings = { mode_mappings, "t" },
 		})
-		self.mapping_handles[mode] = self.mapping_handles[mode] or {}
 		for key, fn in pairs(mode_mappings) do
 			self:add_key_map(mode, key, fn)
 		end
@@ -144,44 +142,18 @@ function M:add_key_map(mode, key, fn)
 		fn = fn.callback
 	end
 
-	local prefix = (mode == "v") and ":<c-u>" or "<cmd>"
-	self.mapping_handles[mode] = self.mapping_handles[mode] or {}
-	self.mapping_handles[mode][key] = function()
-		if self.is_reloading and modify_buffer then
-			-- Cancel reload since we will reload after calling fn.
-			self.cancel_reload = true
-		end
-		fn()
-	end
-	vim.api.nvim_buf_set_keymap(
-		self.id,
+	vim.keymap.set(
 		mode,
 		key,
-		('%slua require("libp.ui.Buffer").execut_mapping("%s", "%s")<cr>'):format(prefix, mode, key:gsub("^<", "<lt>")),
-		{}
+		a.void(function()
+			if self.is_reloading and modify_buffer then
+				-- Cancel reload since we will reload after calling fn.
+				self.cancel_reload = true
+			end
+			fn()
+		end),
+		{ buffer = self.id }
 	)
-
-	-- todo: this does not work for visual mode for getting visual selected rows for now.
-	-- vim.keymap.set(
-	-- 	mode,
-	-- 	key,
-	-- 	a.void(function()
-	-- 		if self.is_reloading and modify_buffer then
-	-- 			-- Cancel reload since we will reload after calling fn.
-	-- 			self.cancel_reload = true
-	-- 		end
-	-- 		fn()
-	-- 	end),
-	-- 	{ buffer = self.id }
-	-- )
-end
-
-function M.execut_mapping(mode, key)
-	local b = global.buffers[vim.api.nvim_get_current_buf()]
-	key = key:gsub("<lt>", "^<")
-	a.void(function()
-		b.mapping_handles[mode][key]()
-	end)()
 end
 
 function M:mark(data, max_num_data)

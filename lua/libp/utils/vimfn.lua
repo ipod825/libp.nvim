@@ -1,17 +1,5 @@
 local M = {}
 
-function M.visual_rows()
-	local row_beg, row_end
-	_, row_beg, _ = unpack(vim.fn.getpos("'<"))
-	_, row_end, _ = unpack(vim.fn.getpos("'>"))
-	-- Fallback to normal mode.
-	if row_beg == row_end then
-		row_beg = vim.fn.line(".")
-		row_end = row_beg
-	end
-	return row_beg, row_end
-end
-
 function M.all_rows()
 	return 1, vim.fn.line("$")
 end
@@ -22,6 +10,71 @@ end
 
 function M.last_visible_line()
 	return vim.fn.line("w$")
+end
+
+-- todo: Monitor new API: https://github.com/neovim/neovim/pull/13896
+--@param mark1 Name of mark starting the region
+--@param mark2 Name of mark ending the region
+--@param options Table containing the adjustment function, register type and selection mode
+--@return region region between the two marks, as returned by |vim.region|
+--@return start (row,col) tuple denoting the start of the region
+--@return finish (row,col) tuple denoting the end of the region
+function M.get_marked_region(mark1, mark2, options)
+	local bufnr = 0
+	local adjust = options.adjust or function(pos1, pos2)
+		return pos1, pos2
+	end
+	local regtype = options.regtype or vim.fn.visualmode()
+	local selection = options.selection or (vim.o.selection ~= "exclusive")
+
+	local pos1 = vim.fn.getpos(mark1)
+	local pos2 = vim.fn.getpos(mark2)
+	pos1, pos2 = adjust(pos1, pos2)
+
+	local start = { pos1[2] - 1, pos1[3] - 1 + pos1[4] }
+	local finish = { pos2[2] - 1, pos2[3] - 1 + pos2[4] }
+
+	-- Return if start or finish are invalid
+	if start[2] < 0 or finish[1] < start[1] then
+		return
+	end
+
+	local region = vim.region(bufnr, start, finish, regtype, selection)
+	return region, start, finish
+end
+
+function M.visual_rows()
+	local visual_modes = {
+		v = true,
+		V = true,
+		-- [t'<C-v>'] = true, -- Visual block does not seem to be supported by vim.region
+	}
+
+	-- Return current line if not in visual mode.
+	if visual_modes[vim.api.nvim_get_mode().mode] == nil then
+		local cursor = vim.api.nvim_win_get_cursor(0)
+		return cursor[1], cursor[1]
+	end
+
+	local options = {}
+	options.adjust = function(pos1, pos2)
+		if vim.fn.visualmode() == "V" then
+			pos1[3] = 1
+			pos2[3] = 2 ^ 31 - 1
+		end
+
+		if pos1[2] > pos2[2] then
+			pos2[3], pos1[3] = pos1[3], pos2[3]
+			return pos2, pos1
+		elseif pos1[2] == pos2[2] and pos1[3] > pos2[3] then
+			return pos2, pos1
+		else
+			return pos1, pos2
+		end
+	end
+
+	local _, start, finish = M.get_marked_region("v", ".", options)
+	return start[1] + 1, finish[1] + 1
 end
 
 return M
