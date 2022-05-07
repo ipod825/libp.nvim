@@ -1,6 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local global = require("libp.global")("libp")
-local functional = require("libp.functional")
 local a = require("plenary.async")
 local Job = require("libp.Job")
 local log = require("libp.log")
@@ -34,7 +33,7 @@ end
 function M:init(opts)
 	vim.validate({
 		filename = { opts.filename, "s", true },
-		content = { opts.content, { "f", "t" } },
+		content = { opts.content, { "f", "t" }, true },
 		buf_enter_reload = { opts.buf_enter_reload, "b", true },
 		mappings = { opts.mappings, "t", true },
 		b = { opts.b, "table", true },
@@ -52,7 +51,7 @@ function M:init(opts)
 	end
 
 	global.buffers[self.id] = self
-	self.content = opts.content or functional.nop
+	self.content = opts.content or {}
 	self.mappings = opts.mappings
 
 	self:mapfn(opts.mappings)
