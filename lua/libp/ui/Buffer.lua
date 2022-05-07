@@ -129,6 +129,22 @@ function M:mapfn(mappings)
 	end
 end
 
+M.MultiReloadStrategy = {
+	-- Wait for any existing reload to finish. The caller might be blocked and
+	-- is free to do anything after unblock. This is the default behavior and
+	-- should be good in most cases. Only if the Buffer contains more than 10k
+	-- lines should we try to reduce user waiting time with the following
+	-- options.
+	WAIT = 1,
+	-- Cancel any existing reload. The caller will never be blocked but is
+	-- expected to trigger another reload so that the buffer content will still
+	-- be up-to-date.
+	CANCEL = 2,
+	-- Ignore any existing reload. The caller will never be blocked and is
+	-- expected to not trigger any reload.
+	IGNORE = 3,
+}
+
 function M:add_key_map(mode, key, fn)
 	vim.validate({
 		mode = { mode, "s" },
@@ -136,9 +152,9 @@ function M:add_key_map(mode, key, fn)
 		fn = { fn, { "f", "t" } },
 	})
 
-	local modify_buffer = true
+	local multi_reload = M.MultiReloadStrategy.WAIT
 	if type(fn) == "table" then
-		modify_buffer = fn.modify_buffer or true
+		multi_reload = fn.multi_reload_strategy
 		fn = fn.callback
 	end
 
@@ -146,9 +162,12 @@ function M:add_key_map(mode, key, fn)
 		mode,
 		key,
 		a.void(function()
-			if self.is_reloading and modify_buffer then
-				-- Cancel reload since we will reload after calling fn.
-				self.cancel_reload = true
+			if self.is_reloading then
+				if multi_reload == M.MultiReloadStrategy.WAIT then
+					self:wait_reload()
+				elseif multi_reload == M.MultiReloadStrategy.CANCEL then
+					self.cancel_reload = true
+				end
 			end
 			fn()
 		end),
