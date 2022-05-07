@@ -10,6 +10,9 @@ function M:init(capacity)
 end
 
 function M:add(val)
+	if not val then
+		return
+	end
 	local node = self.val_to_node[val]
 	if node then
 		self.lst:splice(self.lst.head, self.lst, node)
