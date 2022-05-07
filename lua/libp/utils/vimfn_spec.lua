@@ -1,5 +1,5 @@
 local vimfn = require("libp.utils.vimfn")
-local stub = require("luassert.stub")
+local log = require("libp.log")
 
 describe("visual_rows", function()
 	it("Returns current row in normal mode", function()
@@ -15,6 +15,23 @@ describe("visual_rows", function()
 		vim.cmd("normal! ggVG")
 
 		local row_beg, row_end = vimfn.visual_rows()
+		assert.are.same(1, row_beg)
+		assert.are.same(3, row_end)
+	end)
+end)
+
+describe("selected_rows", function()
+	it("Selects the specified rows", function()
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, { "1", "2", "3" })
+
+		vimfn.visual_select_rows(2, 3)
+		local row_beg, row_end = vimfn.visual_rows()
+		assert.are.same(2, row_beg)
+		assert.are.same(3, row_end)
+
+		vimfn.visual_select_rows(1, 3)
+		row_beg, row_end = vimfn.visual_rows()
+
 		assert.are.same(1, row_beg)
 		assert.are.same(3, row_end)
 	end)

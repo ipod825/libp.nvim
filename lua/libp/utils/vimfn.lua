@@ -1,4 +1,5 @@
 local M = {}
+local log = require("libp.log")
 
 function M.all_rows()
 	return 1, vim.fn.line("$")
@@ -41,6 +42,21 @@ function M.get_marked_region(mark1, mark2, options)
 
 	local region = vim.region(bufnr, start, finish, regtype, selection)
 	return region, start, finish
+end
+
+function M.visual_select_rows(from, to)
+	if vim.fn.mode() ~= "n" then
+		vim.cmd("normal! V")
+		-- If we were in visual line mode, the previous cmd might already have
+		-- us back in normal mode. Otherwise, we should be in visual line mode
+		-- at this point.
+		if vim.fn.mode() ~= "n" then
+			vim.cmd("normal! V")
+		end
+	end
+	vim.api.nvim_win_set_cursor(0, { from, 1 })
+	vim.cmd("normal! V")
+	vim.api.nvim_win_set_cursor(0, { to, 1 })
 end
 
 function M.visual_rows()
