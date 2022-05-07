@@ -106,6 +106,7 @@ function M:init(opts)
 		})
 	end
 
+	self.reload_done = a.control.Condvar.new()
 	self:reload()
 end
 
@@ -264,6 +265,10 @@ function M:register_reload_notification()
 	return self.reload_done
 end
 
+function M:wait_reload()
+	self.reload_done:wait()
+end
+
 function M:reload()
 	if self.bo.filetype then
 		vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
@@ -333,9 +338,7 @@ function M:reload()
 		vim.api.nvim_win_set_option(ori_win, "statusline", ori_st)
 	end
 
-	if self.reload_done ~= nil then
-		self.reload_done:notify_one()
-	end
+	self.reload_done:notify_all()
 end
 
 return M
