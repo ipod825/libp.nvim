@@ -222,7 +222,7 @@ function M:edit(opts)
 	if opts.fill_lines then
 		opts.fill_lines()
 	end
-	vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.api.nvim_get_option("undolevels")
+	vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
 end
 
 function M:_unmapfn(mappings)

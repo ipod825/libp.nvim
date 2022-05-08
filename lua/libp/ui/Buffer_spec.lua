@@ -2,6 +2,7 @@ require("plenary.async").tests.add_to_env()
 local Buffer = require("libp.ui.Buffer")
 local stub = require("luassert.stub")
 local spy = require("luassert.spy")
+local functional = require("libp.functional")
 local log = require("libp.log")
 
 describe("Buffer", function()
@@ -11,7 +12,7 @@ describe("Buffer", function()
 	end)
 	after_each(function()
 		if b then
-			vim.cmd("bwipeout " .. b.id)
+			vim.cmd("bwipeout! " .. b.id)
 		end
 	end)
 
@@ -239,6 +240,141 @@ describe("Buffer", function()
 				})
 				assert.are.same("delete", vim.bo.bufhidden)
 			end)
+		end)
+	end)
+
+	describe("set_content", function()
+		it("Sets array content", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			local content = { "a", "b", "c" }
+			assert.are_not.same(content, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+			b:set_content(content)
+			assert.are.same(content, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+		end)
+		a.it("Sets function content", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			b:set_content(function()
+				return { "echo", "hello" }
+			end)
+			assert.are.same({ "hello" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+		end)
+	end)
+
+	describe("edit", function()
+		it("Deafulats to global undolevels", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			b:edit({ get_items = functional.nop, update = functional.nop })
+			assert.are.same(vim.go.undolevels, vim.api.nvim_buf_get_option(b.id, "undolevels"))
+			vim.cmd("write")
+			assert.are.same(-1, vim.api.nvim_buf_get_option(b.id, "undolevels"))
+		end)
+
+		it("Respects undolevels in init", function()
+			local ori_undolevel = 3
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				bo = { undolevels = ori_undolevel },
+			})
+			b:edit({ get_items = functional.nop, update = functional.nop })
+			assert.are.same(ori_undolevel, vim.api.nvim_buf_get_option(b.id, "undolevels"))
+			vim.cmd("write")
+			assert.are.same(ori_undolevel, vim.api.nvim_buf_get_option(b.id, "undolevels"))
+		end)
+
+		it("Sets up buftype and modifiable", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			b:edit({ get_items = functional.nop, update = functional.nop })
+			assert.are.same("acwrite", vim.api.nvim_buf_get_option(b.id, "buftype"))
+			assert.are.same(true, vim.api.nvim_buf_get_option(b.id, "modifiable"))
+			vim.cmd("write")
+			assert.are.same("nofile", vim.api.nvim_buf_get_option(b.id, "buftype"))
+			assert.are.same(false, vim.api.nvim_buf_get_option(b.id, "modifiable"))
+		end)
+
+		it("Respects customized filetypes and modifiable", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				bo = { buftype = "nowrite", modifiable = true },
+			})
+			b:edit({ get_items = functional.nop, update = functional.nop })
+			assert.are.same("acwrite", vim.api.nvim_buf_get_option(b.id, "buftype"))
+			assert.are.same(true, vim.api.nvim_buf_get_option(b.id, "modifiable"))
+			vim.cmd("write")
+			assert.are.same("nowrite", vim.api.nvim_buf_get_option(b.id, "buftype"))
+			assert.are.same(true, vim.api.nvim_buf_get_option(b.id, "modifiable"))
+		end)
+
+		it("Unmaps mappings", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				mappings = { n = { a = functional.nop } },
+			})
+			b:edit({ get_items = functional.nop, update = functional.nop })
+			assert.are.same(0, #vim.api.nvim_buf_get_keymap(b.id, "n"))
+			vim.cmd("write")
+			assert.are.same(1, #vim.api.nvim_buf_get_keymap(b.id, "n"))
+		end)
+
+		it("Optionally modifies buffer content", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			b:edit({
+				get_items = functional.nop,
+				update = functional.nop,
+				fill_lines = function()
+					vim.api.nvim_buf_set_lines(b.id, 0, -1, true, { "a", "b" })
+				end,
+			})
+			assert.are.same({ "a", "b" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+		end)
+
+		it("Saves edit on write", function()
+			local final_items = {}
+			local update = function(o, n)
+				final_items = { o[1], n[1] }
+			end
+			local counter = 1
+			local ori_items = { "ori_items" }
+			local new_items = { "new_items" }
+			local get_items = function()
+				if counter == 1 then
+					counter = counter + 1
+					return ori_items
+				else
+					return new_items
+				end
+			end
+
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			local reload = spy.on(b, "reload")
+			b:edit({
+				get_items = get_items,
+				update = update,
+			})
+			vim.cmd("write")
+			assert.are.same({ "ori_items", "new_items" }, final_items)
+			assert.spy(reload).was_called()
+			reload:clear()
 		end)
 	end)
 end)
