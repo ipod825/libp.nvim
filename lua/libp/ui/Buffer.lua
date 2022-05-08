@@ -54,7 +54,7 @@ function M:init(opts)
 	self.content = opts.content or {}
 	self.mappings = opts.mappings
 
-	self:mapfn(opts.mappings)
+	self:_mapfn(opts.mappings)
 
 	-- For client to store arbitrary lua object.
 	local ctx = {}
@@ -116,7 +116,7 @@ function M:on_wipeout()
 	global.buffers[self.id] = nil
 end
 
-function M:mapfn(mappings)
+function M:_mapfn(mappings)
 	if not mappings then
 		return
 	end
@@ -126,7 +126,7 @@ function M:mapfn(mappings)
 			mode_mappings = { mode_mappings, "t" },
 		})
 		for key, fn in pairs(mode_mappings) do
-			self:add_key_map(mode, key, fn)
+			self:_add_key_map(mode, key, fn)
 		end
 	end
 end
@@ -147,7 +147,7 @@ M.MultiReloadStrategy = {
 	IGNORE = 3,
 }
 
-function M:add_key_map(mode, key, fn)
+function M:_add_key_map(mode, key, fn)
 	vim.validate({
 		mode = { mode, "s" },
 		key = { key, "s" },
@@ -191,13 +191,13 @@ function M:mark(data, max_num_data)
 	end
 end
 
-function M:save_edit()
+function M:_save_edit()
 	self.ctx.edit.update(self.ctx.edit.ori_items, self.ctx.edit.get_items())
 	self.ctx.edit = nil
-	vim.bo.buftype = "nofile"
+	vim.bo.buftype = self.bo.buftype
 	vim.bo.modifiable = self.bo.modifiable
 	vim.bo.undolevels = self.bo.undolevels
-	self:mapfn(self.mappings)
+	self:_mapfn(self.mappings)
 	self:reload()
 end
 
@@ -213,10 +213,10 @@ function M:edit(opts)
 		buffer = self.id,
 		once = true,
 		callback = a.void(function()
-			global.buffers[self.id]:save_edit()
+			global.buffers[self.id]:_save_edit()
 		end),
 	})
-	self:unmapfn(self.mappings)
+	self:_unmapfn(self.mappings)
 	vim.bo.undolevels = -1
 	vim.bo.modifiable = true
 	if opts.fill_lines then
@@ -225,7 +225,10 @@ function M:edit(opts)
 	vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.api.nvim_get_option("undolevels")
 end
 
-function M:unmapfn(mappings)
+function M:_unmapfn(mappings)
+	if not mappings then
+		return
+	end
 	for mode, mode_mappings in pairs(mappings) do
 		vim.validate({
 			mode = { mode, "s" },
@@ -267,74 +270,72 @@ function M:wait_reload()
 end
 
 function M:reload()
-	if self.bo.filetype then
-		vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
-	end
-	if type(self.content) == "table" then
-		vim.api.nvim_buf_set_option(self.id, "modifiable", true)
-		vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
-		vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
-		return
-	end
-
 	if self.is_reloading then
 		return
 	end
-
 	self.is_reloading = true
 	-- Clear the marks so that we don't hit into invisible marks.
 	self.ctx.mark = nil
 	self.cancel_reload = false
 
-	local ori_win, ori_cursor
-	local ori_st = vim.o.statusline
-	if self.id == vim.api.nvim_get_current_buf() then
-		ori_win = vim.api.nvim_get_current_win()
-		ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
-		ori_st = vim.o.statusline
+	if self.bo.filetype then
+		vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
 	end
 
-	self:_clear()
+	if type(self.content) == "table" then
+		vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+		vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
+		vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
+	else
+		local ori_win, ori_cursor
+		local ori_st = vim.o.statusline
+		if self.id == vim.api.nvim_get_current_buf() then
+			ori_win = vim.api.nvim_get_current_win()
+			ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
+			ori_st = vim.o.statusline
+		end
 
-	local count = 1
-	local beg = 0
-	local job
-	job = Job({
-		cmds = self.content(),
-		on_stdout = function(lines)
-			if not vim.api.nvim_buf_is_valid(self.id) or self.cancel_reload then
-				job:kill()
-				return
-			end
+		self:_clear()
 
-			beg = self:_append(lines, beg)
-			-- We only restore cursor once. For content that can be drawn in one
-			-- shot, reload should finish before any new user interaction.
-			-- Restoring the view thus compensate the cursor move due to clear.
-			-- For content that needs to be drawn in multiple run, restoring the
-			-- cursor after every append just makes user can't do anything.
-			if ori_cursor and vim.api.nvim_win_is_valid(ori_win) then
-				vim.api.nvim_win_set_cursor(
-					ori_win,
-					{ math.min(vim.api.nvim_buf_line_count(self.id), ori_cursor[1]), ori_cursor[2] }
-				)
-				ori_cursor = nil
-			end
+		local count = 1
+		local beg = 0
+		local job
+		job = Job({
+			cmds = self.content(),
+			on_stdout = function(lines)
+				if not vim.api.nvim_buf_is_valid(self.id) or self.cancel_reload then
+					job:kill()
+					return
+				end
 
-			if ori_win == vim.api.nvim_get_current_win() then
-				vim.wo.statusline = " Loading " .. ("."):rep(count)
-				count = count % 6 + 1
-			end
-		end,
-	})
+				beg = self:_append(lines, beg)
+				-- We only restore cursor once. For content that can be drawn in one
+				-- shot, reload should finish before any new user interaction.
+				-- Restoring the view thus compensate the cursor move due to clear.
+				-- For content that needs to be drawn in multiple run, restoring the
+				-- cursor after every append just makes user can't do anything.
+				if ori_cursor and vim.api.nvim_win_is_valid(ori_win) then
+					vim.api.nvim_win_set_cursor(
+						ori_win,
+						{ math.min(vim.api.nvim_buf_line_count(self.id), ori_cursor[1]), ori_cursor[2] }
+					)
+					ori_cursor = nil
+				end
 
-	job:start()
+				if ori_win == vim.api.nvim_get_current_win() then
+					vim.wo.statusline = " Loading " .. ("."):rep(count)
+					count = count % 6 + 1
+				end
+			end,
+		})
+
+		job:start()
+		if ori_win and vim.api.nvim_win_is_valid(ori_win) then
+			vim.api.nvim_win_set_option(ori_win, "statusline", ori_st)
+		end
+	end
 
 	self.is_reloading = false
-	if ori_win and vim.api.nvim_win_is_valid(ori_win) then
-		vim.api.nvim_win_set_option(ori_win, "statusline", ori_st)
-	end
-
 	self.reload_done:notify_all()
 end
 
