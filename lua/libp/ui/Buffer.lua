@@ -85,7 +85,9 @@ function M:init(opts)
 	vim.api.nvim_create_autocmd("BufWipeout", {
 		buffer = self.id,
 		once = true,
-		callback = self:BIND(self.on_wipeout),
+		callback = function()
+			self:on_wipeout()
+		end,
 	})
 
 	-- reload on :edit
@@ -235,7 +237,7 @@ function M:unmapfn(mappings)
 	end
 end
 
-function M:clear()
+function M:_clear()
 	vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
 	vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 	vim.api.nvim_buf_set_lines(self.id, 0, -1, false, {})
@@ -243,7 +245,7 @@ function M:clear()
 	vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels)
 end
 
-function M:append(lines, beg)
+function M:_append(lines, beg)
 	vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
 	vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 
@@ -271,17 +273,6 @@ function M:set_content(content)
 	vim.validate({ content = { content, { "f", "t" } } })
 	self.content = content
 	self:reload()
-end
-
-function M:register_reload_notification()
-	-- This functoin is mainly for testing purpose. When the reload function is
-	-- not invoked by the main testing coroutine (a.void) but by a (autocmd)
-	-- callback, the main testing coroutine won't block until reload finishes as
-	-- reload is invoked by another coroutine. This function returns a mutex so
-	-- that the other coroutine can notify the main testing coroutine when it
-	-- completes the reload function.
-	self.reload_done = a.control.Condvar.new()
-	return self.reload_done
 end
 
 function M:wait_reload()
@@ -316,7 +307,7 @@ function M:reload()
 		ori_st = vim.o.statusline
 	end
 
-	self:clear()
+	self:_clear()
 
 	local count = 1
 	local beg = 0
@@ -329,7 +320,7 @@ function M:reload()
 				return
 			end
 
-			beg = self:append(lines, beg)
+			beg = self:_append(lines, beg)
 			-- We only restore cursor once. For content that can be drawn in one
 			-- shot, reload should finish before any new user interaction.
 			-- Restoring the view thus compensate the cursor move due to clear.

@@ -1,6 +1,7 @@
 require("plenary.async").tests.add_to_env()
 local Buffer = require("libp.ui.Buffer")
 local stub = require("luassert.stub")
+local spy = require("luassert.spy")
 local log = require("libp.log")
 
 describe("Buffer", function()
@@ -39,37 +40,69 @@ describe("Buffer", function()
 	end)
 
 	describe("init", function()
-		describe("buf_enter_reload", function()
-			it("Does not reload on BufEnter if set to false", function()
-				b = Buffer.open_or_new({
-					filename = "test_abc",
-					open_cmd = "edit",
-					buf_enter_reload = false,
-					bo = { modifiable = true },
-					content = { "line 1" },
-				})
-				b.content = { "line 1", "line 2" }
-				assert.are.same({ "line 1" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
-				vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
-				assert.are.same({ "line 1" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+		describe("builtin autocmds", function()
+			describe("BufReadCmd", function()
+				it("Reloads buffer on BufReadCmd", function()
+					b = Buffer.open_or_new({
+						filename = "test_abc",
+						open_cmd = "edit",
+					})
+					local reload = spy.on(b, "reload")
+
+					vim.cmd("edit")
+
+					assert.spy(reload).was_called()
+					reload:clear()
+				end)
 			end)
 
-			it("Reloads on BufEnter if set to true", function()
-				b = Buffer.open_or_new({
-					filename = "test_abc",
-					open_cmd = "edit",
-					buf_enter_reload = true,
-					bo = { modifiable = true },
-					content = { "line 1" },
-				})
-				b.content = { "line 1", "line 2" }
-				assert.are.same({ "line 1" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
-				vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
-				assert.are.same({ "line 1", "line 2" }, vim.api.nvim_buf_get_lines(b.id, 0, -1, true))
+			describe("BufWipeout", function()
+				it("Calls on_wipeout handler", function()
+					b = Buffer.open_or_new({
+						filename = "test_abc",
+						open_cmd = "edit",
+					})
+					local on_wipeout = spy.on(b, "on_wipeout")
+
+					vim.api.nvim_exec_autocmds("BufWipeout", { buffer = b.id })
+
+					assert.spy(on_wipeout).was_called()
+					on_wipeout:clear()
+				end)
+			end)
+
+			describe("BufEnterReload", function()
+				it("Does not reload on BufEnter if set to false", function()
+					b = Buffer.open_or_new({
+						filename = "test_abc",
+						open_cmd = "edit",
+						buf_enter_reload = false,
+					})
+					local reload = spy.on(b, "reload")
+
+					vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
+
+					assert.spy(reload).was_not_called()
+					reload:clear()
+				end)
+
+				it("Reloads on BufEnter if set to true", function()
+					b = Buffer.open_or_new({
+						filename = "test_abc",
+						open_cmd = "edit",
+						buf_enter_reload = true,
+					})
+					local reload = spy.on(b, "reload")
+
+					vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
+
+					assert.spy(reload).was_called()
+					reload:clear()
+				end)
 			end)
 		end)
 
-		describe("mapping", function()
+		describe("mappings", function()
 			it("Takes single func", function()
 				local var
 				b = Buffer.open_or_new({
@@ -183,6 +216,28 @@ describe("Buffer", function()
 					b.cancel_reload = false
 					wait_reload:revert()
 				end)
+			end)
+		end)
+
+		describe("buffer options", function()
+			it("Defaults to", function()
+				b = Buffer.open_or_new({
+					filename = "test_abc",
+					open_cmd = "edit",
+				})
+				assert.are.same(false, vim.bo.modifiable)
+				assert.are.same("wipe", vim.bo.bufhidden)
+				assert.are.same("nofile", vim.bo.buftype)
+				assert.are.same(false, vim.bo.swapfile)
+			end)
+
+			it("Respects options", function()
+				b = Buffer.open_or_new({
+					filename = "test_abc",
+					open_cmd = "edit",
+					bo = { bufhidden = "delete" },
+				})
+				assert.are.same("delete", vim.bo.bufhidden)
 			end)
 		end)
 	end)
