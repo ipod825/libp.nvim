@@ -178,16 +178,29 @@ function M:_add_key_map(mode, key, fn)
 end
 
 function M:mark(data, max_num_data)
+	vim.validate({ max_num_data = {
+		max_num_data,
+		function(e)
+			return e > 0
+		end,
+	} })
+
+	-- ctx.mark gets cleared on full. _mark_linenrs is a shadow buffer
+	-- containing the line numbers for highlight usage.
 	self.ctx.mark = self.ctx.mark or {}
+	self._mark_linenrs = self._mark_linenrs or {}
+
 	if #self.ctx.mark == max_num_data then
 		self.ctx.mark = {}
+		self._mark_linenrs = {}
 	end
 	local index = (#self.ctx.mark % max_num_data) + 1
-	self.ctx.mark[index] = vim.tbl_extend("error", data, { linenr = vim.fn.line(".") - 1 })
+	self.ctx.mark[index] = data
+	self._mark_linenrs[index] = vim.fn.line(".") - 1
 
-	vim.api.nvim_buf_clear_namespace(self.id, self.namespace, 1, -1)
-	for i, d in ipairs(self.ctx.mark) do
-		vim.api.nvim_buf_add_highlight(self.id, self.namespace, "LibpBufferMark" .. i, d.linenr, 1, -1)
+	vim.api.nvim_buf_clear_namespace(self.id, self.namespace, 0, -1)
+	for i, linenr in ipairs(self._mark_linenrs) do
+		vim.api.nvim_buf_add_highlight(self.id, self.namespace, "LibpBufferMark" .. i, linenr, 1, -1)
 	end
 end
 

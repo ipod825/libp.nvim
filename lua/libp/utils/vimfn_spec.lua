@@ -37,6 +37,16 @@ describe("selected_rows", function()
 	end)
 end)
 
+describe("setrow", function()
+	it("Sets the row", function()
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, { "1", "2", "3" })
+		vimfn.setrow(1)
+		assert.are.same(1, vim.api.nvim_win_get_cursor(0)[1])
+		vimfn.setrow(2)
+		assert.are.same(2, vim.api.nvim_win_get_cursor(0)[1])
+	end)
+end)
+
 describe("first_visible_line", function()
 	it("Returns seleted row beg and end", function()
 		local content = {}

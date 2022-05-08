@@ -2,7 +2,9 @@ require("plenary.async").tests.add_to_env()
 local Buffer = require("libp.ui.Buffer")
 local stub = require("luassert.stub")
 local spy = require("luassert.spy")
+local match = require("luassert.match")
 local functional = require("libp.functional")
+local vimfn = require("libp.utils.vimfn")
 local log = require("libp.log")
 
 describe("Buffer", function()
@@ -53,7 +55,6 @@ describe("Buffer", function()
 					vim.cmd("edit")
 
 					assert.spy(reload).was_called()
-					reload:clear()
 				end)
 			end)
 
@@ -84,7 +85,6 @@ describe("Buffer", function()
 					vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
 
 					assert.spy(reload).was_not_called()
-					reload:clear()
 				end)
 
 				it("Reloads on BufEnter if set to true", function()
@@ -98,7 +98,6 @@ describe("Buffer", function()
 					vim.api.nvim_exec_autocmds("BufEnter", { buffer = b.id })
 
 					assert.spy(reload).was_called()
-					reload:clear()
 				end)
 			end)
 		end)
@@ -164,7 +163,6 @@ describe("Buffer", function()
 					assert.is_true(wait_reload:called())
 
 					b.is_reloading = false
-					wait_reload:revert()
 				end)
 				it("CANCEL cancels existing reload", function()
 					b = Buffer.open_or_new({
@@ -189,7 +187,6 @@ describe("Buffer", function()
 
 					b.is_reloading = false
 					b.cancel_reload = false
-					wait_reload:revert()
 				end)
 
 				it("IGNORE ignores existing reload", function()
@@ -215,7 +212,6 @@ describe("Buffer", function()
 
 					b.is_reloading = false
 					b.cancel_reload = false
-					wait_reload:revert()
 				end)
 			end)
 		end)
@@ -374,7 +370,44 @@ describe("Buffer", function()
 			vim.cmd("write")
 			assert.are.same({ "ori_items", "new_items" }, final_items)
 			assert.spy(reload).was_called()
-			reload:clear()
+		end)
+	end)
+
+	describe("mark", function()
+		it("Stores data and clears all on full", function()
+			local add_highlight = spy.on(vim.api, "nvim_buf_add_highlight")
+			local _ = match._
+
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				content = { "a", "b", "c" },
+			})
+			vimfn.setrow(1)
+			b:mark("ca", 2)
+			assert.are.same({ "ca" }, b.ctx.mark)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 1, -1)
+			add_highlight:clear()
+
+			vimfn.setrow(2)
+			b:mark("cb", 2)
+			assert.are.same({ "ca", "cb" }, b.ctx.mark)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 1, 1, -1)
+			add_highlight:clear()
+
+			vimfn.setrow(3)
+			b:mark("cc", 2)
+			assert.are.same({ "cc" }, b.ctx.mark)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 1, -1)
+			add_highlight:clear()
+
+			vimfn.setrow(1)
+			b:mark("ca", 2)
+			assert.are.same({ "cc", "ca" }, b.ctx.mark)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 0, 1, -1)
+			add_highlight:clear()
 		end)
 	end)
 end)

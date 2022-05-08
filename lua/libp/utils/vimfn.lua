@@ -44,6 +44,16 @@ function M.get_marked_region(mark1, mark2, options)
 	return region, start, finish
 end
 
+function M.setrow(row)
+	vim.validate({ row = {
+		row,
+		function()
+			return row > 0
+		end,
+	} })
+	vim.api.nvim_win_set_cursor(0, { row, 1 })
+end
+
 function M.visual_select_rows(from, to)
 	if vim.fn.mode() ~= "n" then
 		vim.cmd("normal! V")
@@ -54,9 +64,9 @@ function M.visual_select_rows(from, to)
 			vim.cmd("normal! V")
 		end
 	end
-	vim.api.nvim_win_set_cursor(0, { from, 1 })
+	M.setrow(from)
 	vim.cmd("normal! V")
-	vim.api.nvim_win_set_cursor(0, { to, 1 })
+	M.setrow(to)
 end
 
 function M.visual_rows()
