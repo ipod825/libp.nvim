@@ -13,6 +13,19 @@ describe("identity", function()
 	end)
 end)
 
+describe("oneshot", function()
+	it("Returns a function that will be called only once", function()
+		local var = 0
+		local inc = functional.oneshot(function()
+			var = var + 1
+			return var
+		end)
+		assert.are.same(1, inc())
+		assert.is_falsy(inc())
+		assert.are.same(1, var)
+	end)
+end)
+
 describe("head_tail", function()
 	it("Returns the argument", function()
 		local arr = { 1, 2, 3 }

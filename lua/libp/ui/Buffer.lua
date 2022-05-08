@@ -2,6 +2,7 @@ local M = require("libp.datatype.Class"):EXTEND()
 local global = require("libp.global")("libp")
 local a = require("plenary.async")
 local Job = require("libp.Job")
+local functional = require("libp.functional")
 local log = require("libp.log")
 
 global.buffers = global.buffers or {}
@@ -298,18 +299,33 @@ function M:reload()
 	self.ctx.mark = nil
 	self.cancel_reload = false
 
+	local ori_win
+	local restor_cursor_once = functional.nop
+	if vim.api.nvim_get_current_buf() == self.id then
+		ori_win = vim.api.nvim_get_current_win()
+		local ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
+		-- We only restore cursor once. For content that can be drawn in one
+		-- shot, reload should finish before any new user interaction. Restoring
+		-- the view thus compensate the cursor move due to nvim_buf_set_lines.
+		-- For content that needs to be drawn in multiple run, restoring the
+		-- cursor after every nvim_buf_set_lines just annoyes the user.
+		restor_cursor_once = functional.oneshot(function()
+			if vim.api.nvim_win_is_valid(ori_win) then
+				vim.api.nvim_win_set_cursor(
+					ori_win,
+					{ math.min(vim.api.nvim_buf_line_count(self.id), ori_cursor[1]), ori_cursor[2] }
+				)
+			end
+		end)
+	end
+
 	if type(self.content) == "table" then
 		vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 		vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
 		vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
+		restor_cursor_once()
 	else
-		local ori_win, ori_cursor
 		local ori_st = vim.o.statusline
-		if self.id == vim.api.nvim_get_current_buf() then
-			ori_win = vim.api.nvim_get_current_win()
-			ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
-			ori_st = vim.o.statusline
-		end
 
 		self:_clear()
 
@@ -325,21 +341,10 @@ function M:reload()
 				end
 
 				beg = self:_append(lines, beg)
-				-- We only restore cursor once. For content that can be drawn in one
-				-- shot, reload should finish before any new user interaction.
-				-- Restoring the view thus compensate the cursor move due to clear.
-				-- For content that needs to be drawn in multiple run, restoring the
-				-- cursor after every append just makes user can't do anything.
-				if ori_cursor and vim.api.nvim_win_is_valid(ori_win) then
-					vim.api.nvim_win_set_cursor(
-						ori_win,
-						{ math.min(vim.api.nvim_buf_line_count(self.id), ori_cursor[1]), ori_cursor[2] }
-					)
-					ori_cursor = nil
-				end
+				restor_cursor_once()
 
 				if ori_win == vim.api.nvim_get_current_win() then
-					vim.wo.statusline = " Loading " .. ("."):rep(count)
+					vim.api.nvim_win_set_option(ori_win, "statusline", " Loading " .. ("."):rep(count))
 					count = count % 6 + 1
 				end
 			end,
