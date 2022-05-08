@@ -256,19 +256,6 @@ function M:_append(lines, beg)
 	return beg + #lines
 end
 
-function M:delay_reload()
-	local job_done = a.control.Condvar.new()
-	a.void(function()
-		job_done:wait()
-		a.util.scheduler()
-		self:reload()
-	end)()
-
-	return function()
-		job_done:notify_one()
-	end
-end
-
 function M:set_content(content)
 	vim.validate({ content = { content, { "f", "t" } } })
 	self.content = content
