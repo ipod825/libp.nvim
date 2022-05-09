@@ -51,7 +51,7 @@ function M:open(fwin_cfg)
 		focusable = false,
 		anchor = "NW",
 	})
-	self:SUPER():open(fwin_cfg)
+	return self:SUPER():open(fwin_cfg)
 end
 
 return M
