@@ -1,5 +1,5 @@
 local M = require("libp.ui.Window"):EXTEND()
-local styles = require("libp.ui.pbarstyle")
+local styles = require("libp.ui.progressbar_style")
 local log = require("libp.log")
 
 function M:init(opts)

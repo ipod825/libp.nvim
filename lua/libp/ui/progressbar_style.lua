@@ -1,3 +1,4 @@
+-- Credits: https://github.com/sindresorhus/cli-spinners
 return {
 	dots = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
 	dots2 = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
