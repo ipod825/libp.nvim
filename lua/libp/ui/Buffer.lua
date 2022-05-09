@@ -3,6 +3,7 @@ local global = require("libp.global")("libp")
 local a = require("plenary.async")
 local Job = require("libp.Job")
 local functional = require("libp.functional")
+local ProgressWindow = require("libp.ui.ProgressWindow")
 local log = require("libp.log")
 
 global.buffers = global.buffers or {}
@@ -32,6 +33,7 @@ function M.open_or_new(opts)
 end
 
 function M:init(opts)
+	opts = opts or {}
 	vim.validate({
 		filename = { opts.filename, "s", true },
 		content = { opts.content, { "f", "t" }, true },
@@ -299,10 +301,10 @@ function M:reload()
 	self.ctx.mark = nil
 	self.cancel_reload = false
 
-	local ori_win
+	local pbar
 	local restor_cursor_once = functional.nop
 	if vim.api.nvim_get_current_buf() == self.id then
-		ori_win = vim.api.nvim_get_current_win()
+		local ori_win = vim.api.nvim_get_current_win()
 		local ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
 		-- We only restore cursor once. For content that can be drawn in one
 		-- shot, reload should finish before any new user interaction. Restoring
@@ -317,6 +319,8 @@ function M:reload()
 				)
 			end
 		end)
+		pbar = ProgressWindow()
+		pbar:open()
 	end
 
 	if type(self.content) == "table" then
@@ -343,16 +347,15 @@ function M:reload()
 				beg = self:_append(lines, beg)
 				restor_cursor_once()
 
-				if ori_win == vim.api.nvim_get_current_win() then
-					vim.api.nvim_win_set_option(ori_win, "statusline", " Loading " .. ("."):rep(count))
-					count = count % 6 + 1
+				if pbar then
+					pbar:tick()
 				end
 			end,
 		})
 
 		job:start()
-		if ori_win and vim.api.nvim_win_is_valid(ori_win) then
-			vim.api.nvim_win_set_option(ori_win, "statusline", ori_st)
+		if pbar then
+			pbar:close()
 		end
 	end
 
