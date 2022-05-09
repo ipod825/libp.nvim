@@ -5,7 +5,7 @@ local log = require("libp.log")
 function M:init(opts)
 	opts = opts or {}
 	vim.validate({
-		text = { opts.text, "s", true },
+		desc = { opts.desc, "s", true },
 		total = { opts.total, "n", true },
 		style = { opts.style, "s", true },
 	})
@@ -14,10 +14,9 @@ function M:init(opts)
 	self:SUPER():init(buffer, opts)
 
 	self.current = 0
-	self.text = opts.text and opts.text or ""
+	self.desc = opts.desc and opts.desc or ""
 	self.total = opts.total
 	self.style = styles[opts.style or "pipe"]
-	self:tick(0)
 end
 
 function M:tick(step)
@@ -32,12 +31,10 @@ function M:tick(step)
 		local content
 		if self.total then
 			local width = vim.api.nvim_win_get_width(self.id)
-			local text = #self.text > 0 and self.text .. ":" or ""
-			local pbar_width = math.floor((width - #text) * self.current / self.total)
-			content = ("%s%s"):format(text, ("█"):rep(pbar_width))
+			local pbar_width = math.floor((width - #self.desc) * self.current / self.total)
+			content = ("%s%s"):format(self.desc, ("█"):rep(pbar_width))
 		else
-			local text = #self.text > 0 and self.text or "Loading"
-			content = ("%s %s"):format(text, self.style[self.current % #self.style + 1])
+			content = ("%s%s"):format(self.desc, self.style[self.current % #self.style + 1])
 		end
 		self.buffer:set_content({ content })
 	end

@@ -319,7 +319,7 @@ function M:reload()
 				)
 			end
 		end)
-		pbar = ProgressWindow()
+		pbar = ProgressWindow({ desc = "Loading " })
 		pbar:open()
 	end
 
