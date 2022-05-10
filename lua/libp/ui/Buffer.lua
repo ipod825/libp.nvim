@@ -319,8 +319,9 @@ function M:reload()
 				)
 			end
 		end)
-		pbar = ProgressWindow({ desc = "Loading " })
-		pbar:open()
+		-- todo: this is causing window freeze.
+		-- pbar = ProgressWindow({ desc = "Loading " })
+		-- pbar:open()
 	end
 
 	if type(self.content) == "table" then
