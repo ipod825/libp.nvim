@@ -7,6 +7,8 @@ local M = {
 	InfoBox = require("libp.ui.InfoBox"),
 	Menu = require("libp.ui.Menu"),
 	Window = require("libp.ui.Window"),
+	BoxBorder = require("libp.ui.BoxBorder"),
+	BorderedWindow = require("libp.ui.BorderedWindow"),
 }
 
 function M.center_align_text(content, total_width)

@@ -1,9 +1,9 @@
-local BorderWindow = require("libp.ui.BorderWindow")
+local BoxBorder = require("libp.ui.BoxBorder")
 local log = require("libp.log")
 
 describe("open", function()
 	it("Sets the border content", function()
-		local b = BorderWindow({ title = "Title", border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" } })
+		local b = BoxBorder({ title = "Title", border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" } })
 
 		local height = 5
 		local width = 40

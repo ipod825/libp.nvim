@@ -13,7 +13,7 @@ local win_config = {
 	anchor = "NW",
 }
 
-pending("open", function()
+describe("open", function()
 	local b
 	local w
 	before_each(function()
@@ -43,6 +43,14 @@ pending("open", function()
 		for k, v in pairs(wo) do
 			assert.are.same(v, vim.api.nvim_win_get_option(w.id, k))
 		end
+	end)
+
+	it("Adds WinClosed autocmd calling close", function()
+		w = ui.Window(b, { focus_on_open = true })
+		w:open(win_config)
+		local close = spy.on(w, "close")
+		vim.api.nvim_win_close(w.id, false)
+		assert.spy(close).was_called()
 	end)
 end)
 

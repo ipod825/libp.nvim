@@ -18,6 +18,12 @@ end
 function M:open(fwin_cfg)
 	vim.validate({ fwin_cfg = { fwin_cfg, "t" } })
 	self.id = vim.api.nvim_open_win(self.buffer.id, self.focus_on_open, fwin_cfg)
+	vim.api.nvim_create_autocmd("WinClosed", {
+		pattern = tostring(self.id),
+		callback = function()
+			self:close()
+		end,
+	})
 	for k, v in pairs(self.wo) do
 		vim.api.nvim_win_set_option(self.id, k, v)
 	end
