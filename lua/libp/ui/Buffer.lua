@@ -319,9 +319,7 @@ function M:reload()
 				)
 			end
 		end)
-		-- todo: this is causing window freeze.
-		-- pbar = ProgressWindow({ desc = "Loading " })
-		-- pbar:open()
+		pbar = ProgressWindow({ desc = "Loading " })
 	end
 
 	if type(self.content) == "table" then
@@ -349,6 +347,12 @@ function M:reload()
 				restor_cursor_once()
 
 				if pbar then
+					-- todo: Not sure why in some cases, putting open right
+					-- after the instantiation of pbar would cause job:start
+					-- to run forever.
+					if not pbar.id then
+						pbar:open()
+					end
 					pbar:tick()
 				end
 			end,
