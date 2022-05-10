@@ -18,8 +18,12 @@ function M:init(buffer, opts, border_opts)
 	self.box_border = BoxBorder(border_opts)
 end
 
-function M:get_border()
+function M:get_border_window()
 	return self.box_border
+end
+
+function M:get_inner_window()
+	return self
 end
 
 function M:open(fwin_cfg)
