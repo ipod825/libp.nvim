@@ -1,6 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local DoubleLinkList = require("libp.datatype.DoubleLinkList")
-local log = require("libp.log")
 
 function M:init(capacity)
 	self.capacity = capacity or 100

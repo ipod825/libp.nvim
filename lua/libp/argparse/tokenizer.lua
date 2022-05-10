@@ -1,5 +1,4 @@
 local M = {}
-local log = require("libp.log")
 
 function M.tokenize(str)
 	local beg = 1

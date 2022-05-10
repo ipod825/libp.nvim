@@ -1,5 +1,4 @@
 local String = getmetatable("").__index
-local log = require("libp.log")
 
 function String:split_trim(sep)
 	local res = {}

@@ -1,5 +1,4 @@
 local M = require("libp.datatype.Class"):EXTEND()
-local log = require("libp.log")
 
 function M:init(buffer, opts)
 	opts = opts or {}

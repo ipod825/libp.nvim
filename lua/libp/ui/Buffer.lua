@@ -4,7 +4,6 @@ local a = require("plenary.async")
 local Job = require("libp.Job")
 local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
-local log = require("libp.log")
 
 global.buffers = global.buffers or {}
 

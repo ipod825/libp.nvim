@@ -1,6 +1,5 @@
 local Lru = require("libp.datatype.Lru")
 local Set = require("libp.datatype.Set")
-local log = require("libp.log")
 
 describe("unordered_values", function()
 	it("Returns empty list for empty lru", function()

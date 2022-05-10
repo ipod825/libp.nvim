@@ -1,6 +1,5 @@
 local ui = require("libp.ui")
 local spy = require("luassert.spy")
-local log = require("libp.log")
 
 local win_config = {
 	relative = "editor",

@@ -1,5 +1,4 @@
 local M = {}
-local log = require("libp.log")
 
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
 

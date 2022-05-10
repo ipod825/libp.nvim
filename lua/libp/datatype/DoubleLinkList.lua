@@ -1,5 +1,4 @@
 local M = require("libp.datatype.Class"):EXTEND()
-local log = require("libp.log")
 
 local Node = require("libp.datatype.Class"):EXTEND()
 function Node:init(val)

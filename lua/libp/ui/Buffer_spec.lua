@@ -5,7 +5,6 @@ local spy = require("luassert.spy")
 local match = require("luassert.match")
 local functional = require("libp.functional")
 local vimfn = require("libp.utils.vimfn")
-local log = require("libp.log")
 
 describe("Buffer", function()
 	local b

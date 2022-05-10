@@ -1,6 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
-local log = require("libp.log")
 
 function M:init(filename)
 	vim.validate({ filename = { filename, "s" } })

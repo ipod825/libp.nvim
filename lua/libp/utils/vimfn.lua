@@ -1,5 +1,4 @@
 local M = {}
-local log = require("libp.log")
 
 function M.all_rows()
 	return 1, vim.fn.line("$")

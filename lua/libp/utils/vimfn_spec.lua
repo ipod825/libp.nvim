@@ -1,5 +1,4 @@
 local vimfn = require("libp.utils.vimfn")
-local log = require("libp.log")
 
 describe("visual_rows", function()
 	it("Returns current row in normal mode", function()

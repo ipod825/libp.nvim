@@ -4,7 +4,6 @@ local List = require("libp.datatype.List")
 local OrderedDict = require("libp.datatype.OrderedDict")
 local functional = require("libp.functional")
 local tokenize = require("libp.argparse.tokenizer").tokenize
-local log = require("libp.log")
 
 local ArgType = { POSITION = 1, FLAG = 2, LONG_FLAG = 3 }
 

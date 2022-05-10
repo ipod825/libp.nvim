@@ -1,5 +1,4 @@
 local BoxBorder = require("libp.ui.BoxBorder")
-local log = require("libp.log")
 
 describe("open", function()
 	it("Sets the border content", function()

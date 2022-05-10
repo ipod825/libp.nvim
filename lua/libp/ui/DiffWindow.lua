@@ -1,5 +1,4 @@
 local M = require("libp.ui.Window"):EXTEND()
-local log = require("libp.log")
 
 function M:init(buffer, opts)
 	opts = opts or {}

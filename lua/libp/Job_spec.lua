@@ -3,7 +3,6 @@ local Job = require("libp.Job")
 local a = require("plenary.async")
 local Set = require("libp.datatype.Set")
 local spy = require("luassert.spy")
-local log = require("libp.log")
 
 describe("start", function()
 	local function test_buffer_size(sz)

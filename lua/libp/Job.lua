@@ -2,7 +2,6 @@ require("libp.utils.string_extension")
 local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
 local List = require("libp.datatype.List")
-local log = require("libp.log")
 
 local function close_pipe(pipe)
 	if not pipe then
