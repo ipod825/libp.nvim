@@ -78,9 +78,6 @@ function M:init(opts)
 	for k, v in pairs(bo) do
 		vim.api.nvim_buf_set_option(self.id, k, v)
 	end
-	if bo.filetype then
-		vim.api.nvim_buf_set_option(self.id, "filetype", bo.filetype)
-	end
 	self.bo = bo
 
 	-- The following autocmds might not be triggered due to nested autocmds. The
@@ -99,10 +96,6 @@ function M:init(opts)
 	vim.api.nvim_create_autocmd("BufReadCmd", {
 		buffer = self.id,
 		callback = a.void(function()
-			-- ':edit' clears the highlight, needs to set filetype again.
-			if self.bo.filetype then
-				vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
-			end
 			self:reload()
 		end),
 	})
@@ -299,6 +292,10 @@ function M:reload()
 	-- Clear the marks so that we don't hit into invisible marks.
 	self.ctx.mark = nil
 	self.cancel_reload = false
+
+	if self.bo.filetype then
+		vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
+	end
 
 	local pbar
 	local restor_cursor_once = functional.nop
