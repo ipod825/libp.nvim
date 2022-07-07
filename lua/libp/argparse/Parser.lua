@@ -156,8 +156,7 @@ function M:get_completion_list_internal(args, hint)
 	end
 
 	if hint then
-		res = res
-			:to_iter()
+		res = res:to_iter()
 			:filter(function(e)
 				return vim.startswith(e, hint)
 			end)
