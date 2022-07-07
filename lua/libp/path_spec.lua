@@ -50,4 +50,25 @@ describe("find_directory", function()
 		vim.cmd("cd " .. dir)
 		assert.are.same(wdir .. "/a/b/c", path.find_directory("b"))
 	end)
+
+	it("Works with multiple anchors", function()
+		local wdir = path.dirname(vim.fn.tempname())
+		local dir = wdir .. "/a/b/c/b/c"
+		vim.fn.mkdir(dir, "p")
+		local found_dir, base = path.find_directory({ "b", "f" }, dir)
+		assert.are.same(wdir .. "/a/b/c", found_dir)
+		assert.are.same(base, "b")
+
+		found_dir, base = path.find_directory({ "c", "f" }, dir)
+		assert.are.same(wdir .. "/a/b/c/b", found_dir)
+		assert.are.same(base, "c")
+	end)
+
+	it("Finds first parent of the anchor", function()
+		local wdir = path.dirname(vim.fn.tempname())
+		local dir = wdir .. "/a/b/c/b/c"
+		vim.fn.mkdir(dir, "p")
+		assert.are.same(wdir .. "/a/b/c", path.find_directory("b", { dir, dir .. "/f" }))
+		assert.is_nil(path.find_directory("k", { dir .. "/f", dir .. "/g" }))
+	end)
 end)

@@ -7,16 +7,19 @@ function M.join(...)
 end
 
 function M.find_directory(anchor, dir)
-	vim.validate({ anchor = { anchor, "s" }, dir = { dir, { "s", "t" }, true } })
+	vim.validate({ anchor = { anchor, { "s", "t" } }, dir = { dir, { "s", "t" }, true } })
+	if type(anchor) == "string" then
+		anchor = { anchor }
+	end
 	if type(dir) == "string" then
 		dir = { dir }
 	end
 	dir = dir or { vim.api.nvim_buf_get_name(0), vim.fn.getcwd() }
 
-	local function search(d)
+	local function search(a, d)
 		local res = nil
 		while #d > 1 do
-			if vim.fn.glob(M.join(d, anchor)) ~= "" then
+			if vim.fn.glob(M.join(d, a)) ~= "" then
 				return d
 			end
 			local ori_len
@@ -29,10 +32,12 @@ function M.find_directory(anchor, dir)
 	end
 
 	local res
-	for _, d in ipairs(dir) do
-		res = search(d)
-		if res then
-			return res
+	for _, a in ipairs(anchor) do
+		for _, d in ipairs(dir) do
+			res = search(a, d)
+			if res then
+				return res, a
+			end
 		end
 	end
 end
