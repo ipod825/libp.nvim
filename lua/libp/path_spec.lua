@@ -20,6 +20,13 @@ describe("basename", function()
 	end)
 end)
 
+describe("randomAlphaNumerical", function()
+	it("Respects lenght argument", function()
+		assert.are.same(3, #path.randomAlphaNumerical(3))
+		assert.are.same(4, #path.randomAlphaNumerical(4))
+	end)
+end)
+
 describe("join", function()
 	it("Joins the paths", function()
 		assert.are.same("a/b", path.join("a", "b"))

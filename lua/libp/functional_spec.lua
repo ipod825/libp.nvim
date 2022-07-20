@@ -21,7 +21,7 @@ describe("oneshot", function()
 			return var
 		end)
 		assert.are.same(1, inc())
-		assert.is_falsy(inc())
+		assert.is_nil(inc())
 		assert.are.same(1, var)
 	end)
 end)
