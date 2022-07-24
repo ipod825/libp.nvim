@@ -17,7 +17,8 @@ function M.get_or_new(opts)
 	})
 
 	local id = vim.fn.bufnr(opts.filename)
-	return id == -1 and M(opts) or global.buffers[id]
+	local new = id == -1
+	return (new and M(opts) or global.buffers[id]), new
 end
 
 function M.open_or_new(opts)
@@ -28,7 +29,8 @@ function M.open_or_new(opts)
 
 	vim.cmd(("%s %s"):format(opts.open_cmd, opts.filename))
 	opts.id = vim.api.nvim_get_current_buf()
-	return global.buffers[opts.id] or M(opts)
+	local new = global.buffers[opts.id] == nil
+	return (new and M(opts) or global.buffers[opts.id]), new
 end
 
 function M:init(opts)
@@ -185,24 +187,31 @@ function M:mark(data, max_num_data)
 		function(e)
 			return e > 0
 		end,
+		true,
 	} })
 
 	-- ctx.mark gets cleared on full. _mark_linenrs is a shadow buffer
 	-- containing the line numbers for highlight usage.
 	self.ctx.mark = self.ctx.mark or {}
+	max_num_data = max_num_data or #self.ctx.mark + 1
+
 	self._mark_linenrs = self._mark_linenrs or {}
 
 	if #self.ctx.mark == max_num_data then
 		self.ctx.mark = {}
+		-- Clears all previous mark highlight
+		for _, line in ipairs(self._mark_linenrs) do
+			self:clear_hl(line)
+		end
 		self._mark_linenrs = {}
 	end
+
 	local index = (#self.ctx.mark % max_num_data) + 1
 	self.ctx.mark[index] = data
-	self._mark_linenrs[index] = vim.fn.line(".") - 1
+	self._mark_linenrs[index] = vim.fn.line(".")
 
-	vim.api.nvim_buf_clear_namespace(self.id, self.namespace, 0, -1)
 	for i, linenr in ipairs(self._mark_linenrs) do
-		vim.api.nvim_buf_add_highlight(self.id, self.namespace, "LibpBufferMark" .. i, linenr, 1, -1)
+		self:set_hl("LibpBufferMark" .. i, linenr)
 	end
 end
 
@@ -253,6 +262,25 @@ function M:_unmapfn(mappings)
 			vim.keymap.del(mode, key, { buffer = self.id })
 		end
 	end
+end
+
+function M:set_hl(hl, row, col_start, col_end)
+	col_start = col_start or 1
+	col_end = col_end or -1
+	vim.api.nvim_buf_add_highlight(
+		self.id,
+		self.namespace,
+		hl,
+		row - 1,
+		col_start - 1,
+		col_end > 0 and col_end - 1 or col_end
+	)
+end
+
+function M:clear_hl(row_start, row_end)
+	vim.validate({ row_start = { row_start, "n" } })
+	row_end = row_end or row_start + 1
+	vim.api.nvim_buf_clear_namespace(self.id, self.namespace, row_start - 1, row_end - 1)
 end
 
 function M:_clear()

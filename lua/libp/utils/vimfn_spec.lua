@@ -72,3 +72,14 @@ describe("all_rows", function()
 		assert.are.same(3, row_end)
 	end)
 end)
+
+describe("editable_width", function()
+	it("Returns width excluding gutter", function()
+		vim.o.number = false
+		local ori_winwidth = vim.api.nvim_win_get_width(0)
+		assert.are.same(ori_winwidth, vimfn.editable_width(0))
+		vim.o.number = true
+		assert.are.same(ori_winwidth - 4, vimfn.editable_width(0))
+		vim.o.number = false
+	end)
+end)

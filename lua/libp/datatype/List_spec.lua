@@ -54,6 +54,58 @@ describe("to_iter", function()
 	end)
 end)
 
+describe("map", function()
+	it("Maps the list to another list", function()
+		assert.are.same(
+			{ 2, 4, 6, 8 },
+			List({ 1, 2, 3, 4 }):map(function(e)
+				return e * 2
+			end)
+		)
+	end)
+end)
+
+describe("filter", function()
+	it("Filters the list to another list", function()
+		assert.are.same(
+			{ 2, 4 },
+			List({ 1, 2, 3, 4 }):filter(function(e)
+				return e % 2 == 0
+			end)
+		)
+	end)
+end)
+
+describe("sort", function()
+	it("Sorts the list and returns self", function()
+		local lst = List({ 1, 3, 2, 4 })
+		local lst2 = lst:sort()
+		assert.are.same({ 1, 2, 3, 4 }, lst2)
+		assert.are.equal(lst, lst2)
+	end)
+	it("Takes table sort arguments", function()
+		assert.are.same(
+			{ 4, 3, 2, 1 },
+			List({ 1, 3, 2, 4 }):sort(function(a, b)
+				return b < a
+			end)
+		)
+	end)
+end)
+
+describe("for_each", function()
+	it("Operates over each element", function()
+		local sum = 0
+		local indices = {}
+		List({ 1, 2, 3, 4 }):for_each(function(e, i)
+			sum = sum + e
+			table.insert(indices, i)
+		end)
+		assert.are.same(10, sum)
+		assert.are.same({ 1, 2, 3, 4 }, indices)
+	end)
+end)
+
 describe("unbox_if_one", function()
 	it("Returns 1st element if there's only one element", function()
 		assert.are.same("a", List({ "a" }):unbox_if_one())

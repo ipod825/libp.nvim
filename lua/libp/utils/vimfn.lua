@@ -12,6 +12,12 @@ function M.last_visible_line()
 	return vim.fn.line("w$")
 end
 
+function M.editable_width(win_id)
+	vim.validate({ win_id = { win_id, { "n" } } })
+	win_id = win_id == 0 and vim.api.nvim_get_current_win() or win_id
+	return vim.api.nvim_win_get_width(win_id) - vim.fn.getwininfo(win_id)[1].textoff
+end
+
 -- todo: Monitor new API: https://github.com/neovim/neovim/pull/13896
 --@param mark1 Name of mark starting the region
 --@param mark2 Name of mark ending the region

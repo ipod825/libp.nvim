@@ -8,6 +8,7 @@ local vimfn = require("libp.utils.vimfn")
 
 describe("Buffer", function()
 	local b
+	local new
 	before_each(function()
 		b = nil
 	end)
@@ -18,7 +19,7 @@ describe("Buffer", function()
 	end)
 
 	describe("get_current_buffer", function()
-		it("Returns the correct buffer reference", function()
+		it("Returns the correct buffer reference. Null if the buffer is not bookkept.", function()
 			b = Buffer.get_or_new({ filename = "test_abc" })
 			vim.cmd(("%d b"):format(b.id))
 			assert.are.equal(b, Buffer.get_current_buffer())
@@ -29,15 +30,21 @@ describe("Buffer", function()
 
 	describe("get_or_new", function()
 		it("Returns the same buffer on second call", function()
-			b = Buffer.get_or_new({ filename = "test_abc" })
-			assert.are.same(b.id, Buffer.get_or_new({ filename = "test_abc" }).id)
+			b, new = Buffer.get_or_new({ filename = "test_abc" })
+			assert.is_true(new)
+			local b2, new2 = Buffer.get_or_new({ filename = "test_abc" })
+			assert.are.same(b, b2)
+			assert.is_false(new2)
 		end)
 	end)
 
 	describe("open_or_new", function()
 		it("Returns the same buffer on second call", function()
-			b = Buffer.open_or_new({ filename = "test_abc", open_cmd = "edit" })
-			assert.are.same(b.id, Buffer.open_or_new({ filename = "test_abc", open_cmd = "tabedit" }).id)
+			b, new = Buffer.open_or_new({ filename = "test_abc", open_cmd = "edit" })
+			assert.is_true(new)
+			local b2, new2 = Buffer.open_or_new({ filename = "test_abc", open_cmd = "tabedit" })
+			assert.are.same(b, b2)
+			assert.is_false(new2)
 		end)
 	end)
 
@@ -372,6 +379,61 @@ describe("Buffer", function()
 		end)
 	end)
 
+	describe("set_hl", function()
+		local add_highlight = spy.on(vim.api, "nvim_buf_add_highlight")
+		local _ = match._
+		it("Defaults to set highlight on the whole line", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+
+			b:set_hl("Normal", 1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 0, -1)
+			add_highlight:clear()
+		end)
+
+		it("Accepts col_start and col_end", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+
+			b:set_hl("Normal", 1, 2, 3)
+			assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 1, 2)
+			add_highlight:clear()
+		end)
+	end)
+
+	describe("clear_hl", function()
+		local clear_highlight = spy.on(vim.api, "nvim_buf_clear_namespace")
+		local _ = match._
+		it("Defaults clear one line", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				content = { "a", "b", "c" },
+			})
+
+			b:clear_hl(1)
+			assert.spy(clear_highlight).was_called_with(b.id, _, 0, 1)
+			clear_highlight:clear()
+			b:clear_hl(2)
+			assert.spy(clear_highlight).was_called_with(b.id, _, 1, 2)
+			clear_highlight:clear()
+		end)
+		it("Accepts row_end", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+
+			b:clear_hl(1, 5)
+			assert.spy(clear_highlight).was_called_with(b.id, _, 0, 4)
+			clear_highlight:clear()
+		end)
+	end)
+
 	describe("mark", function()
 		it("Stores data and clears all on full", function()
 			local add_highlight = spy.on(vim.api, "nvim_buf_add_highlight")
@@ -385,27 +447,27 @@ describe("Buffer", function()
 			vimfn.setrow(1)
 			b:mark("ca", 2)
 			assert.are.same({ "ca" }, b.ctx.mark)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 0, -1)
 			add_highlight:clear()
 
 			vimfn.setrow(2)
 			b:mark("cb", 2)
 			assert.are.same({ "ca", "cb" }, b.ctx.mark)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 1, -1)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 1, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 0, 0, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 1, 0, -1)
 			add_highlight:clear()
 
 			vimfn.setrow(3)
 			b:mark("cc", 2)
 			assert.are.same({ "cc" }, b.ctx.mark)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 0, -1)
 			add_highlight:clear()
 
 			vimfn.setrow(1)
 			b:mark("ca", 2)
 			assert.are.same({ "cc", "ca" }, b.ctx.mark)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 1, -1)
-			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 0, 1, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark1", 2, 0, -1)
+			assert.spy(add_highlight).was_called_with(b.id, _, "LibpBufferMark2", 0, 0, -1)
 			add_highlight:clear()
 		end)
 	end)

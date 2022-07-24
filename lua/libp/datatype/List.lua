@@ -22,6 +22,11 @@ function M:extend(that)
 	return self
 end
 
+function M:sort(...)
+	table.sort(self, ...)
+	return self
+end
+
 function M:values()
 	return coroutine.wrap(function()
 		for _, e in ipairs(self) do
@@ -32,6 +37,20 @@ end
 
 function M:to_iter()
 	return require("libp.datatype.IterList")({ next_fn = next, invariant = self })
+end
+
+function M:filter(fn)
+	return self:to_iter():filter(fn):collect()
+end
+
+function M:map(fn)
+	return self:to_iter():map(fn):collect()
+end
+
+function M:for_each(fn)
+	for i, e in ipairs(self) do
+		fn(e, i)
+	end
 end
 
 function M:unbox_if_one()
