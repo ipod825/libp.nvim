@@ -24,6 +24,17 @@ describe("oneshot", function()
 		assert.is_nil(inc())
 		assert.are.same(1, var)
 	end)
+	it("Accepts parameter to control which time the call happens", function()
+		local var = 0
+		local inc = functional.oneshot(function()
+			var = var + 1
+			return var
+		end, 2)
+		assert.is_nil(inc())
+		assert.are.same(1, inc())
+		assert.is_nil(inc())
+		assert.are.same(1, var)
+	end)
 end)
 
 describe("head_tail", function()

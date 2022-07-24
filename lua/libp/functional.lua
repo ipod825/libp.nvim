@@ -6,13 +6,15 @@ function M.identity(e)
 	return e
 end
 
-function M.oneshot(f)
-	local counter = 0
+function M.oneshot(f, at_counter)
+	local counter = 1
+	at_counter = at_counter or 1
 	return function()
-		if counter == 0 then
+		if counter == at_counter then
 			counter = counter + 1
 			return f()
 		end
+		counter = counter + 1
 	end
 end
 

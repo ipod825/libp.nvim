@@ -12,6 +12,10 @@ function M.last_visible_line()
 	return vim.fn.line("w$")
 end
 
+function M.current_row()
+	return vim.api.nvim_win_get_cursor(vim.api.nvim_get_current_win())[1]
+end
+
 function M.editable_width(win_id)
 	vim.validate({ win_id = { win_id, { "n" } } })
 	win_id = win_id == 0 and vim.api.nvim_get_current_win() or win_id
@@ -56,7 +60,7 @@ function M.setrow(row)
 			return row > 0
 		end,
 	} })
-	vim.api.nvim_win_set_cursor(0, { row, 1 })
+	vim.api.nvim_win_set_cursor(0, { row, 0 })
 end
 
 function M.visual_select_rows(from, to)

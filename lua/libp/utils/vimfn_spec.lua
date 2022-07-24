@@ -73,6 +73,18 @@ describe("all_rows", function()
 	end)
 end)
 
+describe("current_row", function()
+	it("Returns the current row", function()
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, { "1", "2", "3" })
+		vimfn.setrow(1)
+		assert.are.same(1, vimfn.current_row())
+		vimfn.setrow(2)
+		assert.are.same(2, vimfn.current_row())
+		vimfn.setrow(3)
+		assert.are.same(3, vimfn.current_row())
+	end)
+end)
+
 describe("editable_width", function()
 	it("Returns width excluding gutter", function()
 		vim.o.number = false

@@ -11,17 +11,19 @@ function M.get_current_buffer()
 	return global.buffers[vim.api.nvim_get_current_buf()]
 end
 
-function M.get_or_new(opts)
+function M.get_or_new(opts, BufferType)
+	BufferType = BufferType or M
 	vim.validate({
 		filename = { opts.filename, "s" },
 	})
 
 	local id = vim.fn.bufnr(opts.filename)
 	local new = id == -1
-	return (new and M(opts) or global.buffers[id]), new
+	return (new and BufferType(opts) or global.buffers[id]), new
 end
 
-function M.open_or_new(opts)
+function M.open_or_new(opts, BufferType)
+	BufferType = BufferType or M
 	vim.validate({
 		open_cmd = { opts.open_cmd, "s" },
 		filename = { opts.filename, "s" },
@@ -30,7 +32,7 @@ function M.open_or_new(opts)
 	vim.cmd(("%s %s"):format(opts.open_cmd, opts.filename))
 	opts.id = vim.api.nvim_get_current_buf()
 	local new = global.buffers[opts.id] == nil
-	return (new and M(opts) or global.buffers[opts.id]), new
+	return (new and BufferType(opts) or global.buffers[opts.id]), new
 end
 
 function M:init(opts)
@@ -326,8 +328,10 @@ function M:reload()
 	end
 
 	local pbar
-	local restor_cursor_once = functional.nop
-	if vim.api.nvim_get_current_buf() == self.id then
+	local init_pbar_on_second_stdout = functional.nop
+	local restore_cursor_once = functional.nop
+	local self_buffer_focused = vim.api.nvim_get_current_buf() == self.id
+	if self_buffer_focused then
 		local ori_win = vim.api.nvim_get_current_win()
 		local ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
 		-- We only restore cursor once. For content that can be drawn in one
@@ -335,7 +339,7 @@ function M:reload()
 		-- the view thus compensate the cursor move due to nvim_buf_set_lines.
 		-- For content that needs to be drawn in multiple run, restoring the
 		-- cursor after every nvim_buf_set_lines just annoyes the user.
-		restor_cursor_once = functional.oneshot(function()
+		restore_cursor_once = functional.oneshot(function()
 			if vim.api.nvim_win_is_valid(ori_win) then
 				vim.api.nvim_win_set_cursor(
 					ori_win,
@@ -343,20 +347,21 @@ function M:reload()
 				)
 			end
 		end)
-		pbar = ProgressWindow({ desc = "Loading " })
+		-- Only show the progress bar if on_stdout is called more than one time.
+		init_pbar_on_second_stdout = functional.oneshot(function()
+			pbar = ProgressWindow({ desc = "Loading " })
+			pbar:open()
+		end, 2)
 	end
 
 	if type(self.content) == "table" then
 		vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 		vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
 		vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
-		restor_cursor_once()
+		restore_cursor_once()
 	else
-		local ori_st = vim.o.statusline
-
 		self:_clear()
 
-		local count = 1
 		local beg = 0
 		local job
 		job = Job({
@@ -368,15 +373,9 @@ function M:reload()
 				end
 
 				beg = self:_append(lines, beg)
-				restor_cursor_once()
-
+				restore_cursor_once()
+				init_pbar_on_second_stdout()
 				if pbar then
-					-- todo: Not sure why in some cases, putting open right
-					-- after the instantiation of pbar would cause job:start
-					-- to run forever.
-					if not pbar.id then
-						pbar:open()
-					end
 					pbar:tick()
 				end
 			end,

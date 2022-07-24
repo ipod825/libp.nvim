@@ -10,4 +10,14 @@ function M.reverse(lst)
 	return res
 end
 
+function M.weak_reference(obj)
+	local mt = getmetatable(obj)
+	if not mt then
+		return setmetatable(obj, { __mode = "v" })
+	else
+		mt["__mode"] = "v"
+		return obj
+	end
+end
+
 return M
