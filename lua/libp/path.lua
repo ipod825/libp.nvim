@@ -120,6 +120,9 @@ function M.dirname(str)
 	vim.validate({ std = { str, "s" } })
 	local pat = ("%s[^%s]*$"):format(path_sep, path_sep)
 	local name = str:gsub(pat, "")
+	if name:gsub(pat, "") == name then
+		name = name .. path_sep
+	end
 	return name
 end
 
