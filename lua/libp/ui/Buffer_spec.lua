@@ -263,6 +263,39 @@ describe("Buffer", function()
 		end)
 	end)
 
+	describe("set_mappings", function()
+		it("Unmaps existing mappings", function()
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+				mappings = {
+					n = {
+						a = function() end,
+					},
+				},
+			})
+			b:set_mappings({})
+			assert.are.same({}, vim.api.nvim_buf_get_keymap(b.id, "n"))
+		end)
+		it("Add new mappings", function()
+			local var
+			b = Buffer.open_or_new({
+				filename = "test_abc",
+				open_cmd = "edit",
+			})
+			b:set_mappings({
+				n = {
+					a = function()
+						var = 1
+					end,
+				},
+			})
+			assert.is_falsy(var)
+			vim.api.nvim_feedkeys("a", "x", false)
+			assert.are.same(1, var)
+		end)
+	end)
+
 	describe("set_content", function()
 		it("Sets array content", function()
 			b = Buffer.open_or_new({

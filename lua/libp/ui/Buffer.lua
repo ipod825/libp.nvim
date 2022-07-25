@@ -122,6 +122,12 @@ function M:on_wipeout()
 	global.buffers[self.id] = nil
 end
 
+function M:set_mappings(mappings)
+	self:_unmapfn(self.mappings)
+	self.mappings = mappings
+	self:_mapfn(self.mappings)
+end
+
 function M:_mapfn(mappings)
 	if not mappings then
 		return
