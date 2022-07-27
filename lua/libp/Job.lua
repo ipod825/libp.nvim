@@ -124,7 +124,12 @@ M.start = a.wrap(function(self, callback)
 					vim.log.levels.WARN
 				)
 			end
-		elseif opts.on_stdout then
+		end
+
+		-- It's tempting to not handle stdout on error. However, it's useful in
+		-- case when the user wants to read stdout result while expecting the
+		-- command to fail.
+		if opts.on_stdout then
 			stdout_lines = eof_has_new_line and vim.list_slice(stdout_lines, 1, #stdout_lines - 1) or stdout_lines
 			if #stdout_lines > 0 then
 				opts.on_stdout(stdout_lines)
