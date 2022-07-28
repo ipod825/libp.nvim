@@ -63,7 +63,7 @@ function M.setrow(row)
 	vim.api.nvim_win_set_cursor(0, { row, 0 })
 end
 
-function M.visual_select_rows(from, to)
+function M.ensure_exit_visual_mode()
 	if vim.fn.mode() ~= "n" then
 		vim.cmd("normal! V")
 		-- If we were in visual line mode, the previous cmd might already have
@@ -73,6 +73,10 @@ function M.visual_select_rows(from, to)
 			vim.cmd("normal! V")
 		end
 	end
+end
+
+function M.visual_select_rows(from, to)
+	M.ensure_exit_visual_mode()
 	M.setrow(from)
 	vim.cmd("normal! V")
 	M.setrow(to)
