@@ -3,7 +3,7 @@ local M = {}
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
 
 function M.join(...)
-	return table.concat({ ... }, path_sep)
+	return table.concat({ ... }, path_sep):gsub(path_sep .. path_sep, path_sep)
 end
 
 -- stylua: ignore start
