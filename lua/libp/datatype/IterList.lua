@@ -40,7 +40,7 @@ function M:map(map_fn)
 			local ori_k, ori_v = self.next_fn(table, last_index)
 			last_index = last_index or 0
 			while ori_v ~= nil do
-				coroutine.yield(ori_k, map_fn(ori_v))
+				coroutine.yield(ori_k, map_fn(ori_v, last_index + 1))
 				last_index = last_index + 1
 				ori_k, ori_v = self.next_fn(table, last_index)
 			end
@@ -57,7 +57,7 @@ function M:filter(filter_fn)
 			local ori_k, ori_v = self.next_fn(table, last_index)
 			last_index = last_index or 0
 			while ori_v ~= nil do
-				if filter_fn(ori_v) then
+				if filter_fn(ori_v, last_index + 1) then
 					coroutine.yield(ori_k - offset, ori_v)
 				else
 					offset = offset + 1

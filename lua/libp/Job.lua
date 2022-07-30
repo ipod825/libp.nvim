@@ -212,14 +212,16 @@ function M:shutdown()
 end
 
 M.start_all = a.wrap(function(cmds, opts, callback)
-	a.util.run_all(
-		List(cmds):map(function(e)
+	local res_code = {}
+	a.run(function()
+		res_code = a.util.join(List(cmds):map(function(e)
 			return a.wrap(function(cb)
 				M(vim.tbl_extend("keep", { cmds = e }, opts or {})):start(cb)
 			end, 1)
-		end),
-		callback
-	)
+		end))
+	end, function()
+		callback(res_code)
+	end)
 end, 3)
 
 return M
