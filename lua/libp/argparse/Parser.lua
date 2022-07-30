@@ -156,11 +156,9 @@ function M:get_completion_list_internal(args, hint)
 	end
 
 	if hint then
-		res = res:to_iter()
-			:filter(function(e)
-				return vim.startswith(e, hint)
-			end)
-			:collect()
+		res = res:filter(function(e)
+			return vim.startswith(e, hint)
+		end)
 	end
 	table.sort(res)
 	return res
@@ -176,11 +174,9 @@ function M:parse_internal(args)
 
 	local function fill_current_arg_prop_with_values()
 		res[current_arg_prop.name] = values
-			:to_iter()
 			:map(function(e)
 				return convert_type(e, current_arg_prop.type)
 			end)
-			:collect()
 			:unbox_if_one()
 		current_arg_prop = nil
 		values = List()
