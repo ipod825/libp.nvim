@@ -41,6 +41,10 @@ function M.size(set)
 	return set[size_key]
 end
 
+function M.empty(set)
+	return M.size(set) == 0
+end
+
 function M._inc(set, s)
 	set[size_key] = set[size_key] + s
 end
