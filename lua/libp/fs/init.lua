@@ -3,17 +3,7 @@ local path = require("libp.path")
 local IterList = require("libp.datatype.IterList")
 local a = require("plenary.async")
 
-function M.list_dir(dir_name, max_entry)
-	vim.validate({ dir_name = { dir_name, "s" }, max_entry = { max_entry, "n", true } })
-	max_entry = max_entry or 9999999
-	local dir = vim.loop.fs_opendir(dir_name, nil, max_entry)
-	local _, entries = a.uv.fs_readdir(dir)
-	a.uv.fs_closedir(dir)
-	a.util.scheduler()
-	return entries
-end
-
-function M.list_dir2(dir_name)
+function M.list_dir(dir_name)
 	vim.validate({ dir_name = { dir_name, "s" } })
 	local err, handle = a.uv.fs_scandir(dir_name)
 	if err then
@@ -23,15 +13,9 @@ function M.list_dir2(dir_name)
 	return IterList({
 		next_fn = function(_, last_index)
 			last_index = last_index or 0
-			local name = vim.loop.fs_scandir_next(handle)
+			local name, type = vim.loop.fs_scandir_next(handle)
 			if name then
-				local _, stats = a.uv.fs_stat(path.join(dir_name, name))
-				a.util.scheduler()
-				if stats then
-					stats.name = name
-					return last_index + 1, stats
-				end
-				-- return last_index + 1, name
+				return last_index + 1, { name = name, type = type }
 			end
 		end,
 	}):collect()
