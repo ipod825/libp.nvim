@@ -25,8 +25,7 @@ function M.list_dir2(dir_name)
 			last_index = last_index or 0
 			local name = vim.loop.fs_scandir_next(handle)
 			if name then
-				local stats
-				stats = vim.loop.fs_stat(path.join(dir_name, name))
+				local _, stats = a.uv.fs_stat(path.join(dir_name, name))
 				a.util.scheduler()
 				if stats then
 					stats.name = name
