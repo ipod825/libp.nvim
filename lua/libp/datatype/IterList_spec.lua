@@ -115,14 +115,34 @@ describe("next", function()
 		assert.are.same({ 2, 3 }, iter:collect())
 	end)
 	it("Yields next values for List", function()
-		local iter = IterList.from_range(1, 2)
+		local iter = require("libp.datatype.List")({ 1, 2 }):to_iter()
 		assert.are.same(1, iter:next())
 		assert.are.same(2, iter:next())
 		assert.are.same(nil, iter:next())
 	end)
 	it("Modifies the internal of the iterators for List", function()
-		local iter = IterList.from_range(1, 3)
+		local iter = require("libp.datatype.List")({ 1, 2, 3 }):to_iter()
 		assert.are.same(1, iter:next())
 		assert.are.same({ 2, 3 }, iter:collect())
+	end)
+end)
+
+describe("enumerate", function()
+	it("Works with generic for", function()
+		local iter = IterList.from_range(1, 3)
+		for i, e in iter:enumerate() do
+			assert.are.same(i, e)
+		end
+	end)
+end)
+
+describe("values", function()
+	it("Works with generic for", function()
+		local iter = IterList.from_range(1, 3)
+		local vals = {}
+		for e in iter:values() do
+			table.insert(vals, e)
+		end
+		assert.are.same({ 1, 2, 3 }, vals)
 	end)
 end)

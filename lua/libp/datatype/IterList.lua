@@ -14,8 +14,16 @@ function M:init(opts)
 	self.control = opts.control
 end
 
-function M:generic_for()
+function M:enumerate()
 	return self.next_fn, self.invariant, self.control
+end
+
+function M:values()
+	return coroutine.wrap(function()
+		for _, e in self:enumerate() do
+			coroutine.yield(e)
+		end
+	end)
 end
 
 function M:next()
@@ -27,7 +35,7 @@ end
 function M:collect()
 	local res = {}
 	local i = 1
-	for _, v in self:generic_for() do
+	for _, v in self:enumerate() do
 		res[i] = v
 		i = i + 1
 	end
@@ -36,15 +44,13 @@ end
 
 function M:map(map_fn)
 	return M({
-		next_fn = coroutine.wrap(function(table, last_index)
-			local ori_k, ori_v = self.next_fn(table, last_index)
-			last_index = last_index or 0
-			while ori_v ~= nil do
-				coroutine.yield(ori_k, map_fn(ori_v, last_index + 1))
-				last_index = last_index + 1
-				ori_k, ori_v = self.next_fn(table, last_index)
+		next_fn = function(invariant, control)
+			local v
+			control, v = self.next_fn(invariant, control)
+			if control then
+				return control, map_fn(v)
 			end
-		end),
+		end,
 		invariant = self.invariant,
 		control = self.control,
 	})
@@ -52,20 +58,15 @@ end
 
 function M:filter(filter_fn)
 	return M({
-		next_fn = coroutine.wrap(function(table, last_index)
-			local offset = 0
-			local ori_k, ori_v = self.next_fn(table, last_index)
-			last_index = last_index or 0
-			while ori_v ~= nil do
-				if filter_fn(ori_v, last_index + 1) then
-					coroutine.yield(ori_k - offset, ori_v)
-				else
-					offset = offset + 1
+		next_fn = function(invariant, control)
+			repeat
+				local v
+				control, v = self.next_fn(invariant, control)
+				if control and filter_fn(v) then
+					return control, v
 				end
-				last_index = last_index + 1
-				ori_k, ori_v = self.next_fn(table, last_index)
-			end
-		end),
+			until not control
+		end,
 		invariant = self.invariant,
 		control = self.control,
 	})
@@ -77,14 +78,23 @@ function M.from_range(beg, ends, step)
 		beg = 1
 	end
 	step = step or 1
+
+	assert(step ~= 0, "step can not be zero")
+
 	return M({
-		next_fn = coroutine.wrap(function(_, last_index)
-			last_index = last_index or 1
-			for e = beg, ends, step do
-				coroutine.yield(last_index, e)
-				last_index = last_index + 1
+		next_fn = function(_, control)
+			control = control or 0
+			local res = beg + control * step
+			if step > 0 then
+				if res <= ends then
+					return control + 1, res
+				end
+			else
+				if res >= ends then
+					return control + 1, res
+				end
 			end
-		end),
+		end,
 	})
 end
 

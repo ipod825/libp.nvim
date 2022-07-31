@@ -27,7 +27,7 @@ function M:NEW()
 	return obj
 end
 
-function M.pairs(d)
+function M.enumerate(d)
 	local mt = getmetatable(d)
 	assert(mt.key_arr)
 

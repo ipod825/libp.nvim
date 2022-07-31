@@ -20,11 +20,11 @@ describe("OrderedDict", function()
 		assert.are.same({ b = 1, a = 2 }, OrderedDict.data(d))
 	end)
 
-	it("Is ordered in pairs", function()
+	it("Is ordered in enumerate", function()
 		local d = OrderedDict()
 		d.b = 1
 		d.a = 2
-		local next = OrderedDict.pairs(d)
+		local next = OrderedDict.enumerate(d)
 		assert.are.same({ "b", 1 }, { next() })
 		assert.are.same({ "a", 2 }, { next() })
 	end)

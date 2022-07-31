@@ -47,6 +47,15 @@ describe("values", function()
 	end)
 end)
 
+describe("enumerate", function()
+	it("Works with generic for", function()
+		local l = List({ 1, 2, 3, 4 })
+		for i, e in l:enumerate() do
+			assert.are.same(i, e)
+		end
+	end)
+end)
+
 describe("to_iter", function()
 	it("Returns a IterList", function()
 		local it = List({ 1, 2, 3, 4 }):to_iter()

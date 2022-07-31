@@ -35,6 +35,10 @@ function M:values()
 	end)
 end
 
+function M:enumerate()
+	return next, self, nil
+end
+
 function M:to_iter()
 	return require("libp.datatype.IterList")({ next_fn = next, invariant = self })
 end
