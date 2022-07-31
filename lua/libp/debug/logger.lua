@@ -8,7 +8,7 @@ end
 function M:init(opts)
 	vim.validate({ log_file = { opts.log_file, "s" } })
 	self:config(opts)
-	self.log_date_format = "%F %H:%M:%S"
+	self.log_date_format = "%H:%M:%S"
 	self.format_func = function(arg)
 		return vim.inspect(arg, { newline = "" })
 	end
@@ -54,13 +54,14 @@ function M:log(level, ...)
 		return true
 	end
 
-	local info = debug.getinfo(2, "Sl")
+	local info = debug.getinfo(2, "Sln")
 	local header = string.format(
-		"[%s][%s] ...%s:%s",
+		"[%s][%s] ...%s:%s %s",
 		level,
 		os.date(self.log_date_format),
 		string.sub(info.short_src, #info.short_src - 15),
-		info.currentline
+		info.currentline,
+		info.name
 	)
 	local parts = { header }
 	for i = 1, argc do
