@@ -6,6 +6,7 @@ local a = require("plenary.async")
 function M.list_dir(dir_name)
 	vim.validate({ dir_name = { dir_name, "s" } })
 	local err, handle = a.uv.fs_scandir(dir_name)
+	a.util.scheduler()
 	if err then
 		return err, false
 	end
