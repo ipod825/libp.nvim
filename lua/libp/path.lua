@@ -1,6 +1,7 @@
 local M = {}
 
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
+M.path_sep = path_sep
 
 function M.join(...)
 	local res = table.concat({ ... }, path_sep):gsub(path_sep .. path_sep, path_sep)
