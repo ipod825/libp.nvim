@@ -2,7 +2,7 @@ require("libp.utils.string_extension")
 local M = require("libp.datatype.Class"):EXTEND()
 local List = require("libp.datatype.List")
 local OrderedDict = require("libp.datatype.OrderedDict")
-local functional = require("libp.functional")
+local vimfn = require("libp.utils.vimfn")
 local tokenize = require("libp.argparse.tokenizer").tokenize
 
 local ArgType = { POSITION = 1, FLAG = 2, LONG_FLAG = 3 }
@@ -119,7 +119,7 @@ function M:parse(str)
 	end
 
 	if err_msg then
-		vim.notify(("error: %s"):format(err_msg), vim.log.levels.ERROR)
+		vimfn.error(("error: %s"):format(err_msg))
 		return nil
 	end
 

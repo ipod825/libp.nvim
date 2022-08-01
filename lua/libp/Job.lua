@@ -1,6 +1,7 @@
 require("libp.utils.string_extension")
 local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
+local vimfn = require("libp.utils.vimfn")
 local List = require("libp.datatype.List")
 
 local function close_pipe(pipe)
@@ -119,10 +120,7 @@ M.start = a.wrap(function(self, callback)
 
 		if exit_code ~= 0 then
 			if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
-				vim.notify(
-					("Error message from\n%s\n\n%s"):format(table.concat(opts.cmds, " "), stderr_lines),
-					vim.log.levels.WARN
-				)
+				vimfn.error(("Error message from\n%s\n\n%s"):format(table.concat(opts.cmds, " "), stderr_lines))
 			end
 		end
 
@@ -136,7 +134,7 @@ M.start = a.wrap(function(self, callback)
 			end
 
 			if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_lines > 0 then
-				vim.notify(stderr_lines, vim.log.levels.WARN)
+				vimfn.warn(stderr_lines)
 			end
 		end
 
@@ -157,7 +155,7 @@ M.start = a.wrap(function(self, callback)
 
 	if type(self.pid) == "string" then
 		stderr_lines = stderr_lines .. ("Command not found: %s"):format(cmd)
-		vim.notify(stderr_lines, vim.log.levels.ERROR)
+		vimfn.error(stderr_lines)
 		return -1
 	else
 		self.stdout:read_start(vim.schedule_wrap(on_stdout))

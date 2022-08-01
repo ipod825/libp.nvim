@@ -3,6 +3,7 @@ local Job = require("libp.Job")
 local a = require("plenary.async")
 local Set = require("libp.datatype.Set")
 local spy = require("luassert.spy")
+local reflection = require("libp.debug.reflection")
 
 describe("start", function()
 	local function test_buffer_size(sz)
@@ -124,10 +125,7 @@ describe("start", function()
 				cmds = { "echoerr" },
 				stderr_dump_level = Job.StderrDumpLevel.ALWAYS,
 				env = {
-					PATH = ("%s:%s/scripts"):format(
-						os.getenv("PATH"),
-						vim.fn.trim(vim.fn.system("git rev-parse --show-toplevel"))
-					),
+					PATH = ("%s:%s/scripts"):format(os.getenv("PATH"), reflection.git_project_root()),
 				},
 			}):start()
 			assert.spy(notify).was_called()

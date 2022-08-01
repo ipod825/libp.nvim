@@ -1,4 +1,5 @@
 local M = {}
+local vimfn = require("libp.utils.vimfn")
 
 function M.tokenize(str)
 	local beg = 1
@@ -14,7 +15,7 @@ function M.tokenize(str)
 			local _, pend = str:find(("[^\\]%s"):format(opening_quote), beg)
 			table.insert(res, str:sub(opening_quote_beg, pend))
 			if pend == nil then
-				vim.notify("error: Missing quote.", vim.log.levels.ERROR)
+				vimfn.error("error: Missing quote.")
 				return
 			end
 			beg = str:find("[^ ]", pend + 1) or #str + 1
@@ -33,7 +34,7 @@ function M.tokenize(str)
 				opening_quote = p2
 				beg = pend2 + 1
 				if beg > #str then
-					vim.notify("error: Missing quote.", vim.log.levels.ERROR)
+					vimfn.error("error: Missing quote.")
 					return
 				end
 			else

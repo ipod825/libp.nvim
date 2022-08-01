@@ -1,5 +1,13 @@
 local M = {}
 
+function M.warn(msg)
+	vim.notify(msg, vim.log.levels.WARN)
+end
+
+function M.error(msg)
+	vim.notify(msg, vim.log.levels.ERROR)
+end
+
 function M.all_rows()
 	return 1, vim.fn.line("$")
 end
