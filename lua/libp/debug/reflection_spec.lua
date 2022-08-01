@@ -6,6 +6,15 @@ describe("git_project_root", function()
 	end)
 end)
 
+describe("script_path", function()
+	it("Returns the script path", function()
+		assert.are.same(
+			("%s/%s"):format(reflection.git_project_root(), "lua/libp/debug/reflection_spec.lua"),
+			reflection.script_path()
+		)
+	end)
+end)
+
 describe("script_dir", function()
 	it("Returns the directory containing the script", function()
 		assert.are.same(("%s/%s"):format(reflection.git_project_root(), "lua/libp/debug"), reflection.script_dir())

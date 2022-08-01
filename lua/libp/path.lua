@@ -77,4 +77,12 @@ function M.basename(str)
 	return name
 end
 
+function M.is_readable(path)
+	local fd = vim.loop.fs_open(path, "r", 493)
+	if fd then
+		vim.loop.fs_close(fd)
+	end
+	return fd ~= nil
+end
+
 return M
