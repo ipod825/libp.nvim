@@ -1,5 +1,6 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
+local uv = require("libp.fs.uv")
 
 function M:init(filename)
 	vim.validate({ filename = { filename, "s" } })
@@ -15,9 +16,12 @@ function M:init(filename)
 	vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
 	vim.api.nvim_buf_set_option(self.id, "undofile", false)
 
-	local _, fd = a.uv.fs_open(filename, "r", 448)
-	local err, stat = a.uv.fs_fstat(fd)
-	assert(not err)
+	local fd, stat, err
+	fd, err = uv.fs_open(filename, "r", 448)
+	assert(not err, err)
+	stat, err = uv.fs_fstat(fd)
+	assert(not err, err)
+
 	-- Remove last newline
 	local _, content = a.uv.fs_read(fd, stat.size - 1)
 	a.util.scheduler()
