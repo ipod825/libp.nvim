@@ -23,7 +23,7 @@ function M.list_dir(dir_name)
 	}):collect()
 end
 
-function M:copy(src, dst, opts)
+function M.copy(src, dst, opts)
 	vim.validate({ src = { src, "s" }, dst = { dst, "s" }, opts = { opts, "t", true } })
 	if src == dst then
 		return nil, true
