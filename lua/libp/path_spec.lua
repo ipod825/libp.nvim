@@ -91,16 +91,3 @@ describe("find_directory", function()
 		assert.is_nil(path.find_directory("k", { dir .. "/f", dir .. "/g" }))
 	end)
 end)
-
-describe("is_readable", function()
-	it("Returns if file is readable", function()
-		assert.is_true(path.is_readable(reflection.script_path()))
-		assert.is_false(path.is_readable("no_such_file"))
-	end)
-
-	it("Returns if directory is readable", function()
-		assert.is_true(path.is_readable(reflection.script_dir()))
-		assert.is_false(path.is_readable("no_such_directory"))
-	end)
-	-- TODO: Test file exists but not readable.
-end)

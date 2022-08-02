@@ -1,9 +1,44 @@
-local path = require("libp.path")
 local IterList = require("libp.datatype.IterList")
 local uv = require("libp.fs.uv")
+local path_join = require("libp.path").join
 local M = {
 	Watcher = require("libp.fs.Watcher"),
 }
+
+function M.stat_mode_num(human_repr)
+	vim.validate({ human_repr = { human_repr, "s" } })
+	return tonumber(human_repr, 8)
+end
+local k777 = M.stat_mode_num("777")
+local k640 = M.stat_mode_num("640")
+
+function M.is_readable(path)
+	vim.validate({ path = { path, "s" } })
+	local fd, err = uv.fs_open(path, "r", k640)
+	if err then
+		return nil, err
+	end
+	return uv.fs_close(fd)
+end
+
+function M.get_mode_string(path)
+	local res, err = uv.fs_stat(path)
+	if err then
+		return nil, err
+	end
+	return ("%d"):format(bit.band(res, k777))
+end
+
+function M.touch(path, mode)
+	vim.validate({ path = { path, "s" }, mode = { mode, "s", true } })
+	mode = mode and M.stat_mode_num(mode) or k640
+	local fd, err = uv.fs_open(path, "a", mode)
+	if err then
+		return nil, err
+	end
+	uv.fs_close(fd)
+	return true
+end
 
 function M.list_dir(dir_name)
 	vim.validate({ dir_name = { dir_name, "s" } })
@@ -56,7 +91,7 @@ function M.copy(src, dst, opts)
 				break
 			end
 
-			_, err = M.copy(path.join(src, name), path.join(dst, name), opts)
+			_, err = M.copy(path_join(src, name), path_join(dst, name), opts)
 			if err then
 				return nil, err
 			end
