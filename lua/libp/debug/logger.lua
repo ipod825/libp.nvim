@@ -10,7 +10,15 @@ function M:init(opts)
 	self:config(opts)
 	self.log_date_format = "%H:%M:%S"
 	self.format_func = function(arg)
-		return vim.inspect(arg, { newline = "" })
+		local res
+		if arg == nil then
+			res = "nil"
+		elseif type(arg) == "string" then
+			res = arg
+		else
+			res = vim.inspect(arg, { newline = "" })
+		end
+		return ("%s🚧\n"):format(res)
 	end
 
 	self.logfilename = join(vim.fn.stdpath("cache"), opts.log_file)
@@ -63,16 +71,10 @@ function M:log(level, ...)
 		info.currentline,
 		info.name
 	)
-	local parts = { header }
+	self.logfile:write(header, "\n")
 	for i = 1, argc do
-		local arg = select(i, ...)
-		if arg == nil then
-			table.insert(parts, "nil")
-		else
-			table.insert(parts, self.format_func(arg))
-		end
+		self.logfile:write(self.format_func(select(i, ...)))
 	end
-	self.logfile:write(table.concat(parts, "\t"), "\n")
 	self.logfile:flush()
 end
 
