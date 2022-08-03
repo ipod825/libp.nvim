@@ -1,38 +1,43 @@
 local IterList = require("libp.datatype.IterList")
 local uv = require("libp.fs.uv")
 local path_join = require("libp.path").join
+local mathfn = require("libp.utils.mathfn")
 local M = {
 	Watcher = require("libp.fs.Watcher"),
 }
 
 function M.stat_mode_num(human_repr)
-	vim.validate({ human_repr = { human_repr, "s" } })
-	return tonumber(human_repr, 8)
+	vim.validate({ human_repr = { human_repr, "n" } })
+	return tonumber(tostring(human_repr), 8)
 end
-local k777 = M.stat_mode_num("777")
-local k640 = M.stat_mode_num("640")
+local k777 = M.stat_mode_num(777)
+local k640 = M.stat_mode_num(640)
 
 function M.is_readable(path)
 	vim.validate({ path = { path, "s" } })
 	local fd, err = uv.fs_open(path, "r", k640)
 	if err then
-		return nil, err
+		return false
 	end
-	return uv.fs_close(fd)
+	uv.fs_close(fd)
+	return true
 end
 
-function M.get_mode_string(path)
+function M.chmod(path, mode)
+	return uv.fs_chmod(path, M.stat_mode_num(mode))
+end
+
+function M.get_mode(path)
 	local res, err = uv.fs_stat(path)
 	if err then
 		return nil, err
 	end
-	return ("%d"):format(bit.band(res, k777))
+	return mathfn.decimal_to_octal(bit.band(res.mode, k777))
 end
 
-function M.touch(path, mode)
-	vim.validate({ path = { path, "s" }, mode = { mode, "s", true } })
-	mode = mode and M.stat_mode_num(mode) or k640
-	local fd, err = uv.fs_open(path, "a", mode)
+function M.touch(path)
+	vim.validate({ path = { path, "s" } })
+	local fd, err = uv.fs_open(path, "a", k640)
 	if err then
 		return nil, err
 	end
@@ -60,8 +65,9 @@ end
 
 function M.copy(src, dst, opts)
 	vim.validate({ src = { src, "s" }, dst = { dst, "s" }, opts = { opts, "t", true } })
+	opts = opts or {}
 	if src == dst then
-		return nil, true
+		return true, nil
 	end
 
 	local src_stats, err = uv.fs_stat(src)
@@ -80,7 +86,11 @@ function M.copy(src, dst, opts)
 
 		_, err = uv.fs_mkdir(dst, src_stats.mode)
 		if err then
-			if not (vim.startswith(err, "EEXIST") and not opts.excl) then
+			if vim.startswith(err, "EEXIST") then
+				if opts.excl then
+					return nil, err
+				end
+			else
 				return nil, err
 			end
 		end
