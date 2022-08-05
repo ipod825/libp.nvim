@@ -1,4 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
+local List = require("libp.datatype.List")
 
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
 local join = function(...)
@@ -15,16 +16,19 @@ function M:init(opts)
 			res = "nil"
 		elseif type(arg) == "string" then
 			res = arg
+		elseif arg["IS"] and arg:IS(List) then
+			res = vim.inspect(arg, { newline = "", depth = 1 })
 		else
 			res = vim.inspect(arg, { newline = "" })
 		end
-		return ("%s🚧\n"):format(res)
+		return ("%s⏎\n"):format(res)
 	end
 
 	self.logfilename = join(vim.fn.stdpath("cache"), opts.log_file)
 
 	vim.fn.mkdir(vim.fn.stdpath("cache"), "p")
 	self.logfile = assert(io.open(self.logfilename, "a+"))
+	self.logfile:write("===New Logging Session===\n")
 
 	for level, levelnr in pairs(vim.log.levels) do
 		self[level:lower()] = self:BIND(self.log, levelnr)
@@ -64,7 +68,7 @@ function M:log(level, ...)
 
 	local info = debug.getinfo(2, "Sln")
 	local header = string.format(
-		"[%s][%s] ...%s:%s %s",
+		"🗎[%s][%s] ...%s:%s %s",
 		level,
 		os.date(self.log_date_format),
 		string.sub(info.short_src, #info.short_src - 15),
