@@ -42,7 +42,15 @@ function M:collect()
 	return List(res)
 end
 
+function M:for_each(fn)
+	vim.validate({ fn = { fn, "function" } })
+	for _, v in self:enumerate() do
+		fn(v)
+	end
+end
+
 function M:map(map_fn)
+	vim.validate({ map_fn = { map_fn, "function" } })
 	return M({
 		next_fn = function(invariant, control)
 			local v
@@ -57,6 +65,7 @@ function M:map(map_fn)
 end
 
 function M:filter(filter_fn)
+	vim.validate({ filter_fn = { filter_fn, "function" } })
 	return M({
 		next_fn = function(invariant, control)
 			repeat
@@ -73,6 +82,7 @@ function M:filter(filter_fn)
 end
 
 function M.from_range(beg, ends, step)
+	vim.validate({ beg = { beg, "n" }, ends = { ends, "n" }, step = { step, "n", true } })
 	if not ends then
 		ends = beg
 		beg = 1

@@ -1,5 +1,16 @@
 local IterList = require("libp.datatype.IterList")
 
+describe("for_each", function()
+	it("Operates on each element", function()
+		local res = {}
+		local l = IterList.from_range(1, 4)
+		l:for_each(function(e)
+			table.insert(res, e * 2)
+		end)
+		assert.are.same({ 2, 4, 6, 8 }, res)
+	end)
+end)
+
 describe("map", function()
 	it("Maps items", function()
 		local l = IterList.from_range(1, 4)
