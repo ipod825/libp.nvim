@@ -12,6 +12,17 @@ function M.stat_mode_num(human_repr)
 end
 local k777 = M.stat_mode_num(777)
 local k640 = M.stat_mode_num(640)
+local k100 = M.stat_mode_num(100)
+
+function M.is_directory(path)
+	vim.validate({ path = { path, "s" } })
+	local fd, err = uv.fs_opendir(path)
+	if err then
+		return false
+	end
+	uv.fs_closedir(fd)
+	return true
+end
 
 function M.is_readable(path)
 	vim.validate({ path = { path, "s" } })
@@ -21,6 +32,16 @@ function M.is_readable(path)
 	end
 	uv.fs_close(fd)
 	return true
+end
+
+function M.is_executable(path)
+	local res, err = uv.fs_stat(path)
+	if err then
+		return false
+	elseif res.type == "directory" then
+		return false
+	end
+	return mathfn.decimal_to_octal(bit.band(res.mode, k100)) ~= 0
 end
 
 function M.chmod(path, mode)

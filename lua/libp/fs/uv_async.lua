@@ -15,7 +15,7 @@ local function add(name, argc)
 
 	M[name] = function(...)
 		local err, res = async_fn(...)
-		a.util.scheduler()
+		require("plenary.async.util").scheduler()
 		return res, err
 	end
 end
