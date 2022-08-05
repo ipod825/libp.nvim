@@ -1,0 +1,10 @@
+local osfn = require("libp.utils.osfn")
+
+describe("is_in_path", function()
+	it("Returns false if target is not in path", function()
+		assert.is_false(osfn.is_in_path("no_such_binary"))
+	end)
+	it("Returns true if target is  in path", function()
+		assert.is_true(osfn.is_in_path("ls"))
+	end)
+end)
