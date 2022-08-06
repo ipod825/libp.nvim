@@ -45,3 +45,37 @@ describe("head_tail", function()
 		assert.are.same({ 2, 3 }, tail)
 	end)
 end)
+
+describe("bind", function()
+	local function f1(a)
+		return a
+	end
+
+	local function f2(a, b)
+		return a + b
+	end
+
+	local function nil_to_str(a, b, c)
+		return tostring(a), tostring(b), tostring(c)
+	end
+
+	it("Failed on zero args", function()
+		assert.has.errors(function()
+			functional.bind(f1)
+		end)
+	end)
+
+	it("Binds one arg", function()
+		assert.are.same(1, functional.bind(f1, 1)())
+		assert.are.same(3, functional.bind(f2, 1)(2))
+	end)
+	it("Binds two args", function()
+		assert.are.same(3, functional.bind(f2, 1, 2)())
+	end)
+	it("Accepts nil", function()
+		local f = functional.bind(nil_to_str, nil)
+		assert.are.same({ "nil", "1", "2" }, { f(1, 2) })
+		assert.are.same({ "nil", "nil", "2" }, { f(nil, 2) })
+		assert.are.same({ "nil", "nil", "nil" }, { f(nil, nil) })
+	end)
+end)

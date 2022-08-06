@@ -97,6 +97,17 @@ describe("Class", function()
 			f(2)
 			assert.are.same({ 1, 2 }, arr)
 		end)
+
+		it("Returns a function that can take nil in var args", function()
+			function Child:nil_to_string(a, b, c)
+				return tostring(a), tostring(b), tostring(c)
+			end
+			local c = Child()
+			local f = c:BIND(c.nil_to_string)
+			assert.are.same({ "nil", "1", "2" }, { f(nil, 1, 2) })
+			assert.are.same({ "nil", "nil", "2" }, { f(nil, nil, 2) })
+			assert.are.same({ "nil", "nil", "nil" }, { f(nil, nil, nil) })
+		end)
 	end)
 
 	describe("SUPER", function()

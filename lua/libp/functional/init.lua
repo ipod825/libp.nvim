@@ -6,6 +6,13 @@ function M.identity(e)
 	return e
 end
 
+local bind_tbl = require("libp.functional.bind_tbl")
+function M.bind(fn, ...)
+	local argc = select("#", ...)
+	assert(argc > 0 and argc < #bind_tbl, "bind supports args between 1 and " .. #bind_tbl)
+	return bind_tbl[argc](fn, ...)
+end
+
 function M.oneshot(f, at_counter)
 	local counter = 1
 	at_counter = at_counter or 1

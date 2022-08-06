@@ -16,7 +16,7 @@ function M:init(opts)
 			res = "nil"
 		elseif type(arg) == "string" then
 			res = arg
-		elseif arg["IS"] and arg:IS(List) then
+		elseif type(arg) == "table" and arg["IS"] and arg:IS(List) then
 			res = vim.inspect(arg, { newline = "", depth = 1 })
 		else
 			res = vim.inspect(arg, { newline = "" })

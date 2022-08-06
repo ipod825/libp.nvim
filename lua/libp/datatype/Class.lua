@@ -27,13 +27,7 @@ function M:init() end
 -- Retuns a function that calls the member method with bound instance and first
 -- several args.
 function M:BIND(fn, ...)
-	local bind_args = { ... }
-	return function(...)
-		local args = {}
-		vim.list_extend(args, bind_args)
-		vim.list_extend(args, { ... })
-		return fn(self, unpack(args))
-	end
+	return require("libp.functional").bind(fn, self, ...)
 end
 
 -- Retuns an instance whose metatable is the parent class of the current class.
