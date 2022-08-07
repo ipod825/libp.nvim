@@ -190,13 +190,15 @@ function M:_add_key_map(mode, key, fn)
 end
 
 function M:mark(data, max_num_data)
-    vim.validate({ max_num_data = {
-        max_num_data,
-        function(e)
-            return e > 0
-        end,
-        true,
-    } })
+    vim.validate({
+        max_num_data = {
+            max_num_data,
+            function(e)
+                return e > 0
+            end,
+            true,
+        },
+    })
 
     -- ctx.mark gets cleared on full. _mark_linenrs is a shadow buffer
     -- containing the line numbers for highlight usage.

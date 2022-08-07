@@ -1,23 +1,23 @@
 local a = require("plenary.async.async")
 
 local M = setmetatable({}, {
-	__index = function(tbl, key)
-		return rawget(tbl, key) or vim.loop[key]
-	end,
+    __index = function(tbl, key)
+        return rawget(tbl, key) or vim.loop[key]
+    end,
 })
 
 local function add(name, argc)
-	local success, async_fn = pcall(a.wrap, vim.loop[name], argc)
+    local success, async_fn = pcall(a.wrap, vim.loop[name], argc)
 
-	if not success then
-		error("Failed to add function with name " .. name)
-	end
+    if not success then
+        error("Failed to add function with name " .. name)
+    end
 
-	M[name] = function(...)
-		local err, res = async_fn(...)
-		require("plenary.async.util").scheduler()
-		return res, err
-	end
+    M[name] = function(...)
+        local err, res = async_fn(...)
+        require("plenary.async.util").scheduler()
+        return res, err
+    end
 end
 
 add("close", 4) -- close a handle
