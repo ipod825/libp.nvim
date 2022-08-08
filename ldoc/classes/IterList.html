@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><strong>IterList</strong></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>IterList</code></h1>
+<p>Module: <strong>libp.datatype.IterList</strong></p>
+
+<p> List iterator class.</p>
+<p> A <a href="../classes/List.html#">List</a> can be transformed to <a href="../classes/IterList.html#">IterList</a> by <a href="../classes/List.html#List:to_iter">List.to_iter</a>. While <a href="../classes/List.html#">List</a>
+ already provides some functional programming style functions such as
+ <a href="../classes/List.html#List:filter">List.filter</a> and <a href="../classes/List.html#List:map">List.map</a>, <a href="../classes/IterList.html#">IterList</a> makes it more general such that
+ the filter and map operations can be chained. In fact, the <a href="../classes/List.html#">List</a> APIs were
+ provided to reduce verbosity in simple cases. Those APIs simply call
+ <a href="../classes/IterList.html#">IterList</a> APIs.</p>
+
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#IterList.from_range">IterList.from_range (beg[, ends[, step=1]])</a></td>
+	<td class="summary">Creates an IterList from a range.</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#IterList:collect">IterList:collect ()</a></td>
+	<td class="summary">Returns the List containing all the values.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:enumerate">IterList:enumerate ()</a></td>
+	<td class="summary">Returns iterator (index, value) over the elements.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:filter">IterList:filter (fn)</a></td>
+	<td class="summary">Creates an IterList with an extra filtering step via the function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:for_each">IterList:for_each (fn)</a></td>
+	<td class="summary">Executes a function on each element of the list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:init">IterList:init (opts)</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:map">IterList:map (fn)</a></td>
+	<td class="summary">Creates an IterList with an extra transforming step via the function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:next">IterList:next ()</a></td>
+	<td class="summary">Returns the next value of the iterator and updates the internal position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IterList:values">IterList:values ()</a></td>
+	<td class="summary">Returns iterator (value) over the elements.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    Methods
+    <dl class="function">
+    <dt>
+    <a name = "IterList.from_range"></a>
+    <strong>IterList.from_range (beg[, ends[, step=1]])</strong>
+    </dt>
+    <dd>
+    Creates an IterList from a range.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">beg</span>
+            <span class="types"><span class="type">number</span></span>
+         The start of the range (included). If ends is not provided, beg specifies the ends and beg is implicitly set to 1.
+        </li>
+        <li><span class="parameter">ends</span>
+            <span class="types"><span class="type">number</span></span>
+         The end of the range (included)
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">step</span>
+            <span class="types"><span class="type">number</span></span>
+         The step for each iteration. Can be negative
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/IterList.html#">IterList</a></span>
+        The IterList representing the range.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }, IterList.from_range(<span class="number">4</span>))
+<span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span> }, IterList.from_range(<span class="number">1</span>, <span class="number">6</span>, <span class="number">2</span>))</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "IterList:collect"></a>
+    <strong>IterList:collect ()</strong>
+    </dt>
+    <dd>
+    Returns the List containing all the values.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">List.</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, IterList.from_range(<span class="number">1</span>, <span class="number">3</span>):collect())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:enumerate"></a>
+    <strong>IterList:enumerate ()</strong>
+    </dt>
+    <dd>
+    Returns iterator (index, value) over the elements.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">function,array</span>, <span class="type">nil,number</span> or <span class="type">nil</span></span>
+        Generic for tuple
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">for</span> i, v <span class="keyword">in</span> IterList.from_range(<span class="number">1</span>, <span class="number">4</span>):enumerate() <span class="keyword">do</span>
+    <span class="global">assert</span>(i == v)
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:filter"></a>
+    <strong>IterList:filter (fn)</strong>
+    </dt>
+    <dd>
+    Creates an IterList with an extra filtering step via the function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->any</span></span>
+         The filtering function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/IterList.html#">IterList</a></span>
+        The IterList with an extra filtering step
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="number">2</span>, <span class="number">4</span> },
+    IterList.from_range(<span class="number">1</span>, <span class="number">4</span>)
+        :filter(<span class="keyword">function</span>(e)
+            <span class="keyword">return</span> e % <span class="number">2</span> == <span class="number">0</span>
+        <span class="keyword">end</span>)
+        :collect()
+)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:for_each"></a>
+    <strong>IterList:for_each (fn)</strong>
+    </dt>
+    <dd>
+    Executes a function on each element of the list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->nil</span></span>
+         The function to be executed
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> sum = <span class="number">0</span>
+<span class="keyword">local</span> indices = {}
+IterList.from_range(<span class="number">1</span>, <span class="number">4</span>):for_each(<span class="keyword">function</span>(e, i)
+    sum = sum + e
+    <span class="global">table</span>.insert(indices, i)
+<span class="keyword">end</span>)
+<span class="global">assert</span>.are.same(<span class="number">10</span>, sum)
+<span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }, indices)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:init"></a>
+    <strong>IterList:init (opts)</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">next_fn</span>
+            <span class="types"><span class="type">function</span></span>
+         The next function
+        </li>
+        <li><span class="parameter">invariant</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The invariant
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">control</span>
+            <span class="types"><span class="type">number</span></span>
+         The control
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/IterList.html#">IterList</a></span>
+        A new IterList
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <li><a href="https://www.lua.org/manual/5.1/manual.html#pdf-ipairs">ipairs</a></li>
+         <li><a href="https://www.lua.org/manual/5.1/manual.html#pdf-pairs">pairs</a></li>
+         <li><a href="../classes/IterList.html#IterList:next">next</a></li>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "IterList:map"></a>
+    <strong>IterList:map (fn)</strong>
+    </dt>
+    <dd>
+    Creates an IterList with an extra transforming step via the function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->any</span></span>
+         The mapping function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/IterList.html#">IterList</a></span>
+        The IterList with an extra transforming step
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> },
+    IterList.from_range(<span class="number">1</span>, <span class="number">4</span>)
+        :map(<span class="keyword">function</span>(e)
+            <span class="keyword">return</span> e * <span class="number">2</span>
+        <span class="keyword">end</span>)
+        :collect()
+)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:next"></a>
+    <strong>IterList:next ()</strong>
+    </dt>
+    <dd>
+    Returns the next value of the iterator and updates the internal position.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span></span>
+        next value of the iterator.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> iter = IterList.from_range(<span class="number">1</span>, <span class="number">2</span>)
+<span class="global">assert</span>.are.same(<span class="number">1</span>, iter:<span class="global">next</span>())
+<span class="global">assert</span>.are.same(<span class="number">2</span>, iter:<span class="global">next</span>())
+<span class="global">assert</span>.are.same(<span class="keyword">nil</span>, iter:<span class="global">next</span>())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "IterList:values"></a>
+    <strong>IterList:values ()</strong>
+    </dt>
+    <dd>
+    Returns iterator (value) over the elements.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">function</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> i = <span class="number">1</span>
+<span class="keyword">for</span> v <span class="keyword">in</span> List({ <span class="number">1</span>, <span class="number">2</span> }):values() <span class="keyword">do</span>
+    <span class="global">assert</span>(i == v)
+    i = i + <span class="number">1</span>
+<span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-08 00:15:36 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

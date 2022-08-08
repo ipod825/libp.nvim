@@ -3,3 +3,6 @@ test:
 
 lint:
 	stylua --check .
+
+push:
+	rm -rf ldoc && ldoc lua && git add . && git commit -m "update ldoc" && git push

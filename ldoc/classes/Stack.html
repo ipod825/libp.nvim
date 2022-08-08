@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/IterList.html">IterList</a></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><strong>Stack</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Stack</code></h1>
+<p>Module: <strong>libp.datatype.Stack</strong></p>
+
+<p> Stack class.</p>
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Stack:NEW">Stack:NEW ([lst={}])</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Stack:empty">Stack:empty ()</a></td>
+	<td class="summary">Returns if the stack is empty.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Stack:pop">Stack:pop ()</a></td>
+	<td class="summary">Pops an element from the top.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Stack:push">Stack:push (ele)</a></td>
+	<td class="summary">Pushes an element to the top.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Stack:size">Stack:size ()</a></td>
+	<td class="summary">Returns the size of the stack.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Stack:top">Stack:top ()</a></td>
+	<td class="summary">Returns the top element.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Stack:NEW"></a>
+    <strong>Stack:NEW ([lst={}])</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">lst</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         Initialization list.
+         (<em>default</em> {})
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Stack.html#">Stack</a></span>
+        A new Stack
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Stack:empty"></a>
+    <strong>Stack:empty ()</strong>
+    </dt>
+    <dd>
+    Returns if the stack is empty.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="keyword">true</span>, Stack():empty())
+<span class="global">assert</span>.are.same(<span class="keyword">false</span>, Stack({ <span class="number">1</span> }):empty())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Stack:pop"></a>
+    <strong>Stack:pop ()</strong>
+    </dt>
+    <dd>
+    Pops an element from the top.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span> or <span class="type">nil</span></span>
+        The element on top or nil if empty
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="number">1</span>, Stack({ <span class="number">1</span> }):pop())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Stack:push"></a>
+    <strong>Stack:push (ele)</strong>
+    </dt>
+    <dd>
+    Pushes an element to the top.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">ele</span>
+            <span class="types"><span class="type">any</span></span>
+         The element to be pushed
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, Stack({ <span class="number">1</span>, <span class="number">2</span> }):push(<span class="number">3</span>))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Stack:size"></a>
+    <strong>Stack:size ()</strong>
+    </dt>
+    <dd>
+    Returns the size of the stack.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="number">1</span>, Stack({ <span class="string">'a'</span> }):size())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Stack:top"></a>
+    <strong>Stack:top ()</strong>
+    </dt>
+    <dd>
+    Returns the top element.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">any</span> or <span class="type">nil</span></span>
+        The element on top or nil if empty
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="number">1</span>, Stack({ <span class="number">1</span> }):top())</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-08 00:15:36 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

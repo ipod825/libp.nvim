@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/IterList.html">IterList</a></li>
+  <li><strong>Job</strong></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Job</code></h1>
+<p>Module: <strong>libp.Job</strong></p>
+
+<p> Run shell commands asynchronously.</p>
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Job.StderrDumpLevel">Job.StderrDumpLevel</a></td>
+	<td class="summary">StderrDumpLevel</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Job:init">Job:init (opts)</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:kill">Job:kill ([signal=15])</a></td>
+	<td class="summary">Kills the job.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:send">Job:send (data)</a></td>
+	<td class="summary">Sends a string to the stdin of the job.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:shutdown">Job:shutdown ()</a></td>
+	<td class="summary">Shuts down the job.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:start">Job:start ()</a></td>
+	<td class="summary">Executes the command asynchronously.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:stdoutput">Job:stdoutput ()</a></td>
+	<td class="summary">Retrieves the cached stdoutput.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:stdoutputstr">Job:stdoutputstr ()</a></td>
+	<td class="summary">Retrieves the cached stdoutput as a single string.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Job.StderrDumpLevel"></a>
+    <strong>Job.StderrDumpLevel</strong>
+    </dt>
+    <dd>
+    StderrDumpLevel
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">SILENT</span>
+        Never show stderr output.
+        </li>
+        <li><span class="parameter">ON_ERROR</span>
+        Show stderr output only when the process exits with non-zero code.
+        </li>
+        <li><span class="parameter">ALWAYS</span>
+        Always show stderr error. Useful for program that use stderr for normal message.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Job:init"></a>
+    <strong>Job:init (opts)</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">cmd</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a> or <span class="type">array</span></span>
+         The command to execute along with the
+ arguments. If cmd is a string, it will be tokenize into a list by
+ ???. Otherwise, the user should tokenize the cmd into an
+ array. One benefit of passing an array directly is that the arguments do not
+ need to be quoted even if they contain white space.
+        </li>
+        <li><span class="parameter">on_stdout</span>
+            <span class="types"><span class="type">function</span></span>
+         The handler to process command output
+ (stdout). If not provided, the default behavior is to store the outputs which
+ can be retrieved by <a href="../classes/Job.html#Job:stdoutput">Job:stdoutput</a>.
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">on_stdout_buffer_size</span>
+            <span class="types"><span class="type">number</span></span>
+         The internal buffer size
+ for <code>on_stdout</code>, which will be called when the internal buffer reaches
+ this number of lines. This is an optimization technique to reduce number of
+ function calls. Note that on job finish, <code>on_stdout</code> will be called
+ regardless the number of lines in the buffer (as long as it contains >0
+ line).
+         (<em>default</em> 5000)
+        </li>
+        <li><span class="parameter">stderr_dump_level</span>
+            <span class="types"><a class="type" href="../classes/Job.html#Job.StderrDumpLevel">StderrDumpLevel</a></span>
+         Whether to notify the user with the stderr output. See <a href="../classes/Job.html#Job.StderrDumpLevel">StderrDumpLevel</a> for
+ details.
+         (<em>default</em> StderrDumpLevel.SILENT)
+        </li>
+        <li><span class="parameter">cwd</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The working directory to exectue the command
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">env</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a> or <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">{string}</a></span>
+         Environment variables when invoking the
+ command. If <code>env</code> is of table type, each key is the variable name and each
+ value is the variable value (converted to string type). If <code>env</code> is of string
+ array type, each must be of the form <code>name=value</code>
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">detached</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to detach the job, i.e. to keep the job running after vim exists.
+         (<em>default</em> false)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutput())
+    <span class="global">assert</span>.are.same(
+        { <span class="string">"A=100"</span> },
+        Job({
+            cmd = <span class="string">"env"</span>,
+            env = { A = <span class="number">100</span> },
+        }):stdoutput()
+    )
+<span class="keyword">end</span>)()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Job:kill"></a>
+    <strong>Job:kill ([signal=15])</strong>
+    </dt>
+    <dd>
+    Kills the job.
+ Useful to cancel a job whose output is no longer needed anymore. If accessing
+ the available output is desired, one should use <a href="../classes/Job.html#Job:shutdown">Job:shutdown</a>
+ instead as it not guaranteed the <a href="../classes/Job.html#Job:start">Job.start</a> coroutine finished when <a href="../classes/Job.html#Job:kill">kill</a>
+ returns.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">signal</span>
+            <span class="types"><span class="type">number</span></span>
+         The kill signal to sent to the job.
+         (<em>default</em> 15)
+        </li>
+    </ul>
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Job.html#Job:shutdown">Job.shutdown</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "Job:send"></a>
+    <strong>Job:send (data)</strong>
+    </dt>
+    <dd>
+    Sends a string to the stdin of the job.
+ Thie is useful if the job expects user input. One might need to shutdown the
+ job explicitly if the job don't finish on user inputs (see usage below).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">data</span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> job = Job({
+    cmd = <span class="string">"cat"</span>,
+    on_stdout_buffer_size = sz,
+})
+<span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    job:start()
+<span class="keyword">end</span>)()
+<span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    job:send(<span class="string">"hello\n"</span>)
+    job:send(<span class="string">"world\n"</span>)
+    job:shutdown()
+    <span class="global">assert</span>.are.same({ <span class="string">"hello"</span>, <span class="string">"world"</span> }, job:stdoutput())
+<span class="keyword">end</span>)()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Job:shutdown"></a>
+    <strong>Job:shutdown ()</strong>
+    </dt>
+    <dd>
+    Shuts down the job.
+ Useful to cancel a job. It's guaranteed that the job has already finished on
+ <a href="../classes/Job.html#Job:shutdown">shutdown</a> return. Hence <a href="../classes/Job.html#Job:stdoutput">Job:stdoutput</a> will returns the available outputs
+ before the job shutdown.
+
+
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <li><a href="../classes/Job.html#Job:send">Job.send</a></li>
+         <li><a href="../classes/Job.html#Job:kill">Job.kill</a></li>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "Job:start"></a>
+    <strong>Job:start ()</strong>
+    </dt>
+    <dd>
+    Executes the command asynchronously.
+ See <a href="../classes/Job.html#Job:init">Job.init</a> for configuration.
+
+
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="keyword">local</span> job = Job({ cmd = <span class="string">'echo "a\nb"'</span> })
+    job:start()
+    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, job:stdoutput())
+<span class="keyword">end</span>)()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Job:stdoutput"></a>
+    <strong>Job:stdoutput ()</strong>
+    </dt>
+    <dd>
+    Retrieves the cached stdoutput.
+ If the job hasn't started (<a href="../classes/Job.html#Job:start">Job:start</a>), it will start automatically.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">{string}</a></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutput())
+<span class="keyword">end</span>)()</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Job:stdoutputstr"></a>
+    <strong>Job:stdoutputstr ()</strong>
+    </dt>
+    <dd>
+    Retrieves the cached stdoutput as a single string.
+ If the job hasn't started (<a href="../classes/Job.html#Job:start">Job:start</a>), it will start automatically.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="global">assert</span>.are.same(<span class="string">"a\nb"</span>, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutputstr())
+<span class="keyword">end</span>)()</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-08 00:15:36 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
