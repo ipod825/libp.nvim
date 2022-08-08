@@ -22,6 +22,5 @@ or
 use {'ipod825/libp.nvim', requires={'nvim-lua/plenary.nvim'}
 ```
 
-## Modules
-
-## Customization
+## Documentation
+See the [online doc](https://ipod825.github.io/libp.nvim/)
