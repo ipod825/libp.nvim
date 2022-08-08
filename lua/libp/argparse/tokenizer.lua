@@ -13,16 +13,10 @@ local vimfn = require("libp.utils.vimfn")
 -- 3. Non space separated characters: this_is-a=token
 -- 4. Combination of 1,3 or 2,3: --this="is a token"
 -- @tparam string str The input string
--- @tparam boolean unquote_outtest Whether to remove the outermost quotation
--- marks in each token. This is possibly only useful for uv.spawn which
--- automatically adds quotation marks to all the input arguments. Without
--- striping the quotation marks to compensate that, the spawned command might be
--- inferred wongly.
-function M.tokenize(str, unquote_outtest)
+function M.tokenize(str)
     local pos = 1
     local res = {}
     local opening_quote = nil
-    local opening_quote_pos = nil
     local last_pos = nil
 
     -- Normalize: no space at begin/end and between flag and equal signs.
@@ -33,7 +27,6 @@ function M.tokenize(str, unquote_outtest)
     if pbeg2 then
         last_pos = pos
         opening_quote = p2
-        opening_quote_pos = pend2
         pos = pend2 + 1
 
         if pos > #str then
@@ -57,7 +50,6 @@ function M.tokenize(str, unquote_outtest)
                 -- opening_quote quote.
                 last_pos = pos
                 opening_quote = p2
-                opening_quote_pos = pend2
                 pos = pend2 + 1
 
                 if pos > #str then
@@ -77,20 +69,10 @@ function M.tokenize(str, unquote_outtest)
                 return
             end
 
-            -- Add from last_pos to closing quotes. Removes the opening and
-            -- closing quotes on demand.
-            if unquote_outtest then
-                table.insert(
-                    res,
-                    ("%s%s"):format(str:sub(last_pos, opening_quote_pos - 1), str:sub(opening_quote_pos + 1, pend - 1))
-                )
-            else
-                table.insert(res, str:sub(last_pos, pend))
-            end
+            table.insert(res, str:sub(last_pos, pend))
             pos = str:find("[^ ]", pend + 1) or #str + 1
             last_pos = nil
             opening_quote = nil
-            opening_quote_pos = nil
         end
     end
     return res

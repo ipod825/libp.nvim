@@ -49,7 +49,11 @@ M.StderrDumpLevel = {
 
 --- Constructor.
 -- @tparam table opts
--- @tparam string|table opts.cmd The command to execute along with the arguments. For string type, it will be tokenize into a list by @{tokenizer.tokenize} with `unquote_outtest` set to true. One benefit of passing in a list directly is that the arguments do not need to be quoted even if they contain white space.
+-- @tparam string|array opts.cmd The command to execute along with the
+-- arguments. If cmd is a string, it will be tokenize into a list by
+-- @{tokenizer.tokenize}. Otherwise, the user should tokenize the cmd into an
+-- array. One benefit of passing an array directly is that the arguments do not
+-- need to be quoted even if they contain white space.
 -- @tparam[opt] function opts.on_stdout The handler to process command output
 -- (stdout). If not provided, the default behavior is to store the outputs which
 -- can be retrieved by @{Job:stdoutput}.
@@ -129,7 +133,7 @@ M.start = a.wrap(function(self, callback)
 
     local cmd_tokens
     if type(opts.cmd) == "string" then
-        cmd_tokens = tokenizer.tokenize(opts.cmd, true)
+        cmd_tokens = tokenizer.tokenize(opts.cmd)
     else
         cmd_tokens = vim.deepcopy(opts.cmd)
     end
@@ -137,9 +141,9 @@ M.start = a.wrap(function(self, callback)
     -- Remove quotes as spawn will quote each args. Also need to replace '\"'
     -- with '"' as spawn adds the escape back.
     for i, arg in ipairs(args) do
-        args[i] = arg:gsub('^"', ""):gsub('([^\\])"$', "%1"):gsub('\\"', '"')
+        args[i] = arg:gsub('^"(.*)"$', "%1"):gsub('="(.*)"$', "=%1"):gsub('\\"', '"')
         if #args[i] == #arg then
-            args[i] = arg:gsub("^'", ""):gsub("([^\\])'$", "%1")
+            args[i] = arg:gsub("^'(.*)'$", "%1"):gsub("='(.*)'$", "=%1"):gsub("\\'", "'")
         end
     end
 
