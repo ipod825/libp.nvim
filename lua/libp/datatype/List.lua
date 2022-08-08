@@ -1,11 +1,13 @@
---- List class for object-oriented programming and functional programming paradigm.
+--- Module: **libp.datatype.List**
+--
+-- List class.
 --
 -- Inherits: @{Class}
 -- @classmod List
 local M = require("libp.datatype.Class"):EXTEND()
 
 --- Constructor.
--- @tparam[opt={}] table lst initialization list.
+-- @tparam[opt={}] array lst Initialization list.
 -- @treturn List A new List
 function M:NEW(lst)
     lst = lst or {}
@@ -25,7 +27,7 @@ function M:__add(that)
     return res
 end
 
---- Appends an element to the List
+--- Appends an element to the List.
 -- @tparam any ele The element to be appended
 -- @treturn List The list.
 -- @usage assert.are.same({ 1, 2, 3 }, List({ 1, 2 }):append(3))
@@ -34,8 +36,8 @@ function M:append(ele)
     return self
 end
 
---- Extends the List with another List
--- @tparam table|List that The list to be appended.
+--- Extends the List with another List.
+-- @tparam array|List that The list to be appended.
 -- @treturn List The list
 -- @usage assert.are.same({ 1, 2, 3 }, List({ 1, 2 }):extend({ 3 }))
 function M:extend(that)
@@ -58,8 +60,8 @@ function M:sort(...)
     return self
 end
 
---- Returns coroutine iterator over the elements.
--- @treturn function The iterator function
+--- Returns iterator (value) over the elements.
+-- @treturn function
 -- @usage
 -- local i = 1
 -- for v in List({ 1, 2 }):values() do
@@ -67,15 +69,16 @@ end
 --     i = i + 1
 -- end
 function M:values()
-    return coroutine.wrap(function()
-        for _, e in ipairs(self) do
-            coroutine.yield(e)
-        end
-    end)
+    local next_key = nil
+    return function()
+        local value
+        next_key, value = next(self, next_key)
+        return value
+    end
 end
 
---- Returns the generic for (index,value) tuple.
--- @return Generic for (index,value) tuple
+--- Returns iterator (index, value) over the elements.
+-- @treturn function,List,nil Generic for tuple
 -- @usage
 -- for i, v in List({ 1, 2 }):enumerate() do
 --     assert(i == v)

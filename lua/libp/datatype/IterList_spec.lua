@@ -156,4 +156,13 @@ describe("values", function()
         end
         assert.are.same({ 1, 2, 3 }, vals)
     end)
+    it("Respects the internal control", function()
+        local iter = IterList.from_range(1, 3)
+        assert.are.same(1, iter:next())
+        local vals = {}
+        for e in iter:values() do
+            table.insert(vals, e)
+        end
+        assert.are.same({ 2, 3 }, vals)
+    end)
 end)

@@ -1,4 +1,6 @@
---- Class type for object-oriented programming paradigm.
+--- Module: **libp.datatype.Class**
+--
+-- Mother of all classes.
 --
 -- Each type inheriting from Class (via @{Class.EXTEND}) by default has:
 --
@@ -15,6 +17,7 @@
 -- manipulating the metatable of the constructor arguments. @{Class.NEW} can be
 -- override to achieve that. The other functions provided by Class is not
 -- recommended to be overrided.
+--
 -- @classmod Class
 local M = {}
 

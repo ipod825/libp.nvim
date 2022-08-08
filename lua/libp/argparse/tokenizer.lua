@@ -1,5 +1,5 @@
 --- Tokenize the input string into tokens.
--- @module tokenizer
+-- @module libp.argparse.tokenizer
 local M = {}
 local vimfn = require("libp.utils.vimfn")
 

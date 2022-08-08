@@ -1,4 +1,6 @@
---- List iterator class supporting functional programming operations.
+--- Module: **libp.datatype.IterList**
+--
+-- List iterator class.
 --
 -- A @{List} can be transformed to @{IterList} by @{List.to_iter}. While @{List}
 -- already provides some functional programming style functions such as
@@ -33,8 +35,8 @@ function M:init(opts)
     self.control = opts.control
 end
 
---- Returns the generic for (index,value) tuple.
--- @return Generic for (index,value) tuple
+--- Returns iterator (index, value) over the elements.
+-- @treturn function,array|nil,number|nil Generic for tuple
 -- @usage
 -- for i, v in IterList.from_range(1, 4):enumerate() do
 --     assert(i == v)
@@ -43,8 +45,8 @@ function M:enumerate()
     return self.next_fn, self.invariant, self.control
 end
 
---- Returns coroutine iterator over the elements.
--- @treturn function The iterator function
+--- Returns iterator (value) over the elements.
+-- @treturn function
 -- @usage
 -- local i = 1
 -- for v in List({ 1, 2 }):values() do
@@ -52,14 +54,15 @@ end
 --     i = i + 1
 -- end
 function M:values()
-    return coroutine.wrap(function()
-        for _, e in self:enumerate() do
-            coroutine.yield(e)
-        end
-    end)
+    local next_control = self.control
+    return function()
+        local value
+        next_control, value = self.next_fn(self.invariant, next_control)
+        return value
+    end
 end
 
---- Returns the next value of the iterator and updates the internal.
+--- Returns the next value of the iterator and updates the internal position.
 -- @treturn any next value of the iterator.
 -- @usage
 -- local iter = IterList.from_range(1, 2)

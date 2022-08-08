@@ -75,7 +75,7 @@ describe("start", function()
     test_env({ "A=100", "B=test" }, { "A=100", "B=test" })
     test_env({ A = 100 }, { "A=100" })
     test_env({ "A=This is a long env var" }, { "A=This is a long env var" })
-    test_env({ ["A"] = "This is a long env var" }, { "A=This is a long env var" })
+    test_env({ A = "This is a long env var" }, { "A=This is a long env var" })
     test_env({ ["A"] = 100, ["B"] = "test" }, { "A=100", "B=test" })
     test_env({ ["A"] = 100, "B=test" }, { "A=100", "B=test" })
 

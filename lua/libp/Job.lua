@@ -1,3 +1,9 @@
+--- Module: **libp.Job**
+--
+-- Run shell commands asynchronously.
+--
+-- Inherits: @{Class}
+-- @classmod Job
 require("libp.utils.string_extension")
 local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
@@ -34,8 +40,45 @@ end
 
 local State = { NOT_STARTED = 1, RUNNING = 2, FINISHED = 3 }
 
-M.StderrDumpLevel = { SILENT = 1, ON_ERROR = 2, ALWAYS = 3 }
+--- StderrDumpLevel
+M.StderrDumpLevel = {
+    SILENT = 1, -- Never show stderr output.
+    ON_ERROR = 2, -- Show stderr output only when the process exits with non-zero code.
+    ALWAYS = 3, -- Always show stderr error. Useful for program that use stderr for normal message.
+}
 
+--- Constructor.
+-- @tparam table opts
+-- @tparam string|table opts.cmd The command to execute along with the arguments. For string type, it will be tokenize into a list by @{tokenizer.tokenize} with `unquote_outtest` set to true. One benefit of passing in a list directly is that the arguments do not need to be quoted even if they contain white space.
+-- @tparam[opt] function opts.on_stdout The handler to process command output
+-- (stdout). If not provided, the default behavior is to store the outputs which
+-- can be retrieved by @{Job:stdoutput}.
+-- @tparam[opt=5000] number opts.on_stdout_buffer_size The internal buffer size
+-- for `on_stdout`, which will be called when the internal buffer reaches
+-- this number of lines. This is an optimization technique to reduce number of
+-- function calls. Note that on job finish, `on_stdout` will be called
+-- regardless the number of lines in the buffer (as long as it contains >0
+-- line).
+-- @tparam[opt=StderrDumpLevel.SILENT] StderrDumpLevel opts.stderr_dump_level
+-- Whether to notify the user with the stderr output. See @{StderrDumpLevel} for
+-- details.
+-- @tparam[opt] string opts.cwd The working directory to exectue the command
+-- @tparam[opt] table|{string} opts.env Environment variables when invoking the
+-- command. If `env` is of table type, each key is the variable name and each
+-- value is the variable value (converted to string type). If `env` is of string
+-- array type, each must be of the form `name=value`
+-- @tparam[opt=false] boolean opts.detached Whether to detach the job, i.e. to keep the job running after vim exists.
+-- @usage
+-- require("plenary.async").void(function()
+--     assert.are.same({ "a", "b" }, Job({ cmd = 'echo "a\nb"' }):stdoutput())
+--     assert.are.same(
+--         { "A=100" },
+--         Job({
+--             cmd = "env",
+--             env = { A = 100 },
+--         }):stdoutput()
+--     )
+-- end)()
 function M:init(opts)
     vim.validate({
         cmd = { opts.cmd, { "s", "t" } },
@@ -64,6 +107,15 @@ function M:init(opts)
     self.opts = opts
 end
 
+--- Executes the command asynchronously.
+-- See @{Job.init} for configuration.
+-- @function M:start
+-- @usage
+-- require("plenary.async").void(function()
+--     local job = Job({ cmd = 'echo "a\nb"' })
+--     job:start()
+--     assert.are.same({ "a", "b" }, job:stdoutput())
+-- end)()
 M.start = a.wrap(function(self, callback)
     assert(self.state == State.NOT_STARTED)
     self.state = State.RUNNING
@@ -77,12 +129,13 @@ M.start = a.wrap(function(self, callback)
 
     local cmd_tokens
     if type(opts.cmd) == "string" then
-        cmd_tokens = tokenizer.tokenize(opts.cmd)
+        cmd_tokens = tokenizer.tokenize(opts.cmd, true)
     else
         cmd_tokens = vim.deepcopy(opts.cmd)
     end
     local cmd, args = cmd_tokens[1], vim.list_slice(cmd_tokens, 2, #cmd_tokens)
-    -- Remove quotes as spawn will quote each args.
+    -- Remove quotes as spawn will quote each args. Also need to replace '\"'
+    -- with '"' as spawn adds the escape back.
     for i, arg in ipairs(args) do
         args[i] = arg:gsub('^"', ""):gsub('([^\\])"$', "%1"):gsub('\\"', '"')
         if #args[i] == #arg then
@@ -174,6 +227,13 @@ M.start = a.wrap(function(self, callback)
     end
 end, 2)
 
+--- Retrieves the cached stdoutput.
+-- If the job hasn't started (@{Job:start}), it will start automatically.
+-- @treturn {string}
+-- @usage
+-- require("plenary.async").void(function()
+--     assert.are.same({ "a", "b" }, Job({ cmd = 'echo "a\nb"' }):stdoutput())
+-- end)()
 function M:stdoutput()
     if self.state == State.NOT_STARTED then
         self:start()
@@ -181,23 +241,47 @@ function M:stdoutput()
     return self.stdout_lines
 end
 
+--- Retrieves the cached stdoutput as a single string.
+-- If the job hasn't started (@{Job:start}), it will start automatically.
+-- @treturn string
+-- @usage
+-- require("plenary.async").void(function()
+--     assert.are.same("a\nb", Job({ cmd = 'echo "a\nb"' }):stdoutputstr())
+-- end)()
 function M:stdoutputstr()
     return table.concat(self:stdoutput(), "\n")
 end
 
+--- Sends a string to the stdin of the job.
+-- Thie is useful if the job expects user input. One might need to shutdown the
+-- job explicitly if the job don't finish on user inputs (see usage below).
+-- @treturn nil
+-- @usage
+-- local job = Job({
+--     cmd = "cat",
+--     on_stdout_buffer_size = sz,
+-- })
+-- require("plenary.async").void(function()
+--     job:start()
+-- end)()
+-- require("plenary.async").void(function()
+--     job:send("hello\n")
+--     job:send("world\n")
+--     job:shutdown()
+--     assert.are.same({ "hello", "world" }, job:stdoutput())
+-- end)()
 function M:send(data)
     assert(self.state == State.RUNNING)
     self.stdin:write(data)
 end
 
-function M:wait()
-    assert(self.state ~= State.NOT_STARTED)
-    if self.state == State.FINISHED then
-        return
-    end
-    self.done:wait()
-end
-
+--- Kills the job.
+-- Useful to cancel a job whose output is no longer needed anymore. If accessing
+-- the available output is desired, one should use @{Job:shutdown}
+-- instead as it not guaranteed the @{Job.start} coroutine finished when `kill`
+-- returns.
+-- @tparam[opt=15] number signal The kill signal to sent to the job.
+-- @see Job.shutdown
 function M:kill(signal)
     assert(self.state ~= State.NOT_STARTED)
     if self.state == State.FINISHED then
@@ -208,6 +292,24 @@ function M:kill(signal)
     self.was_killed = true
 end
 
+-- Wait until the job finished. This is only useful for @{Job:shutdown} which is
+-- almost always invoked in a separate coroutine than @{Job:start}. Returning
+-- from shutdown thus does not guarantee finish of the @{Job:start} coroutine
+-- and thus explicit wait is necessary.
+function M:_wait()
+    assert(self.state ~= State.NOT_STARTED)
+    if self.state == State.FINISHED then
+        return
+    end
+    self.done:wait()
+end
+
+--- Shuts down the job.
+-- Useful to cancel a job. It's guaranteed that the job has already finished on
+-- `shutdown` return. Hence @{Job:stdoutput} will returns the available outputs
+-- before the job shutdown.
+-- @see Job.send
+-- @see Job.kill
 function M:shutdown()
     assert(self.state ~= State.NOT_STARTED)
     if self.state == State.FINISHED then
@@ -217,7 +319,7 @@ function M:shutdown()
         return not vim.loop.is_active(self.stdout)
     end)
     self.process:kill(15)
-    self:wait()
+    self:_wait()
 end
 
 M.start_all = a.wrap(function(cmds, opts, callback)
