@@ -1,7 +1,7 @@
 title = "libp"
 project = "libp"
 readme = "README.md"
-dir='ldoc'
+dir='docs'
 
 description = [[
 A neovim plugin providing useful lua modules.
