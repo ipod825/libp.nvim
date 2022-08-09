@@ -84,15 +84,6 @@ function M:enumerate()
     return KVIter(self)
 end
 
---- Returns @{IterList} of the list.
--- @treturn @{IterList} An IterList of the list
--- @usage
--- local IterList = require("libp.datatype.IterList")
--- assert(List:to_iter():IS(IterList))
-function M:to_iter()
-    return require("libp.datatype.IterList")({ next_fn = next, invariant = self })
-end
-
 --- Creates a list of all elements which match a function.
 -- @tparam function(any)->boolean fn The filtering function
 -- @treturn List A new filtered list
@@ -120,7 +111,6 @@ end
 -- )
 function M:map(fn)
     return VIter(self):mapv(fn):collect()
-    -- return self:to_iter():map(fn):collect()
 end
 
 --- Executes a function on each element of the list.

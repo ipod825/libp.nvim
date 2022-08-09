@@ -11,7 +11,7 @@ function M:collect()
     for _, v in self:enumerate() do
         res[#res + 1] = v
     end
-    return res
+    return require("libp.datatype.List")(res)
 end
 
 function M:for_each(fn)

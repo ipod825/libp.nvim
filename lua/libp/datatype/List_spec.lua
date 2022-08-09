@@ -56,13 +56,6 @@ describe("enumerate", function()
     end)
 end)
 
-describe("to_iter", function()
-    it("Returns a IterList", function()
-        local pending = List({ 1, 2, 3, 4 }):to_iter()
-        assert.are.same({ 1, 2, 3, 4 }, pending:collect())
-    end)
-end)
-
 describe("map", function()
     it("Maps the list to another list", function()
         assert.are.same(

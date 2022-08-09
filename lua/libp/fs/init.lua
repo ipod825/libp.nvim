@@ -1,7 +1,7 @@
-local IterList = require("libp.datatype.IterList")
 local uv = require("libp.fs.uv")
 local path_join = require("libp.path").join
 local mathfn = require("libp.utils.mathfn")
+local VIter = require("libp.datatype.VIter")
 local M = {
     Watcher = require("libp.fs.Watcher"),
 }
@@ -73,15 +73,13 @@ function M.list_dir(dir_name)
         return nil, err
     end
 
-    return IterList({
-        next_fn = function(_, last_index)
-            last_index = last_index or 0
-            local name, type = uv.fs_scandir_next(handle)
-            if name then
-                return last_index + 1, { name = name, type = type }
-            end
-        end,
-    }):collect()
+    return VIter(nil, function(_, last_index)
+        last_index = last_index or 0
+        local name, type = uv.fs_scandir_next(handle)
+        if name then
+            return last_index + 1, { name = name, type = type }
+        end
+    end):collect()
 end
 
 function M.copy(src, dst, opts)
