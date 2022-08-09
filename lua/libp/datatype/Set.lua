@@ -145,9 +145,9 @@ function M.values(set)
             is_set,
         },
     })
-    return VIter(set):filter(function(k, _)
+    return VIter(set):filterkv(function(k)
         return k ~= size_key
-    end):map(function(k, v)
+    end):mapkv(function(k, v)
         return v, k
     end)
 end

@@ -50,7 +50,7 @@ function M.enumerate(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return KVIter(mt.key_arr):map(function(_, v)
+    return KVIter(mt.key_arr):mapkv(function(_, v)
         return v, mt.data[v]
     end)
 end
@@ -66,8 +66,8 @@ function M.values(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return VIter(mt.key_arr):map(function(k, v)
-        return k, mt.data[v]
+    return VIter(mt.key_arr):map(function(v)
+        return mt.data[v]
     end)
 end
 

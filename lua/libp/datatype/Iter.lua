@@ -45,7 +45,7 @@ function M:collect()
     assert(false, "Must be implemented by child")
 end
 
-function M:map(map_fn)
+function M:mapkv(map_fn)
     vim.validate({ map_fn = { map_fn, "function" } })
     return self:CLASS()(self.invariant, function()
         local v
@@ -56,7 +56,7 @@ function M:map(map_fn)
     end, self.control)
 end
 
-function M:mapv(map_fn)
+function M:map(map_fn)
     vim.validate({ map_fn = { map_fn, "function" } })
     return self:CLASS()(self.invariant, function()
         local v
@@ -67,7 +67,7 @@ function M:mapv(map_fn)
     end, self.control)
 end
 
-function M:filter(filter_fn)
+function M:filterkv(filter_fn)
     vim.validate({ filter_fn = { filter_fn, "function" } })
     return self:CLASS()(self.invariant, function()
         repeat
@@ -80,7 +80,7 @@ function M:filter(filter_fn)
     end, self.control)
 end
 
-function M:filterv(filter_fn)
+function M:filter(filter_fn)
     vim.validate({ filter_fn = { filter_fn, "function" } })
     return self:CLASS()(self.invariant, function()
         repeat

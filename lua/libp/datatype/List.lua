@@ -95,8 +95,7 @@ end
 --     end)
 -- )
 function M:filter(fn)
-    return VIter(self):filterv(fn):collect()
-    -- return self:to_iter():filter(fn):collect()
+    return VIter(self):filter(fn):collect()
 end
 
 --- Creates a list that transforms elements with a function.
@@ -110,7 +109,7 @@ end
 --     end)
 -- )
 function M:map(fn)
-    return VIter(self):mapv(fn):collect()
+    return VIter(self):map(fn):collect()
 end
 
 --- Executes a function on each element of the list.
