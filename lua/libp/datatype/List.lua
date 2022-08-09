@@ -5,6 +5,8 @@
 -- Inherits: @{Class}
 -- @classmod List
 local M = require("libp.datatype.Class"):EXTEND()
+local VIter = require("libp.datatype.VIter")
+local KVIter = require("libp.datatype.KVIter")
 
 --- Constructor.
 -- @tparam[opt={}] array lst Initialization list.
@@ -69,12 +71,7 @@ end
 --     i = i + 1
 -- end
 function M:values()
-    local next_key = nil
-    return function()
-        local value
-        next_key, value = next(self, next_key)
-        return value
-    end
+    return VIter(self)
 end
 
 --- Returns iterator (index, value) over the elements.
@@ -84,7 +81,7 @@ end
 --     assert(i == v)
 -- end
 function M:enumerate()
-    return next, self, nil
+    return KVIter(self)
 end
 
 --- Returns @{IterList} of the list.
@@ -107,7 +104,8 @@ end
 --     end)
 -- )
 function M:filter(fn)
-    return self:to_iter():filter(fn):collect()
+    return VIter(self):filterv(fn):collect()
+    -- return self:to_iter():filter(fn):collect()
 end
 
 --- Creates a list that transforms elements with a function.
@@ -121,7 +119,8 @@ end
 --     end)
 -- )
 function M:map(fn)
-    return self:to_iter():map(fn):collect()
+    return VIter(self):mapv(fn):collect()
+    -- return self:to_iter():map(fn):collect()
 end
 
 --- Executes a function on each element of the list.

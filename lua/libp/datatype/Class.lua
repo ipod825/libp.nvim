@@ -117,4 +117,11 @@ function M:IS(class)
     return false
 end
 
+--- Returns the direct class of the instance.
+-- If the instance itself is a class then the result is coincidently the parent class.
+-- @return any
+function M:CLASS()
+    return getmetatable(self)
+end
+
 return M

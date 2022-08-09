@@ -58,8 +58,8 @@ end)
 
 describe("to_iter", function()
     it("Returns a IterList", function()
-        local it = List({ 1, 2, 3, 4 }):to_iter()
-        assert.are.same({ 1, 2, 3, 4 }, it:collect())
+        local pending = List({ 1, 2, 3, 4 }):to_iter()
+        assert.are.same({ 1, 2, 3, 4 }, pending:collect())
     end)
 end)
 
@@ -67,8 +67,8 @@ describe("map", function()
     it("Maps the list to another list", function()
         assert.are.same(
             { 2, 4, 6, 8 },
-            List({ 1, 2, 3, 4 }):map(function(e)
-                return e * 2
+            List({ 1, 2, 3, 4 }):map(function(v)
+                return v * 2
             end)
         )
     end)

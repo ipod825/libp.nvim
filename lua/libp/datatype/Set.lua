@@ -10,6 +10,7 @@
 -- functions.
 -- @classmod Set
 local M = {}
+local VIter = require("libp.datatype.VIter")
 
 local size_key = {}
 
@@ -144,14 +145,11 @@ function M.values(set)
             is_set,
         },
     })
-    local next_key = nil
-    return function()
-        next_key = next(set, next_key)
-        if next_key == size_key then
-            next_key = next(set, next_key)
-        end
-        return next_key
-    end
+    return VIter(set):filter(function(k, _)
+        return k ~= size_key
+    end):map(function(k, v)
+        return v, k
+    end)
 end
 
 --- Returns if the set contains the element.

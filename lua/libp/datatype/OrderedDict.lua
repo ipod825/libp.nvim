@@ -5,6 +5,8 @@
 -- Inherits: @{Class}
 -- @classmod OrderedDict
 local M = require("libp.datatype.Class"):EXTEND()
+local KVIter = require("libp.datatype.KVIter")
+local VIter = require("libp.datatype.VIter")
 
 --- Constructor.
 -- @treturn OrderedDict A new OrderedDict
@@ -48,36 +50,25 @@ function M.enumerate(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    local next_key
-    return function()
-        local data_key
-        next_key, data_key = next(mt.key_arr, next_key)
-        return data_key, mt.data[data_key]
-    end
+    return KVIter(mt.key_arr):map(function(_, v)
+        return v, mt.data[v]
+    end)
 end
 
 function M.keys(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    local next_key = nil
-    return function()
-        local data_key
-        next_key, data_key = next(mt.key_arr, next_key)
-        return data_key
-    end
+    return VIter(mt.key_arr)
 end
 
 function M.values(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    local next_key = nil
-    return function()
-        local data_key
-        next_key, data_key = next(mt.key_arr, next_key)
-        return mt.data[data_key]
-    end
+    return VIter(mt.key_arr):map(function(k, v)
+        return k, mt.data[v]
+    end)
 end
 
 function M.data(d)
