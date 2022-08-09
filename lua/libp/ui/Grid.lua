@@ -1,4 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
+local values = require("libp.datatype.itertools").values
 
 function M:init(opts, root)
     opts = opts or {}
@@ -93,7 +94,7 @@ function M:close()
     if self.window then
         self.window:close()
     else
-        for _, child in ipairs(self.children) do
+        for child in values(self.children) do
             child:close()
         end
     end
@@ -112,7 +113,7 @@ function M:show()
             end,
         })
     else
-        for _, child in ipairs(self.children) do
+        for child in values(self.children) do
             child:show()
         end
     end

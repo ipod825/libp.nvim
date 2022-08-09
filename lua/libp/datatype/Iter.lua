@@ -37,7 +37,7 @@ function M:next()
     assert(false, "Must be implemented by child")
 end
 
-function M:enumerate()
+function M:pairs()
     return self.next_fn, self.invariant, self.control
 end
 

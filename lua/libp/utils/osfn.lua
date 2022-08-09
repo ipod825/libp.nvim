@@ -1,9 +1,10 @@
 local M = {}
 local path = require("libp.path")
 local fs = require("libp.fs")
+local values = require("libp.datatype.itertools").values
 
 function M.is_in_path(target)
-    for _, p in ipairs(vim.split(os.getenv("PATH"), ":")) do
+    for p in values(vim.split(os.getenv("PATH"), ":")) do
         if fs.is_executable(path.join(p, target)) then
             return true
         end

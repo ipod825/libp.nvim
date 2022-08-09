@@ -1,8 +1,9 @@
 local String = getmetatable("").__index
+local values = require("libp.datatype.itertools").values
 
 function String:split_trim(sep)
     local res = {}
-    for _, s in ipairs(self:split(sep)) do
+    for s in values(self:split(sep)) do
         table.insert(res, vim.trim(s))
     end
     return res

@@ -1,4 +1,5 @@
 local M = {}
+local values = require("libp.datatype.itertools").values
 
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
 M.path_sep = path_sep
@@ -50,8 +51,8 @@ function M.find_directory(anchor, dir)
     end
 
     local res
-    for _, a in ipairs(anchor) do
-        for _, d in ipairs(dir) do
+    for a in values(anchor) do
+        for d in values(dir) do
             res = search(a, d)
             if res then
                 return res, a

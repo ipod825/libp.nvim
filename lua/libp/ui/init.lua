@@ -10,13 +10,14 @@ local M = {
     BoxBorder = require("libp.ui.BoxBorder"),
     BorderedWindow = require("libp.ui.BorderedWindow"),
 }
+local values = require("libp.datatype.itertools").values
 
 function M.center_align_text(content, total_width)
     vim.validate({ content = { content, "t" }, total_width = { total_width, "n" } })
     local num_pads = #content + 1
     local pad_width = total_width
     local content_width = 0
-    for _, c in ipairs(content) do
+    for c in values(content) do
         pad_width = pad_width - #c
         content_width = content_width + #c
     end
@@ -25,7 +26,7 @@ function M.center_align_text(content, total_width)
 
     local res = (" "):rep(offset)
     local pad = (" "):rep(pad_width)
-    for _, c in ipairs(content) do
+    for c in values(content) do
         res = res .. pad .. c
     end
     return res

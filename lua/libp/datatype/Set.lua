@@ -11,6 +11,7 @@
 -- @classmod Set
 local M = {}
 local VIter = require("libp.datatype.VIter")
+local values = require("libp.datatype.itertools").values
 
 local size_key = {}
 
@@ -81,7 +82,7 @@ setmetatable(M, {
     __call = function(_, table)
         table = table or {}
         local obj = setmetatable({ [size_key] = 0 }, SetMt)
-        for _, v in ipairs(table) do
+        for v in values(table) do
             M.add(obj, v)
         end
         return obj

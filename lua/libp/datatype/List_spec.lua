@@ -36,26 +36,6 @@ describe("Concat(_add)", function()
     end)
 end)
 
-describe("values", function()
-    it("Iterates elements", function()
-        local l = List({ 1, 2, 3, 4 })
-        local i = 1
-        for e in l:values() do
-            assert.are.same(i, e)
-            i = i + 1
-        end
-    end)
-end)
-
-describe("enumerate", function()
-    it("Works with generic for", function()
-        local l = List({ 1, 2, 3, 4 })
-        for i, e in l:enumerate() do
-            assert.are.same(i, e)
-        end
-    end)
-end)
-
 describe("map", function()
     it("Maps the list to another list", function()
         assert.are.same(

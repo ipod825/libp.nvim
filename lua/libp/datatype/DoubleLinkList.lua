@@ -1,4 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
+local values = require("libp.datatype.itertools").values
 
 local Node = require("libp.datatype.Class"):EXTEND()
 function Node:init(val)
@@ -76,7 +77,7 @@ function M.from_list(lst)
     local head = Node(lst[1])
     local current = head
 
-    for _, v in ipairs(vim.list_slice(lst, 2)) do
+    for v in values(vim.list_slice(lst, 2)) do
         current:link_right(Node(v))
         current = current.right
     end

@@ -3,6 +3,7 @@ local Buffer = require("libp.ui.Buffer")
 local BorderedWindow = require("libp.ui.BorderedWindow")
 local functional = require("libp.functional")
 local a = require("plenary.async")
+local values = require("libp.datatype.itertools").values
 
 function M:init(opts)
     vim.validate({
@@ -36,7 +37,7 @@ function M:init(opts)
     local content = opts.content or {}
 
     self.fwin_cfg.height = #content
-    for _, c in ipairs(content) do
+    for c in values(content) do
         if #c > self.fwin_cfg.width then
             self.fwin_cfg.width = #c
         end
@@ -113,7 +114,7 @@ function M.will_select_from_menu(run_before_selection)
             timer:close()
             run_before_selection()
             -- Not sure why nvim_input('<cr>') doesn't work here.
-            for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, "n")) do
+            for m in values(vim.api.nvim_buf_get_keymap(0, "n")) do
                 if m.lhs == "<CR>" then
                     m.callback()
                     break

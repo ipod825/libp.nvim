@@ -7,6 +7,7 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local KVIter = require("libp.datatype.KVIter")
 local VIter = require("libp.datatype.VIter")
+local values = require("libp.datatype.itertools").values
 
 --- Constructor.
 -- @treturn OrderedDict A new OrderedDict
@@ -23,7 +24,7 @@ function M:NEW()
         else
             if mt.data[key] then
                 local new_key_arr = {}
-                for _, ori_key in ipairs(mt.key_arr) do
+                for ori_key in values(mt.key_arr) do
                     if ori_key ~= key then
                         table.insert(new_key_arr, ori_key)
                     end
@@ -43,10 +44,10 @@ end
 -- local d = OrderedDict()
 -- d.b = 1
 -- d.a = 2
--- local next = OrderedDict.enumerate(d)
+-- local next = OrderedDict.pairs(d)
 -- assert.are.same({ "b", 1 }, { next() })
 -- assert.are.same({ "a", 2 }, { next() })
-function M.enumerate(d)
+function M.pairs(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 

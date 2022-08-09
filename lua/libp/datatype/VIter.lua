@@ -8,7 +8,7 @@ end
 
 function M:collect()
     local res = {}
-    for _, v in self:enumerate() do
+    for _, v in self:pairs() do
         res[#res + 1] = v
     end
     return require("libp.datatype.List")(res)
@@ -16,7 +16,7 @@ end
 
 function M:for_each(fn)
     vim.validate({ fn = { fn, "function" } })
-    for _, v in self:enumerate() do
+    for _, v in self:pairs() do
         fn(v)
     end
 end

@@ -4,6 +4,7 @@ local a = require("plenary.async")
 local Job = require("libp.Job")
 local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
+local values = require("libp.datatype.itertools").values
 
 global.buffers = global.buffers or {}
 
@@ -210,7 +211,7 @@ function M:mark(data, max_num_data)
     if #self.ctx.mark == max_num_data then
         self.ctx.mark = {}
         -- Clears all previous mark highlight
-        for _, line in ipairs(self._mark_linenrs) do
+        for line in values(self._mark_linenrs) do
             self:clear_hl(line)
         end
         self._mark_linenrs = {}

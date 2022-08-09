@@ -62,28 +62,6 @@ function M:sort(...)
     return self
 end
 
---- Returns iterator (value) over the elements.
--- @treturn function
--- @usage
--- local i = 1
--- for v in List({ 1, 2 }):values() do
---     assert(i == v)
---     i = i + 1
--- end
-function M:values()
-    return VIter(self)
-end
-
---- Returns iterator (index, value) over the elements.
--- @treturn function,List,nil Generic for tuple
--- @usage
--- for i, v in List({ 1, 2 }):enumerate() do
---     assert(i == v)
--- end
-function M:enumerate()
-    return KVIter(self)
-end
-
 --- Creates a list of all elements which match a function.
 -- @tparam function(any)->boolean fn The filtering function
 -- @treturn List A new filtered list
