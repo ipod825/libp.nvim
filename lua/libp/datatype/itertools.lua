@@ -26,4 +26,14 @@ function M.range(beg, ends, step)
     end)
 end
 
+function M.values(invariant)
+    return VIter(invariant)
+end
+
+function M.keys(invariant)
+    return VIter(invariant):mapkv(function(k, _)
+        return k
+    end)
+end
+
 return M
