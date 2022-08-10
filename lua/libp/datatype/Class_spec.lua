@@ -27,6 +27,25 @@ describe("Class", function()
             assert.are.same("Childarg", GrandChild():fn("arg"))
         end)
 
+        it("Supports metamethod inheritance", function()
+            local ChildWithMetaMethod = Class:EXTEND({
+                __add = function(this, that)
+                    return this.num + that.num
+                end,
+            })
+            function ChildWithMetaMethod:init()
+                self.num = 1
+            end
+
+            local GrandChildWithMetaMethod = ChildWithMetaMethod:EXTEND()
+
+            local c1, c2 = ChildWithMetaMethod(), ChildWithMetaMethod()
+            local gc1, gc2 = GrandChildWithMetaMethod(), GrandChildWithMetaMethod()
+
+            assert.are.same(2, c1 + c2)
+            assert.are.same(2, gc1 + gc2)
+        end)
+
         it("Supports override", function()
             function Child:fn(arg)
                 return "Child" .. arg
@@ -157,6 +176,13 @@ describe("Class", function()
             assert.are.equal(Child, Child():CLASS())
             assert.are.equal(GrandChild, GrandChild():CLASS())
             assert.are.equal(Child, GrandChild:CLASS())
+        end)
+        it("Can be used to create child class instance in parent class", function()
+            function Child:Clone()
+                return self:CLASS()()
+            end
+            assert.is_true(Child():Clone():IS(Child))
+            assert.is_true(GrandChild():Clone():IS(GrandChild))
         end)
     end)
 end)

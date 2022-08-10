@@ -1,23 +1,27 @@
-local M = require("libp.datatype.Class"):EXTEND()
-
-function M:EXTEND()
-    -- Repeat the code of CLASS:EXTEND
-    -- Is there a way to avoid this repetition?
-    local mt = self
-    mt.__call = function(cls, ...)
-        return cls:NEW(...)
-    end
-    mt.__index = mt
-    local IterClass = setmetatable({}, mt)
-
-    -- An instance of any child iterator class should be callable. The semantic
-    -- of the call operator is calling the instance's next member function.
-    IterClass.__call = function(this, ...)
+local M = require("libp.datatype.Class"):EXTEND({
+    __call = function(this, ...)
         return this:next(...)
-    end
+    end,
+})
 
-    return IterClass
-end
+-- function M:EXTEND()
+--     -- Repeat the code of CLASS:EXTEND
+--     -- Is there a way to avoid this repetition?
+--     local mt = self
+--     mt.__call = function(cls, ...)
+--         return cls:NEW(...)
+--     end
+--     mt.__index = mt
+--     local IterClass = setmetatable({}, mt)
+--
+--     -- An instance of any child iterator class should be callable. The semantic
+--     -- of the call operator is calling the instance's next member function.
+--     IterClass.__call = function(this, ...)
+--         return this:next(...)
+--     end
+--
+--     return IterClass
+-- end
 
 function M:init(invariant, next_fn, control)
     vim.validate({
@@ -33,7 +37,7 @@ function M:init(invariant, next_fn, control)
     self.control = control
 end
 
-function M:next()
+function M:next(...)
     assert(false, "Must be implemented by child")
 end
 
