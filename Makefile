@@ -4,5 +4,5 @@ test:
 lint:
 	stylua --check .
 
-push:
-	rm -rf docs && ldoc lua && git add . && git commit -m "update docs" && git push
+docspush:
+	rm -rf docs && ldoc lua && git add -f docs && git commit -m "update docs" && git push
