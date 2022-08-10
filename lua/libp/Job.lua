@@ -312,14 +312,20 @@ end
 -- Useful to cancel a job. It's guaranteed that the job has already finished on
 -- `shutdown` return. Hence @{Job:stdoutput} will returns the available outputs
 -- before the job shutdown.
+-- @tparam[opt=10] number wait_time_ms Grace period in ms before sending the
+-- signal. Probably only useful for unit test of this module.
 -- @see Job.send
 -- @see Job.kill
-function M:shutdown()
+function M:shutdown(wait_time_ms)
+    vim.validate({ wait_time_ms = { wait_time_ms, "n", true } })
+
     assert(self.state ~= State.NOT_STARTED)
     if self.state == State.FINISHED then
         return
     end
-    vim.wait(10, function()
+
+    wait_time_ms = wait_time_ms or 10
+    vim.wait(wait_time_ms, function()
         return not vim.loop.is_active(self.stdout)
     end)
     self.process:kill(15)
