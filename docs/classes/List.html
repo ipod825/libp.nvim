@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+<li><a href="#Metamethods">Metamethods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><strong>List</strong></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>List</code></h1>
+<p>Module: <strong>libp.datatype.List</strong></p>
+
+<p> List class.</p>
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#List:NEW">List:NEW ([lst={}])</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:append">List:append (ele)</a></td>
+	<td class="summary">Appends an element to the List.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:extend">List:extend (that)</a></td>
+	<td class="summary">Extends the List with another List.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:filter">List:filter (fn)</a></td>
+	<td class="summary">Creates a list of all elements which match a function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:for_each">List:for_each (fn)</a></td>
+	<td class="summary">Executes a function on each element of the list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:map">List:map (fn)</a></td>
+	<td class="summary">Creates a list that transforms elements with a function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:sort">List:sort (...)</a></td>
+	<td class="summary">Sorts the List in place.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#List:unbox_if_one">List:unbox_if_one ()</a></td>
+	<td class="summary">Returns the single element if the list contains only one element.</td>
+	</tr>
+</table>
+<h2><a href="#Metamethods">Metamethods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#List:__add">List:__add (that)</a></td>
+	<td class="summary">Concatenation operator.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "List:NEW"></a>
+    <strong>List:NEW ([lst={}])</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">lst</span>
+            <span class="types"><span class="type">array</span></span>
+         Initialization list.
+         (<em>default</em> {})
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        A new List
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "List:append"></a>
+    <strong>List:append (ele)</strong>
+    </dt>
+    <dd>
+    Appends an element to the List.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">ele</span>
+            <span class="types"><span class="type">any</span></span>
+         The element to be appended
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        The list.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, List({ <span class="number">1</span>, <span class="number">2</span> }):append(<span class="number">3</span>))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:extend"></a>
+    <strong>List:extend (that)</strong>
+    </dt>
+    <dd>
+    Extends the List with another List.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">that</span>
+            <span class="types"><span class="type">array</span> or <a class="type" href="../classes/List.html#">List</a></span>
+         The list to be appended.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        The list
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, List({ <span class="number">1</span>, <span class="number">2</span> }):extend({ <span class="number">3</span> }))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:filter"></a>
+    <strong>List:filter (fn)</strong>
+    </dt>
+    <dd>
+    Creates a list of all elements which match a function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->boolean</span></span>
+         The filtering function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        A new filtered list
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="number">2</span>, <span class="number">4</span> },
+    List({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):filter(<span class="keyword">function</span>(e)
+        <span class="keyword">return</span> e % <span class="number">2</span> == <span class="number">0</span>
+    <span class="keyword">end</span>)
+)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:for_each"></a>
+    <strong>List:for_each (fn)</strong>
+    </dt>
+    <dd>
+    Executes a function on each element of the list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->nil</span></span>
+         The function to be executed
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> sum = <span class="number">0</span>
+<span class="keyword">local</span> indices = {}
+List({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):for_each(<span class="keyword">function</span>(e, i)
+    sum = sum + e
+    <span class="global">table</span>.insert(indices, i)
+<span class="keyword">end</span>)
+<span class="global">assert</span>.are.same(<span class="number">10</span>, sum)
+<span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }, indices)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:map"></a>
+    <strong>List:map (fn)</strong>
+    </dt>
+    <dd>
+    Creates a list that transforms elements with a function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function(any)->any</span></span>
+         The mapping function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        A new transformed List
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span> },
+    List({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):map(<span class="keyword">function</span>(e)
+        <span class="keyword">return</span> e * <span class="number">2</span>
+    <span class="keyword">end</span>)
+)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:sort"></a>
+    <strong>List:sort (...)</strong>
+    </dt>
+    <dd>
+    Sorts the List in place.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+            <span class="types"><span class="type">any</span></span>
+         Forward to table.sort.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        The list
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span> },
+    List({ <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span> }):sort(<span class="keyword">function</span>(a, b)
+        <span class="keyword">return</span> b &lt; a
+    <span class="keyword">end</span>)
+)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "List:unbox_if_one"></a>
+    <strong>List:unbox_if_one ()</strong>
+    </dt>
+    <dd>
+    Returns the single element if the list contains only one element.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a> or <span class="type">any</span></span>
+        The single element if the list contains a single element,
+ otherwise the list.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="string">"a"</span>, List({ <span class="string">"a"</span> }):unbox_if_one())</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Metamethods"></a>Metamethods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "List:__add"></a>
+    <strong>List:__add (that)</strong>
+    </dt>
+    <dd>
+    Concatenation operator.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">that</span>
+            <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+         Another List
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/List.html#">List</a></span>
+        A new list consisting of the list with the elements of the new list appended
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, List({ <span class="number">1</span>, <span class="number">2</span> }) + List({ <span class="number">3</span> }))</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-09 21:06:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

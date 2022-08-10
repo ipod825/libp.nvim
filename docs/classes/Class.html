@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><strong>Class</strong></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Class</code></h1>
+<p>Module: <strong>libp.datatype.Class</strong></p>
+
+<p> Mother of all classes.</p>
+<p> Each type inheriting from Class (via <a href="../classes/Class.html#Class:EXTEND">Class:EXTEND</a>) by default has:</p>
+
+<ul>
+    <li>Constructor. The __call metamethod, which just invokes
+    <a href="../classes/Class.html#Class:NEW">NEW</a> creating an instance of the current class and forwards its
+    arguments to <a href="../classes/Class.html#Class:init">init</a> to initialize the instance.</li>
+    <li>Inherit function <a href="../classes/Class.html#Class:EXTEND">EXTEND</a>, which can be used for defining derived
+    types. All member methods and metamethods (with some exception, see
+    <a href="../classes/Class.html#Class:EXTEND">EXTEND</a>) of the parent class will be inherited.</li>
+    <li><a href="../classes/Class.html#Class:SUPER">SUPER</a> for accessing parent member function.</li>
+    <li>Other util member functions (see below).</li>
+</ul>
+
+<p> Theoritically speaking, all the member functions provided by <a href="../classes/Class.html#">Class</a> can be
+ overrided (by simply redefining them for the derived class). However, we only
+ recommend overriding <a href="../classes/Class.html#Class:init">init</a> and <a href="../classes/Class.html#Class:NEW">NEW</a>. <a href="../classes/Class.html#Class:init">init</a> is for
+ initializing an instance, so unless you want to reuse the parent class's
+ <a href="../classes/Class.html#Class:init">init</a> function, you would always want to override it. As for the constructor
+ <a href="../classes/Class.html#Class:NEW">NEW</a>, the rule of thumb is that if the constructor arguments are
+ member variables initializer, then overriding <a href="../classes/Class.html#Class:NEW">NEW</a> is unnecessary.
+ Check <a href="../classes/List.html#List:NEW">List:NEW</a>'s implementation on when one might want to override
+ <a href="../classes/Class.html#Class:NEW">NEW</a>.</p>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Class:BIND">Class:BIND (fn, ...)</a></td>
+	<td class="summary">Returns a function that calls the member method with bound instance and arguments.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:CLASS">Class:CLASS ()</a></td>
+	<td class="summary">Returns the direct class of the instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:EXTEND">Class:EXTEND ([metamethods=nil])</a></td>
+	<td class="summary">Inheriting function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:IS">Class:IS (class)</a></td>
+	<td class="summary">Returns whether the instance belongs to the class.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:NEW">Class:NEW (...)</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:SUPER">Class:SUPER ()</a></td>
+	<td class="summary">Gets accesses of parents' member functions.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Class:init">Class:init (...)</a></td>
+	<td class="summary">Initializer.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Class:BIND"></a>
+    <strong>Class:BIND (fn, ...)</strong>
+    </dt>
+    <dd>
+    Returns a function that calls the member method with bound instance and arguments.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fn</span>
+            <span class="types"><span class="type">function</span></span>
+         The member function to be bound.
+        </li>
+        <li><span class="parameter">...</span>
+            <span class="types"><span class="type">any</span></span>
+         The arguments to be bound.
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">function</span> Child:add(a)
+    <span class="keyword">return</span> a + <span class="number">1</span>
+<span class="keyword">end</span>
+<span class="keyword">local</span> c = Child()
+<span class="global">assert</span>.are.same(<span class="number">3</span>, c:BIND(c.add, <span class="number">2</span>)())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Class:CLASS"></a>
+    <strong>Class:CLASS ()</strong>
+    </dt>
+    <dd>
+    Returns the direct class of the instance.
+ If the instance itself is a class then the result is coincidently the parent
+ class. This is useful to instantiate a derived class instance in a parent
+ class member function.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        any
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Class.html#Class:IS">Class:IS</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">local</span> GrandChild = Child:EXTEND()
+<span class="keyword">function</span> Child:Clone()
+    <span class="keyword">return</span> self:CLASS()()
+<span class="keyword">end</span>
+<span class="global">assert</span>(Child():Clone():IS(Child))
+<span class="global">assert</span>(GrandChild():Clone():IS(GrandChild))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Class:EXTEND"></a>
+    <strong>Class:EXTEND ([metamethods=nil])</strong>
+    </dt>
+    <dd>
+    Inheriting function.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">metamethods</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The metamethods to be defined in the
+ resulting class and its derived classes. Note that <code>__index</code> is an invalid
+ key for <code>metamethods</code>. Also <code>__call</code>, although is a valid key, has no effect
+ once the resulting class is derived again by another class. That is, one can
+ only override <code>__call</code> for a <strong>leaf class</strong>. See the comment in the
+ implementation for detail explanation.
+         (<em>default</em> nil)
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">local</span> GrandChild = Child:EXTEND()
+<span class="keyword">function</span> Child:fn(arg)
+    <span class="keyword">return</span> <span class="string">"Child"</span> .. arg
+<span class="keyword">end</span>
+<span class="global">assert</span>.are.same(<span class="string">"Childarg"</span>, Child():fn(<span class="string">"arg"</span>))
+<span class="global">assert</span>.are.same(<span class="string">"Childarg"</span>, GrandChild():fn(<span class="string">"arg"</span>))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Class:IS"></a>
+    <strong>Class:IS (class)</strong>
+    </dt>
+    <dd>
+    Returns whether the instance belongs to the class.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">class</span>
+         a class type
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        boolean whether the instance belongs to the class
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">local</span> c = Child()
+<span class="global">assert</span>(c:IS(Child))
+<span class="global">assert</span>(c:IS(Class))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Class:NEW"></a>
+    <strong>Class:NEW (...)</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+            <span class="types"><span class="type">any</span></span>
+         Parameter to be passed to the initializer <a href="../classes/Class.html#Class:init">Class:init</a>
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Class:SUPER"></a>
+    <strong>Class:SUPER ()</strong>
+    </dt>
+    <dd>
+    Gets accesses of parents' member functions.
+ Returns an instance whose member function indexing starts by checking the
+parent class and ancestors before checking the direct class of the instance.
+Note that the default behavior is to check the direct class -> parent class ->
+ancestor classes).
+
+
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">local</span> GrandChild = Child:EXTEND()
+<span class="keyword">function</span> Child:fn()
+    <span class="keyword">return</span> <span class="string">"Child"</span>
+<span class="keyword">end</span>
+<span class="keyword">function</span> GrandChild:fn()
+    <span class="keyword">return</span> <span class="string">"GrandChild"</span>
+<span class="keyword">end</span>
+<span class="global">assert</span>.are.same(<span class="string">"GrandChild"</span>, GrandChild():fn())
+<span class="global">assert</span>.are.same(<span class="string">"Child"</span>, GrandChild():SUPER():fn())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Class:init"></a>
+    <strong>Class:init (...)</strong>
+    </dt>
+    <dd>
+    Initializer.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+            <span class="types"><span class="type">any</span></span>
+         Parameter passed from the constructor <a href="../classes/Class.html#Class:NEW">Class:NEW</a>
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> Child = Class:EXTEND()
+<span class="keyword">function</span> Child:init(a, b)
+    self.a = a
+    self.b = b
+<span class="keyword">end</span>
+<span class="keyword">local</span> c = Child(<span class="number">1</span>, <span class="number">2</span>)
+<span class="global">assert</span>(c.a == <span class="number">1</span>)
+<span class="global">assert</span>(c.b == <span class="number">2</span>)</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-09 21:06:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
