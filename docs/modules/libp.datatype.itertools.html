@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+  <li><strong>libp.datatype.itertools</strong></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/Iter.html">Iter</a></li>
+  <li><a href="../classes/KVIter.html">KVIter</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+  <li><a href="../classes/VIter.html">VIter</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>libp.datatype.itertools</code></h1>
+<p>Useful functions related to <a href="../classes/Iter.html#">Iter</a></p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#keys">keys (invariant)</a></td>
+	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container keys.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#range">range (beg[, ends=beg[, step=1]])</a></td>
+	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating through a range with some step.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#values">values (invariant)</a></td>
+	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container values.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "keys"></a>
+    <strong>keys (invariant)</strong>
+    </dt>
+    <dd>
+    Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container keys.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">invariant</span>
+            <span class="types"><span class="type">array</span> or <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The container
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="string">'a'</span>, <span class="string">'b'</span> }, itertools.keys({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "range"></a>
+    <strong>range (beg[, ends=beg[, step=1]])</strong>
+    </dt>
+    <dd>
+    Returns a <a href="../classes/VIter.html#">VIter</a> iterating through a range with some step.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">beg</span>
+            <span class="types"><span class="type">number</span></span>
+         The begin of the range. If <code>ends</code> is omitted, begin becomes 1
+ and <code>ends</code> is set to the value of <code>beg</code>
+        </li>
+        <li><span class="parameter">ends</span>
+            <span class="types"><span class="type">number</span></span>
+         The end of the range
+         (<em>default</em> beg)
+        </li>
+        <li><span class="parameter">step</span>
+            <span class="types"><span class="type">number</span></span>
+         The incremental on each iteration
+         (<em>default</em> 1)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, itertools.range(<span class="number">3</span>):collect())
+<span class="global">assert</span>.are.same({ <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span> }, itertools.range(<span class="number">3</span>, <span class="number">1</span>, -<span class="number">1</span>):collect())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "values"></a>
+    <strong>values (invariant)</strong>
+    </dt>
+    <dd>
+    Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container values.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">invariant</span>
+            <span class="types"><span class="type">array</span> or <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The container
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, itertools.values({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
+    </ul>
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-08-11 00:23:13 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

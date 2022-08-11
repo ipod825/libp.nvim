@@ -39,15 +39,19 @@
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/Iter.html">Iter</a></li>
   <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/KVIter.html">KVIter</a></li>
   <li><a href="../classes/List.html">List</a></li>
   <li><strong>OrderedDict</strong></li>
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
+  <li><a href="../classes/VIter.html">VIter</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+  <li><a href="../modules/libp.datatype.itertools.html">libp.datatype.itertools</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -72,8 +76,20 @@
 	<td class="summary">Constructor.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#OrderedDict:data">OrderedDict:data (d)</a></td>
+	<td class="summary">Returns the managed dict.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#OrderedDict:keys">OrderedDict:keys (d)</a></td>
+	<td class="summary">Returns <a href="../classes/VIter.html#">VIter</a> over the keys.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#OrderedDict:pairs">OrderedDict:pairs (d)</a></td>
-	<td class="summary">Returns iterator (key, value) over the elements.</td>
+	<td class="summary">Returns <a href="../classes/KVIter.html#">KVIter</a> over the key/value pairs.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#OrderedDict:values">OrderedDict:values (d)</a></td>
+	<td class="summary">Returns <a href="../classes/VIter.html#">VIter</a> over the keys.</td>
 	</tr>
 </table>
 
@@ -105,26 +121,28 @@
 
 </dd>
     <dt>
-    <a name = "OrderedDict:pairs"></a>
-    <strong>OrderedDict:pairs (d)</strong>
+    <a name = "OrderedDict:data"></a>
+    <strong>OrderedDict:data (d)</strong>
     </dt>
     <dd>
-    Returns iterator (key, value) over the elements.
+    Returns the managed dict.
+ The returned dict does not maintain the key insertion key order. Also,
+ modifying the returned dict could make the maintained order stale. So make a
+ deep copy if that is desired.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">d</span>
-
-
-
+            <span class="types"><a class="type" href="../classes/OrderedDict.html#">OrderedDict</a></span>
+         The OrderedDict instance
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">function</span></span>
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
 
 
 
@@ -137,9 +155,121 @@
         <pre class="example"><span class="keyword">local</span> d = OrderedDict()
 d.b = <span class="number">1</span>
 d.a = <span class="number">2</span>
-<span class="keyword">local</span> <span class="global">next</span> = OrderedDict.<span class="global">pairs</span>(d)
-<span class="global">assert</span>.are.same({ <span class="string">"b"</span>, <span class="number">1</span> }, { <span class="global">next</span>() })
-<span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="number">2</span> }, { <span class="global">next</span>() })</pre>
+<span class="global">assert</span>.are.same({ a = <span class="number">2</span>, b = <span class="number">1</span> }, OrderedDict.data(d))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "OrderedDict:keys"></a>
+    <strong>OrderedDict:keys (d)</strong>
+    </dt>
+    <dd>
+    Returns <a href="../classes/VIter.html#">VIter</a> over the keys.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">d</span>
+            <span class="types"><a class="type" href="../classes/OrderedDict.html#">OrderedDict</a></span>
+         The OrderedDict instance
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/VIter.html#">VIter</a></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> d = OrderedDict()
+d.b = <span class="number">1</span>
+d.a = <span class="number">2</span>
+<span class="keyword">local</span> iter = OrderedDict.keys(d)
+<span class="global">assert</span>.are.same(<span class="string">"b"</span>, iter:<span class="global">next</span>())
+<span class="global">assert</span>.are.same(<span class="string">"a"</span>, iter:<span class="global">next</span>())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "OrderedDict:pairs"></a>
+    <strong>OrderedDict:pairs (d)</strong>
+    </dt>
+    <dd>
+    Returns <a href="../classes/KVIter.html#">KVIter</a> over the key/value pairs.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">d</span>
+            <span class="types"><a class="type" href="../classes/OrderedDict.html#">OrderedDict</a></span>
+         The OrderedDict instance
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/KVIter.html#">KVIter</a></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> d = OrderedDict()
+d.b = <span class="number">1</span>
+d.a = <span class="number">2</span>
+<span class="keyword">local</span> iter = OrderedDict.<span class="global">pairs</span>(d)
+<span class="global">assert</span>.are.same({ <span class="string">"b"</span>, <span class="number">1</span> }, { iter:<span class="global">next</span>() })
+<span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="number">2</span> }, { iter:<span class="global">next</span>() })</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "OrderedDict:values"></a>
+    <strong>OrderedDict:values (d)</strong>
+    </dt>
+    <dd>
+    Returns <a href="../classes/VIter.html#">VIter</a> over the keys.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">d</span>
+            <span class="types"><a class="type" href="../classes/OrderedDict.html#">OrderedDict</a></span>
+         The OrderedDict instance
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/VIter.html#">VIter</a></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> d = OrderedDict()
+d.b = <span class="number">1</span>
+d.a = <span class="number">2</span>
+<span class="keyword">local</span> iter = OrderedDict.values(d)
+<span class="global">assert</span>.are.same(<span class="number">1</span>, iter:<span class="global">next</span>())
+<span class="global">assert</span>.are.same(<span class="number">2</span>, iter:<span class="global">next</span>())</pre>
     </ul>
 
 </dd>
@@ -150,7 +280,7 @@ d.a = <span class="number">2</span>
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-08-09 21:06:07 </i>
+<i style="float:right;">Last updated 2022-08-11 00:23:13 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
