@@ -38,15 +38,16 @@ function M:NEW()
     return obj
 end
 
---- Returns iterator (key, value) over the elements.
--- @treturn function
+--- Returns @{KVIter} over the key/value pairs.
+-- @tparam OrderedDict d The OrderedDict instance
+-- @treturn KVIter
 -- @usage
 -- local d = OrderedDict()
 -- d.b = 1
 -- d.a = 2
--- local next = OrderedDict.pairs(d)
--- assert.are.same({ "b", 1 }, { next() })
--- assert.are.same({ "a", 2 }, { next() })
+-- local iter = OrderedDict.pairs(d)
+-- assert.are.same({ "b", 1 }, { iter:next() })
+-- assert.are.same({ "a", 2 }, { iter:next() })
 function M.pairs(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
@@ -56,6 +57,16 @@ function M.pairs(d)
     end)
 end
 
+--- Returns @{VIter} over the keys.
+-- @tparam OrderedDict d The OrderedDict instance
+-- @treturn VIter
+-- @usage
+-- local d = OrderedDict()
+-- d.b = 1
+-- d.a = 2
+-- local iter = OrderedDict.keys(d)
+-- assert.are.same("b", iter:next())
+-- assert.are.same("a", iter:next())
 function M.keys(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
@@ -63,6 +74,16 @@ function M.keys(d)
     return VIter(mt.key_arr)
 end
 
+--- Returns @{VIter} over the keys.
+-- @tparam OrderedDict d The OrderedDict instance
+-- @treturn VIter
+-- @usage
+-- local d = OrderedDict()
+-- d.b = 1
+-- d.a = 2
+-- local iter = OrderedDict.values(d)
+-- assert.are.same(1, iter:next())
+-- assert.are.same(2, iter:next())
 function M.values(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
@@ -72,6 +93,17 @@ function M.values(d)
     end)
 end
 
+--- Returns the managed dict.
+-- The returned dict does not maintain the key insertion key order. Also,
+-- modifying the returned dict could make the maintained order stale. So make a
+-- deep copy if that is desired.
+-- @tparam OrderedDict d The OrderedDict instance
+-- @treturn table
+-- @usage
+-- local d = OrderedDict()
+-- d.b = 1
+-- d.a = 2
+-- assert.are.same({ a = 2, b = 1 }, OrderedDict.data(d))
 function M.data(d)
     local mt = getmetatable(d)
     assert(mt.data)

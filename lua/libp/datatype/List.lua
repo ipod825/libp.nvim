@@ -6,7 +6,6 @@
 -- @classmod List
 local M = require("libp.datatype.Class"):EXTEND()
 local VIter = require("libp.datatype.VIter")
-local KVIter = require("libp.datatype.KVIter")
 
 --- Constructor.
 -- @tparam[opt={}] array lst Initialization list.
@@ -62,7 +61,7 @@ function M:sort(...)
     return self
 end
 
---- Creates a list of all elements which match a function.
+--- Creates a new list of all elements which match a function.
 -- @tparam function(any)->boolean fn The filtering function
 -- @treturn List A new filtered list
 -- @usage
@@ -76,7 +75,7 @@ function M:filter(fn)
     return VIter(self):filter(fn):collect()
 end
 
---- Creates a list that transforms elements with a function.
+--- Creates a new list by transforming the elements with a function.
 -- @tparam function(any)->any fn The mapping function
 -- @treturn List A new transformed List
 -- @usage
@@ -88,24 +87,6 @@ end
 -- )
 function M:map(fn)
     return VIter(self):map(fn):collect()
-end
-
---- Executes a function on each element of the list.
--- @tparam function(any)->nil fn The function to be executed
--- @treturn nil
--- @usage
--- local sum = 0
--- local indices = {}
--- List({ 1, 2, 3, 4 }):for_each(function(e, i)
---     sum = sum + e
---     table.insert(indices, i)
--- end)
--- assert.are.same(10, sum)
--- assert.are.same({ 1, 2, 3, 4 }, indices)
-function M:for_each(fn)
-    for i, e in ipairs(self) do
-        fn(e, i)
-    end
 end
 
 --- Returns the single element if the list contains only one element.

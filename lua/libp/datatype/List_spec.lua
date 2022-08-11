@@ -75,19 +75,6 @@ describe("sort", function()
     end)
 end)
 
-describe("for_each", function()
-    it("Operates over each element", function()
-        local sum = 0
-        local indices = {}
-        List({ 1, 2, 3, 4 }):for_each(function(e, i)
-            sum = sum + e
-            table.insert(indices, i)
-        end)
-        assert.are.same(10, sum)
-        assert.are.same({ 1, 2, 3, 4 }, indices)
-    end)
-end)
-
 describe("unbox_if_one", function()
     it("Returns 1st element if there's only one element", function()
         assert.are.same("a", List({ "a" }):unbox_if_one())

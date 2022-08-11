@@ -80,7 +80,7 @@ function M:EXTEND(metamethods)
     --
     -- At line 6. Child's __call still returns "fn1". However, Child's metatable
     -- (i.e., Class) still has its __call doing the constructor stuff. So we
-    -- could still instantiate a Child and  invoke the __call operator on the
+    -- could still instantiate a Child and  invoke the `__call` operator on the
     -- Child's instance (child). This changed after line 8 where we call
     -- Child:EXTEND(). At the beginning of EXTEND, we modify Child.__call back
     -- to the constructor stuff. That is why in line 9, child() no longer

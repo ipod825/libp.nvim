@@ -24,27 +24,27 @@ describe("OrderedDict", function()
         local d = OrderedDict()
         d.b = 1
         d.a = 2
-        local next = OrderedDict.pairs(d)
-        assert.are.same({ "b", 1 }, { next() })
-        assert.are.same({ "a", 2 }, { next() })
+        local iter = OrderedDict.pairs(d)
+        assert.are.same({ "b", 1 }, { iter:next() })
+        assert.are.same({ "a", 2 }, { iter:next() })
     end)
 
     it("Is ordered in keys", function()
         local d = OrderedDict()
         d.b = 1
         d.a = 2
-        local next = OrderedDict.keys(d)
-        assert.are.same("b", next())
-        assert.are.same("a", next())
+        local iter = OrderedDict.keys(d)
+        assert.are.same("b", iter:next())
+        assert.are.same("a", iter:next())
     end)
 
     it("Is ordered in values", function()
         local d = OrderedDict()
         d.b = 1
         d.a = 2
-        local next = OrderedDict.values(d)
-        assert.are.same(1, next())
-        assert.are.same(2, next())
+        local iter = OrderedDict.values(d)
+        assert.are.same(1, iter:next())
+        assert.are.same(2, iter:next())
     end)
 
     it("Works with reference values", function()

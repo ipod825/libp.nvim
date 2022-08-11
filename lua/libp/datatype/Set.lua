@@ -130,9 +130,10 @@ function M._dec(set, s)
     set[size_key] = set[size_key] - s
 end
 
---- Returns iterator (value) over the elements.
+--- Returns @{VIter} over the elements.
 -- @static
--- @treturn function
+-- @tparam set Set the set
+-- @treturn VIter
 -- @usage
 -- local sum = 0
 -- for v in Set.values(Set({ 1, 2 })) do
