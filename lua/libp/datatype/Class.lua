@@ -25,14 +25,18 @@
 --
 -- @classmod Class
 local M = {}
+M.__index = M
+
 local global = require("libp.global")("libp")
 global.class_metamethods = {}
 
 --- Inheriting function.
 -- @tparam[opt=nil] table metamethods The metamethods to be defined in the
--- resulting class and its derived classes. Note that `__index` is an invalid
--- key for `metamethods`. Also `__call`, although is a valid key, has no effect
--- once the resulting class is derived again by another class. That is, one can
+-- resulting class and its derived classes. The metamethod behavior will
+-- automatically be inherited in child classes with two exception: First,
+-- `__index` behavior will not be inherited. Second, `__call`'s behavior, though
+-- will be inherited, but the behavior will not persist on the parent class once
+-- the parent class calls EXTEND to create a new child class. That is, one can
 -- only override `__call` for a **leaf class**. See the comment in the
 -- implementation for detail explanation.
 -- @usage
@@ -44,13 +48,20 @@ global.class_metamethods = {}
 -- assert.are.same("Childarg", Child():fn("arg"))
 -- assert.are.same("Childarg", GrandChild():fn("arg"))
 function M:EXTEND(metamethods)
+    -- New class's metatable will be the current class (self).
     local mt = self
+    -- New class's __call operator will invoke the constructor NEW.
     mt.__call = function(cls, ...)
         return cls:NEW(...)
     end
-    mt.__index = mt
 
+    -- Creates the new class. Sets its __index as itself so that a instance of
+    -- the new_class can lookup member methods when having new_class as its
+    -- metatable. Note that Class.__index is set at the beginning of this file.
     local new_class = setmetatable({}, mt)
+    new_class.__index = new_class
+
+    -- Inherits metamethods from parent class (mt).
     local inherited_meta_methods = global.class_metamethods[mt]
     if metamethods and inherited_meta_methods then
         metamethods = vim.tbl_extend("keep", metamethods, inherited_meta_methods)
@@ -58,13 +69,21 @@ function M:EXTEND(metamethods)
         metamethods = vim.deepcopy(inherited_meta_methods)
     end
 
+    if metamethods then
+        for name, metamethod in pairs(metamethods) do
+            new_class[name] = metamethod
+        end
+        metamethods.__index = nil
+    end
+    -- Stores the metamethod for children class to inherit.
     global.class_metamethods[new_class] = metamethods
-
-    -- Explanation on the trickiness of __call: For all other metamethods such
-    -- as __add. The function in metamethods will be present in new_class and
-    -- all its derived classes. Therefore, all instances of those classes share
-    -- the same behavior on metamethods. However, __call is a special case. This
-    -- is better explained by the following example:
+    -- Note that __index and __call are special metamethods that the Class uses.
+    -- So there are some limitation on inheriting their behavior. For __index,
+    -- we completely disallow inheriting its behavior as that would make the
+    -- instance of a child class lookup its member method from a parent class.
+    -- For __call, only the classes in the bottom level of the inheritance
+    -- hierarchy can keep the overrides behavior. This is better explained by
+    -- the following example
     --
     -- 1.  local Child = require("libp.datatype.Class"):EXTEND({
     -- 2.      __call = function()
@@ -78,36 +97,28 @@ function M:EXTEND(metamethods)
     -- 10. local grandchild = GrandChild()
     -- 11. assert(grandchild() == "fn1")
     --
-    -- At line 6. Child's __call still returns "fn1". However, Child's metatable
-    -- (i.e., Class) still has its __call doing the constructor stuff. So we
-    -- could still instantiate a Child and  invoke the `__call` operator on the
-    -- Child's instance (child). This changed after line 8 where we call
-    -- Child:EXTEND(). At the beginning of EXTEND, we modify Child.__call back
-    -- to the constructor stuff. That is why in line 9, child() no longer
-    -- returns "fn1". However, in the call of Child:EXTEND(), the new_class
-    -- (i.e., GrandChild) still sets its __call to the "fn1" function. That is
-    -- why line 11 holds. By the same reasoning, if we try to have another class
-    -- inheriting GrandChild by calling GrandChild:EXTEND(), GrandChild's __call
-    -- will be reset. The take away is that there's a limitation on inheriting
-    -- the behavior of the __call metamethods. That is, the class that really
-    -- needs the __call behavior can't be extended anymore, they should be the
-    -- "final" level of the inheritance hierarchy.
+    -- At line 7, the __call operator of Child's metatable (Class) allows it to
+    -- create instance. On the other hand, Child's __call allows Child's
+    -- instance child to get "fn1" from its __call operator. Things changed at
+    -- line 8 where we call Child:EXTEND(). At the beginning of EXTEND, we
+    -- modify Child.__call back to the constructor stuff (which is why we can
+    -- instantiate GrandChild in line 10). That is why in line 9, child() no
+    -- longer returns "fn1". However, in the call of Child:EXTEND(), the new
+    -- class (i.e., GrandChild) still sets its __call to the "fn1" function.
+    -- That is why line 11 holds. By the same reasoning, if we try to have
+    -- another class inheriting GrandChild by calling GrandChild:EXTEND(),
+    -- GrandChild's __call will be reset. The take away is that there's a
+    -- limitation on inheriting the behavior of the __call metamethods. That is,
+    -- the class that really needs the __call behavior can't be extended
+    -- anymore, they should be the "final" level of the inheritance hierarchy.
 
-    if metamethods then
-        for name, metamethod in pairs(metamethods) do
-            assert(name ~= "__index", "Class doesn't suppot __index inheritance.")
-            new_class[name] = metamethod
-        end
-    end
     return new_class
 end
 
 --- Constructor.
 -- @tparam any ... Parameter to be passed to the initializer @{Class:init}
 function M:NEW(...)
-    local mt = self
-    mt.__index = mt
-    local obj = setmetatable({}, mt)
+    local obj = setmetatable({}, self)
     obj:init(...)
     return obj
 end

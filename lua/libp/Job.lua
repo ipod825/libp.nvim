@@ -5,7 +5,20 @@
 -- Inherits: @{Class}
 -- @classmod Job
 require("libp.utils.string_extension")
-local M = require("libp.datatype.Class"):EXTEND()
+local M
+M = require("libp.datatype.Class"):EXTEND({
+    __index = function(_, key)
+        if key == "start" then
+            if coroutine.running() then
+                return rawget(M, "_start_async")
+            else
+                return rawget(M, "start")
+            end
+        else
+            return rawget(M, key)
+        end
+    end,
+})
 local a = require("plenary.async")
 local vimfn = require("libp.utils.vimfn")
 local List = require("libp.datatype.List")
@@ -120,7 +133,7 @@ end
 --     job:start()
 --     assert.are.same({ "a", "b" }, job:stdoutput())
 -- end)()
-M.start = a.wrap(function(self, callback)
+function M:start(callback)
     assert(self.state == State.NOT_STARTED)
     self.state = State.RUNNING
 
@@ -129,7 +142,6 @@ M.start = a.wrap(function(self, callback)
     self.stdin = vim.loop.new_pipe(false)
     self.stdout = vim.loop.new_pipe(false)
     local stderr = vim.loop.new_pipe(false)
-    self.done = a.control.Condvar.new()
 
     local cmd_tokens
     if type(opts.cmd) == "string" then
@@ -209,10 +221,8 @@ M.start = a.wrap(function(self, callback)
         if callback then
             callback(exit_code)
         end
-        self.done:notify_all()
         self.state = State.FINISHED
     end
-
     self.process, self.pid = vim.loop.spawn(cmd, {
         stdio = { self.stdin, self.stdout, stderr },
         args = args,
@@ -229,7 +239,9 @@ M.start = a.wrap(function(self, callback)
         self.stdout:read_start(vim.schedule_wrap(on_stdout))
         stderr:read_start(vim.schedule_wrap(on_stderr))
     end
-end, 2)
+end
+
+M._start_async = a.wrap(M.start, 2)
 
 --- Retrieves the cached stdoutput.
 -- If the job hasn't started (@{Job:start}), it will start automatically.
@@ -296,18 +308,6 @@ function M:kill(signal)
     self.was_killed = true
 end
 
--- Wait until the job finished. This is only useful for @{Job:shutdown} which is
--- almost always invoked in a separate coroutine than @{Job:start}. Returning
--- from shutdown thus does not guarantee finish of the @{Job:start} coroutine
--- and thus explicit wait is necessary.
-function M:_wait()
-    assert(self.state ~= State.NOT_STARTED)
-    if self.state == State.FINISHED then
-        return
-    end
-    self.done:wait()
-end
-
 --- Shuts down the job.
 -- Useful to cancel a job. It's guaranteed that the job has already finished on
 -- `shutdown` return. Hence @{Job:stdoutput} will returns the available outputs
@@ -329,7 +329,17 @@ function M:shutdown(wait_time_ms)
         return not vim.loop.is_active(self.stdout)
     end)
     self.process:kill(15)
-    self:_wait()
+
+    -- @{Job:shutdown} is always invoked in a separate coroutine than
+    -- @{Job:start}, but simply killing the Job does not guarantee on_exit
+    -- finishes when we return from shutdown. We thus explicitly wait here to
+    -- guarantee that.
+    if self.state ~= State.FINISHED then
+        vim.wait(10, function()
+            return self.state == State.FINISHED
+        end, 10)
+        return
+    end
 end
 
 M.start_all = a.wrap(function(cmds, opts, callback)
