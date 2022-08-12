@@ -132,7 +132,7 @@ end
 
 --- Returns @{VIter} over the elements.
 -- @static
--- @tparam set Set the set
+-- @tparam Set set the set
 -- @treturn VIter
 -- @usage
 -- local sum = 0

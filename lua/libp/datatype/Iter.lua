@@ -97,7 +97,7 @@ end
 
 --- Returns the generic for (next function, invariant, control) tuple.
 -- This function is probably only of interest to derived class of @{Iter}.
--- @terturn function,table|nil,any
+-- @treturn function,table|nil,any
 function M:pairs()
     return self.next_fn, self.invariant, self.control
 end

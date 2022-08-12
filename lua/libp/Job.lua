@@ -64,9 +64,9 @@ M.StderrDumpLevel = {
 -- @tparam table opts
 -- @tparam string|array opts.cmd The command to execute along with the
 -- arguments. If cmd is a string, it will be tokenize into a list by
--- @{tokenizer.tokenize}. Otherwise, the user should tokenize the cmd into an
--- array. One benefit of passing an array directly is that the arguments do not
--- need to be quoted even if they contain white space.
+-- @{libp.argparse.tokenizer.tokenize}. Otherwise, the user should tokenize the
+-- cmd into an array. One benefit of passing an array directly is that the
+-- arguments do not need to be quoted even if they contain white space.
 -- @tparam[opt] function opts.on_stdout The handler to process command output
 -- (stdout). If not provided, the default behavior is to store the outputs which
 -- can be retrieved by @{Job:stdoutput}.
