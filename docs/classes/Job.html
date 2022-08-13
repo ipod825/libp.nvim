@@ -32,6 +32,7 @@
 
 <h2>Contents</h2>
 <ul>
+<li><a href="#Functions">Functions</a></li>
 <li><a href="#Tables">Tables</a></li>
 <li><a href="#Methods">Methods</a></li>
 </ul>
@@ -67,9 +68,44 @@
 <p>Module: <strong>libp.Job</strong></p>
 
 <p> Run shell commands asynchronously.</p>
+<p> Note that <a href="../classes/Job.html#">Job</a> supports plenary async
+ context seamlessly. For example, the following non-async context usage</p>
+
+
+<pre>
+<span class="keyword">local</span> job = Job({ cmd = <span class="string">"ls"</span> })
+job:start(<span class="keyword">function</span>(exit_code)
+    <span class="global">print</span>(vim.inspect(job:stdoutput()))
+<span class="keyword">end</span>)
+</pre>
+
+<p> is written as the following in plenary async context.</p>
+
+<pre>
+<span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="keyword">local</span> job = Job({ cmd = <span class="string">"ls"</span> })
+    <span class="keyword">local</span> exit_code = job:start()
+    <span class="global">print</span>(vim.inspect(job:stdoutput()))
+<span class="keyword">end</span>)()
+</pre>
+
+<p> For convenience, in non-async context, instead of specifying callback in
+ <a href="../classes/Job.html#Job:start">Job:start</a>, one could chain the APIs like:</p>
+
+<pre>
+Job({cmd=<span class="string">"ls"</span>}):start():wait():stdoutput()
+</pre>
+
 <p> Inherits: <a href="../classes/Class.html#">Class</a></p>
 
 
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Job._start_all_non_async">Job._start_all_non_async (cmds, opts, callback)</a></td>
+	<td class="summary">Executes the commands asynchronously and simultaneously.</td>
+	</tr>
+</table>
 <h2><a href="#Tables">Tables</a></h2>
 <table class="function_list">
 	<tr>
@@ -92,11 +128,11 @@
 	<td class="summary">Sends a string to the stdin of the job.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Job:shutdown">Job:shutdown ([wait_time_ms=10])</a></td>
+	<td class="name" nowrap><a href="#Job:shutdown">Job:shutdown ([signal=15[, grace_period=10]])</a></td>
 	<td class="summary">Shuts down the job.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Job:start">Job:start ()</a></td>
+	<td class="name" nowrap><a href="#Job:start">Job:start ([callback=nil])</a></td>
 	<td class="summary">Executes the command asynchronously.</td>
 	</tr>
 	<tr>
@@ -107,12 +143,74 @@
 	<td class="name" nowrap><a href="#Job:stdoutputstr">Job:stdoutputstr ()</a></td>
 	<td class="summary">Retrieves the cached stdoutput as a single string.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Job:wait">Job:wait ([interval_ms=10])</a></td>
+	<td class="summary">Waits until the job finishes.</td>
+	</tr>
 </table>
 
 <br/>
 <br/>
 
 
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Job._start_all_non_async"></a>
+    <strong>Job._start_all_non_async (cmds, opts, callback)</strong>
+    </dt>
+    <dd>
+    Executes the commands asynchronously and simultaneously.
+ This is beneficial when all commands are i/o bounded. Note that we don't
+ allow per-command configuration, all the commands will share the same option.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">cmds</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">{string}</a> or <span class="type">{array}</span></span>
+         The commands for each job.
+        </li>
+        <li><span class="parameter">opts</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         All jobs' common options. See <a href="../classes/Job.html#Job:init">Job:init</a> for configuration.
+        </li>
+        <li><span class="parameter">callback</span>
+            <span class="types"><span class="type">function({number})->nil</span></span>
+         The function invoked on
+ job finish. The argument is an array of the jobs' exit codes. In async
+ context, the exit codes is the return value of <code>start_all</code> and the callback
+ should not be passed explicitly.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+         non-async: ({<a href="../classes/Job.html#">Job</a>}) The array of all jobs</p>
+
+<p> async: ({{number}}) The exit codes
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Job.html#Job:init">Job:init</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <li><pre class="example">Job.start_all({ <span class="string">"ls"</span>, <span class="string">"ls no_such_file"</span> }, {}, <span class="keyword">function</span>(exit_codes)
+    <span class="global">assert</span>.are.same({ { <span class="number">0</span> }, { <span class="number">2</span> } }, exit_codes)
+<span class="keyword">end</span>)</pre></li>
+        <li><pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
+    <span class="global">assert</span>.are.same({ { <span class="number">0</span> }, { <span class="number">2</span> } }, Job.start_all({ <span class="string">"ls"</span>, <span class="string">"ls no_such_file"</span> }))
+<span class="keyword">end</span>)()</pre></li>
+    </ul>
+
+</dd>
+</dl>
     <h2 class="section-header "><a name="Tables"></a>Tables</h2>
 
     <dl class="function">
@@ -164,13 +262,14 @@
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a> or <span class="type">array</span></span>
          The command to execute along with the
  arguments. If cmd is a string, it will be tokenize into a list by
- ???. Otherwise, the user should tokenize the cmd into an
- array. One benefit of passing an array directly is that the arguments do not
- need to be quoted even if they contain white space.
+ <a href="../modules/libp.argparse.tokenizer.html#tokenize">libp.argparse.tokenizer.tokenize</a>. Otherwise, the user should tokenize the
+ cmd into an array. One benefit of passing an array directly is that the
+ arguments do not need to be quoted even if they contain white space.
         </li>
         <li><span class="parameter">on_stdout</span>
-            <span class="types"><span class="type">function</span></span>
-         The handler to process command output
+            <span class="types"><span class="type">function({string})->nil</span></span>
+         The handler to process
+ command output
  (stdout). If not provided, the default behavior is to store the outputs which
  can be retrieved by <a href="../classes/Job.html#Job:stdoutput">Job:stdoutput</a>.
          (<em>optional</em>)
@@ -180,16 +279,15 @@
          The internal buffer size
  for <code>on_stdout</code>, which will be called when the internal buffer reaches
  this number of lines. This is an optimization technique to reduce number of
- function calls. Note that on job finish, <code>on_stdout</code> will be called
- regardless the number of lines in the buffer (as long as it contains >0
- line).
+ function calls. Note that on job finish, <code>on_stdout</code> will be called the last
+ time with the remaining lines in the buffer.
          (<em>default</em> 5000)
         </li>
         <li><span class="parameter">stderr_dump_level</span>
             <span class="types"><a class="type" href="../classes/Job.html#Job.StderrDumpLevel">StderrDumpLevel</a></span>
-         Whether to notify the user with the stderr output. See <a href="../classes/Job.html#Job.StderrDumpLevel">StderrDumpLevel</a> for
- details.
-         (<em>default</em> StderrDumpLevel.SILENT)
+         Whether to notify (<code>vim.notify</code>) the user with the stderr output. See
+ <a href="../classes/Job.html#Job.StderrDumpLevel">StderrDumpLevel</a> for details.
+         (<em>default</em> StderrDumpLevel.ON_ERROR)
         </li>
         <li><span class="parameter">cwd</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
@@ -212,13 +310,26 @@
         </li></ul>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Job.html#">Job</a></span>
+        The new job
+    </ol>
 
 
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutput())
+        <li><pre class="example"><span class="keyword">local</span> res = {}
+<span class="keyword">local</span> job = Job({ cmd = {<span class="string">"echo"</span>, <span class="string">"a\nb"</span>})
+job:start(<span class="keyword">function</span>(lines)
+    vim.list_extend(res, lines)
+<span class="keyword">end</span>):wait()
+<span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, res)</pre></li>
+        <li><pre class="example"><span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> },
+ Job({ cmd = <span class="string">'echo "a\nb"'</span> }):start():wait():stdoutput())</pre></li>
+        <li><pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
     <span class="global">assert</span>.are.same(
         { <span class="string">"A=100"</span> },
         Job({
@@ -226,7 +337,7 @@
             env = { A = <span class="number">100</span> },
         }):stdoutput()
     )
-<span class="keyword">end</span>)()</pre>
+<span class="keyword">end</span>)()</pre></li>
     </ul>
 
 </dd>
@@ -237,8 +348,8 @@
     <dd>
     Kills the job.
  Useful to cancel a job whose output is no longer needed anymore. If accessing
- the available output is desired, one should use <a href="../classes/Job.html#Job:shutdown">Job:shutdown</a>
- instead as it not guaranteed the <a href="../classes/Job.html#Job:start">Job.start</a> coroutine finished when <a href="../classes/Job.html#Job:kill">kill</a>
+ the available output is desired, one should chain <a href="../classes/Job.html#Job:wait">Job:wait</a> or use <a href="../classes/Job.html#Job:shutdown">Job:shutdown</a>
+ instead as it not guaranteed the <a href="../classes/Job.html#Job:start">Job:start</a> coroutine finished when <a href="../classes/Job.html#Job:kill">kill</a>
  returns.
 
 
@@ -251,6 +362,12 @@
         </li>
     </ul>
 
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Job.html#">Job</a></span>
+        The job
+    </ol>
 
 
     <h3>See also:</h3>
@@ -266,51 +383,46 @@
     </dt>
     <dd>
     Sends a string to the stdin of the job.
- Thie is useful if the job expects user input. One might need to shutdown the
+ This is useful if the job expects user input. One might need to shutdown the
  job explicitly if the job don't finish on user inputs (see usage below).
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">data</span>
-
-
-
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The string to be sent to the job stdin
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><span class="type">nil</span></span>
-
-
-
+           <span class="types"><a class="type" href="../classes/Job.html#">Job</a></span>
+        The job
     </ol>
 
 
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="keyword">local</span> job = Job({
-    cmd = <span class="string">"cat"</span>,
-    on_stdout_buffer_size = sz,
-})
-<span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    job:start()
-<span class="keyword">end</span>)()
-<span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    job:send(<span class="string">"hello\n"</span>)
-    job:send(<span class="string">"world\n"</span>)
-    job:shutdown()
-    <span class="global">assert</span>.are.same({ <span class="string">"hello"</span>, <span class="string">"world"</span> }, job:stdoutput())
-<span class="keyword">end</span>)()</pre>
+        <pre class="example"><span class="global">assert</span>.are.same(
+    { <span class="string">"hello"</span>, <span class="string">"world"</span> },
+    Job({
+            cmd = <span class="string">"cat"</span>,
+        })
+        :start()
+        :send(<span class="string">"hello\n"</span>)
+        :send(<span class="string">"world\n"</span>)
+        :shutdown()
+        :stdoutput()
+)</pre>
     </ul>
 
 </dd>
     <dt>
     <a name = "Job:shutdown"></a>
-    <strong>Job:shutdown ([wait_time_ms=10])</strong>
+    <strong>Job:shutdown ([signal=15[, grace_period=10]])</strong>
     </dt>
     <dd>
     Shuts down the job.
@@ -321,7 +433,12 @@
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">wait_time_ms</span>
+        <li><span class="parameter">signal</span>
+            <span class="types"><span class="type">number</span></span>
+         The kill signal to sent to the job.
+         (<em>default</em> 15)
+        </li>
+        <li><span class="parameter">grace_period</span>
             <span class="types"><span class="type">number</span></span>
          Grace period in ms before sending the
  signal. Probably only useful for unit test of this module.
@@ -341,25 +458,39 @@
 </dd>
     <dt>
     <a name = "Job:start"></a>
-    <strong>Job:start ()</strong>
+    <strong>Job:start ([callback=nil])</strong>
     </dt>
     <dd>
     Executes the command asynchronously.
  See <a href="../classes/Job.html#Job:init">Job.init</a> for configuration.
 
 
-
-
-
-
-    <h3>Usage:</h3>
+    <h3>Parameters:</h3>
     <ul>
-        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    <span class="keyword">local</span> job = Job({ cmd = <span class="string">'echo "a\nb"'</span> })
-    job:start()
-    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, job:stdoutput())
-<span class="keyword">end</span>)()</pre>
+        <li><span class="parameter">callback</span>
+            <span class="types"><span class="type">function(number)->nil</span></span>
+         The function invoked on job
+ finish. The argument is the job exit code. In async context, the exit code is
+ the return value of <a href="../classes/Job.html#Job:start">start</a> and the callback should never be passed
+ explicitly.
+         (<em>default</em> nil)
+        </li>
     </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+         non-async: (<a href="../classes/Job.html#">Job</a>) The job</p>
+
+<p> async: (number) The exit code
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Job.html#Job:init">Job:init</a>
+    </ul>
+
 
 </dd>
     <dt>
@@ -383,12 +514,6 @@
 
 
 
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    <span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutput())
-<span class="keyword">end</span>)()</pre>
-    </ul>
 
 </dd>
     <dt>
@@ -412,12 +537,34 @@
 
 
 
-    <h3>Usage:</h3>
+
+</dd>
+    <dt>
+    <a name = "Job:wait"></a>
+    <strong>Job:wait ([interval_ms=10])</strong>
+    </dt>
+    <dd>
+    Waits until the job finishes.
+
+
+    <h3>Parameters:</h3>
     <ul>
-        <pre class="example"><span class="global">require</span>(<span class="string">"plenary.async"</span>).void(<span class="keyword">function</span>()
-    <span class="global">assert</span>.are.same(<span class="string">"a\nb"</span>, Job({ cmd = <span class="string">'echo "a\nb"'</span> }):stdoutputstr())
-<span class="keyword">end</span>)()</pre>
+        <li><span class="parameter">interval_ms</span>
+            <span class="types"><span class="type">number</span></span>
+         Number of milliseconds to wait between polls.
+         (<em>default</em> 10)
+        </li>
     </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Job.html#">Job</a></span>
+        The job
+    </ol>
+
+
+
 
 </dd>
 </dl>
@@ -427,7 +574,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-08-12 11:10:37 </i>
+<i style="float:right;">Last updated 2022-08-13 00:04:49 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
