@@ -30,15 +30,42 @@ M.__index = M
 local global = require("libp.global")("libp")
 global.class_metamethods = {}
 
+--- Sets the class method level index.
+-- For member method indexing, one could override the class' `__index` via
+-- `EXTEND`. However, for class method like `MyClass.class_method`, the indexing
+-- starts from `getmetatable(MyClass).__index` but not from `MyClass.__index`.
+-- That is what this function is for: hijacking the index of the class'
+-- metatable. See @{Job}'s implementation on usage of this function in practice.
+-- @tparam function(table)->function gen_index_fn A function that takes the
+-- original metatable's __index table and returns a __index function. Since
+-- the metatable table's index will be set to the returned function,
+-- `gen_index_fn` should only access the original index table via the
+-- argument instead of
+-- `getmetatable(MyClass).__index`.
+-- @return The original class
+function M:SET_CLASS_METHOD_INDEX(gen_index_fn)
+    local mt = vim.deepcopy(getmetatable(self))
+    mt.__index = gen_index_fn(mt.__index)
+    return setmetatable(self, mt)
+end
+
 --- Inheriting function.
 -- @tparam[opt=nil] table metamethods The metamethods to be defined in the
--- resulting class and its derived classes. The metamethod behavior will
--- automatically be inherited in child classes with two exception: First,
--- `__index` behavior will not be inherited. Second, `__call`'s behavior, though
--- will be inherited, but the behavior will not persist on the parent class once
--- the parent class calls EXTEND to create a new child class. That is, one can
--- only override `__call` for a **leaf class**. See the comment in the
--- implementation for detail explanation.
+-- resulting class and its derived classes. The metamethods' behavior will
+-- automatically be inherited in child classes. Since both `__index` and
+-- `__call` are automatically defined for each new class, specifying them in
+-- `metamethods` to override the default behavior works differently than other
+-- metamethods. For `__index`, the parent class' overridden behavior will not be
+-- inherited by child classes. However, since child's instance would still look
+-- up using parent class's index when the key is not found in the child
+-- instance/class. The parent class' overridden __index would still takes effect
+-- in such case. For `__call`, the parent class' `__call` will be reset to
+-- constructor call once the parent class calls `EXTEND` to define a new child
+-- class. That is, one can only override `__call` for a **leaf class**. See the
+-- comment in the implementation for detail explanation with an example. Also
+-- see the implementation of @{Job} and @{Iter} on how overriding `__index` and
+-- `__call` works in practice.
+-- @return The new child class
 -- @usage
 -- local Child = Class:EXTEND()
 -- local GrandChild = Child:EXTEND()
@@ -77,13 +104,11 @@ function M:EXTEND(metamethods)
     end
     -- Stores the metamethod for children class to inherit.
     global.class_metamethods[new_class] = metamethods
+
     -- Note that __index and __call are special metamethods that the Class uses.
-    -- So there are some limitation on inheriting their behavior. For __index,
-    -- we completely disallow inheriting its behavior as that would make the
-    -- instance of a child class lookup its member method from a parent class.
-    -- For __call, only the classes in the bottom level of the inheritance
-    -- hierarchy can keep the overrides behavior. This is better explained by
-    -- the following example
+    -- So there are some limitation on inheriting their behavior as described in
+    -- the docstring. Below, we give a detailed explanation on why  one can only
+    -- override `__call` for a leaf class with an example:
     --
     -- 1.  local Child = require("libp.datatype.Class"):EXTEND({
     -- 2.      __call = function()
@@ -93,7 +118,7 @@ function M:EXTEND(metamethods)
     -- 6.  local child = Child()
     -- 7.  assert(child()=="fn1")
     -- 8.  local GrandChild = Child:EXTEND()
-    -- 9.  assert(child() ~= "fn1")
+    -- 9.  assert.has_error(function() child() end)
     -- 10. local grandchild = GrandChild()
     -- 11. assert(grandchild() == "fn1")
     --
@@ -107,10 +132,7 @@ function M:EXTEND(metamethods)
     -- class (i.e., GrandChild) still sets its __call to the "fn1" function.
     -- That is why line 11 holds. By the same reasoning, if we try to have
     -- another class inheriting GrandChild by calling GrandChild:EXTEND(),
-    -- GrandChild's __call will be reset. The take away is that there's a
-    -- limitation on inheriting the behavior of the __call metamethods. That is,
-    -- the class that really needs the __call behavior can't be extended
-    -- anymore, they should be the "final" level of the inheritance hierarchy.
+    -- GrandChild's __call will be reset.
 
     return new_class
 end

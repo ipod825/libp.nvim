@@ -46,6 +46,50 @@ describe("Class", function()
             assert.are.same(2, gc1 + gc2)
         end)
 
+        it("Supports __index override", function()
+            local ChildWithOverriddenIndex
+            ChildWithOverriddenIndex = Class:EXTEND({
+                __index = function(_, key)
+                    if key == "a" then
+                        return "aa"
+                    elseif key == "b" then
+                        return "b"
+                    else
+                        return rawget(ChildWithOverriddenIndex, key) or rawget(Class, key)
+                    end
+                    return key
+                end,
+            })
+            local GrandChildWithOverriddenIndex = ChildWithOverriddenIndex:EXTEND()
+
+            local c = ChildWithOverriddenIndex()
+            local gc = GrandChildWithOverriddenIndex()
+            gc.a = "a"
+
+            assert.are.same("aa", c.a)
+            assert.are.same("b", c.b)
+            -- a is found, did not look up parent index
+            assert.are.same("a", gc.a)
+            -- b is not found, look up in parent index
+            assert.are.same("b", gc.b)
+        end)
+
+        it("Supports __call override", function()
+            local ChildWithOverriddenCall = require("libp.datatype.Class"):EXTEND({
+                __call = function()
+                    return "fn1"
+                end,
+            })
+            local child = ChildWithOverriddenCall()
+            assert.are.same("fn1", child())
+            local GrandChildWithOverriddenCall = ChildWithOverriddenCall:EXTEND()
+            assert.has_error(function()
+                child()
+            end)
+            local grandchild = GrandChildWithOverriddenCall()
+            assert(grandchild() == "fn1")
+        end)
+
         it("Supports override", function()
             function Child:fn(arg)
                 return "Child" .. arg
@@ -55,6 +99,30 @@ describe("Class", function()
             end
             assert.are.same("Childarg", Child():fn("arg"))
             assert.are.same("GrandChildarg", GrandChild():fn("arg"))
+        end)
+    end)
+
+    describe("SET_CLASS_METHOD_INDEX", function()
+        it("Does not modify parent class", function()
+            local _ = Class:EXTEND():SET_CLASS_METHOD_INDEX(function(ori_index)
+                return ori_index
+            end)
+            assert.are.same(Class, Class.__index)
+        end)
+
+        it("Enables class to hijack class method indexing", function()
+            local ChildWithClassMethodHijacking = Class:EXTEND():SET_CLASS_METHOD_INDEX(function(ori_index)
+                return function(_, key)
+                    if key == "a" then
+                        return "a"
+                    else
+                        return ori_index[key]
+                    end
+                end
+            end)
+            assert.is_nil(ChildWithClassMethodHijacking.b)
+            assert.are.same("a", ChildWithClassMethodHijacking.a)
+            assert.are.same(Class.BIND, ChildWithClassMethodHijacking.BIND)
         end)
     end)
 

@@ -21,18 +21,26 @@
 -- @classmod Job
 require("libp.utils.string_extension")
 local M
-M = require("libp.datatype.Class"):EXTEND({
-    __index = function(_, key)
-        if key == "start" then
-            return coroutine.running() and rawget(M, "_start_async") or rawget(M, "start")
-        elseif key == "start_all" then
-            return coroutine.running() and rawget(M, "_start_all_async") or rawget(M, "start_all")
-        else
-            return rawget(M, key)
+M = require("libp.datatype.Class")
+    :EXTEND({
+        __index = function(_, key)
+            if key == "start" then
+                return coroutine.running() and rawget(M, "_start_async") or rawget(M, "start")
+            else
+                return rawget(M, key) or getmetatable(M)[key]
+            end
+        end,
+    })
+    :SET_CLASS_METHOD_INDEX(function(ori_index)
+        return function(_, key)
+            if key == "start_all" then
+                return coroutine.running() and rawget(M, "_start_all_async") or rawget(M, "_start_all_non_async")
+            else
+                return rawget(ori_index, key)
+            end
         end
-    end,
-})
-local itt = require("libp.datatype.itertools")
+    end)
+
 local KVIter = require("libp.datatype.KVIter")
 local a = require("plenary.async")
 local vimfn = require("libp.utils.vimfn")
@@ -396,7 +404,7 @@ end
 -- require("plenary.async").void(function()
 --     assert.are.same({ { 0 }, { 2 } }, Job.start_all({ "ls", "ls no_such_file" }))
 -- end)()
-function M.start_all(cmds, opts, callback)
+function M._start_all_non_async(cmds, opts, callback)
     vim.validate({ cmds = { cmds, "t" }, opts = { opts, "t", true }, callback = { callback, "f", true } })
     local num_jobs = #cmds
     local exit_codes = {}
