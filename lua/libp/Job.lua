@@ -1,6 +1,21 @@
 --- Module: **libp.Job**
 --
--- Run shell commands asynchronously.
+-- Run shell commands asynchronously. Note that `Job` supports plenary async
+-- context seamlessly. For example, the following non-async context usage
+--
+--    local job = Job({ cmd = "ls" })
+--    job:start(function(exit_code)
+--    	print(vim.inspect(job:stdoutput()))
+--    end)
+-- is written as the following in plenary async context.
+--    require("plenary.async").void(function()
+--    	local job = Job({ cmd = "ls" })
+--    	local exit_code = job:start()
+--    	print(vim.inspect(job:stdoutput()))
+--    end)()
+-- For convenience, in non-async context, instead of specifying callback in
+-- @{Job:start}, one could chain the APIs like:
+--    Job({cmd="ls"}):start():wait():stdoutput()
 --
 -- Inherits: @{Class}
 -- @classmod Job
@@ -9,16 +24,16 @@ local M
 M = require("libp.datatype.Class"):EXTEND({
     __index = function(_, key)
         if key == "start" then
-            if coroutine.running() then
-                return rawget(M, "_start_async")
-            else
-                return rawget(M, "start")
-            end
+            return coroutine.running() and rawget(M, "_start_async") or rawget(M, "start")
+        elseif key == "start_all" then
+            return coroutine.running() and rawget(M, "_start_all_async") or rawget(M, "start_all")
         else
             return rawget(M, key)
         end
     end,
 })
+local itt = require("libp.datatype.itertools")
+local KVIter = require("libp.datatype.KVIter")
 local a = require("plenary.async")
 local vimfn = require("libp.utils.vimfn")
 local List = require("libp.datatype.List")
@@ -67,27 +82,37 @@ M.StderrDumpLevel = {
 -- @{libp.argparse.tokenizer.tokenize}. Otherwise, the user should tokenize the
 -- cmd into an array. One benefit of passing an array directly is that the
 -- arguments do not need to be quoted even if they contain white space.
--- @tparam[opt] function opts.on_stdout The handler to process command output
+-- @tparam[opt] function({string})->nil opts.on_stdout The handler to process
+-- command output
 -- (stdout). If not provided, the default behavior is to store the outputs which
 -- can be retrieved by @{Job:stdoutput}.
 -- @tparam[opt=5000] number opts.on_stdout_buffer_size The internal buffer size
 -- for `on_stdout`, which will be called when the internal buffer reaches
 -- this number of lines. This is an optimization technique to reduce number of
--- function calls. Note that on job finish, `on_stdout` will be called
--- regardless the number of lines in the buffer (as long as it contains >0
--- line).
--- @tparam[opt=StderrDumpLevel.SILENT] StderrDumpLevel opts.stderr_dump_level
--- Whether to notify the user with the stderr output. See @{StderrDumpLevel} for
--- details.
+-- function calls. Note that on job finish, `on_stdout` will be called the last
+-- time with the remaining lines in the buffer.
+-- @tparam[opt=StderrDumpLevel.ON_ERROR] StderrDumpLevel opts.stderr_dump_level
+-- Whether to notify (`vim.notify`) the user with the stderr output. See
+-- @{StderrDumpLevel} for details.
 -- @tparam[opt] string opts.cwd The working directory to exectue the command
 -- @tparam[opt] table|{string} opts.env Environment variables when invoking the
 -- command. If `env` is of table type, each key is the variable name and each
 -- value is the variable value (converted to string type). If `env` is of string
 -- array type, each must be of the form `name=value`
 -- @tparam[opt=false] boolean opts.detached Whether to detach the job, i.e. to keep the job running after vim exists.
+-- @treturn Job The new job
+-- @usage
+-- local res = {}
+-- local job = Job({ cmd = {"echo", "a\nb"})
+-- job:start(function(lines)
+--     vim.list_extend(res, lines)
+-- end):wait()
+-- assert.are.same({ "a", "b" }, res)
+-- @usage
+-- assert.are.same({ "a", "b" },
+--  Job({ cmd = 'echo "a\nb"' }):start():wait():stdoutput())
 -- @usage
 -- require("plenary.async").void(function()
---     assert.are.same({ "a", "b" }, Job({ cmd = 'echo "a\nb"' }):stdoutput())
 --     assert.are.same(
 --         { "A=100" },
 --         Job({
@@ -126,13 +151,15 @@ end
 
 --- Executes the command asynchronously.
 -- See @{Job.init} for configuration.
--- @function M:start
--- @usage
--- require("plenary.async").void(function()
---     local job = Job({ cmd = 'echo "a\nb"' })
---     job:start()
---     assert.are.same({ "a", "b" }, job:stdoutput())
--- end)()
+-- @tparam[opt=nil] function(number)->nil callback The function invoked on job
+-- finish. The argument is the job exit code. In async context, the exit code is
+-- the return value of `start` and the callback should never be passed
+-- explicitly.
+-- @return
+-- non-async: (@{Job}) The job
+--
+-- async: (number) The exit code
+-- @see Job:init
 function M:start(callback)
     assert(self.state == State.NOT_STARTED)
     self.state = State.RUNNING
@@ -239,6 +266,7 @@ function M:start(callback)
         self.stdout:read_start(vim.schedule_wrap(on_stdout))
         stderr:read_start(vim.schedule_wrap(on_stderr))
     end
+    return self
 end
 
 M._start_async = a.wrap(M.start, 2)
@@ -246,10 +274,6 @@ M._start_async = a.wrap(M.start, 2)
 --- Retrieves the cached stdoutput.
 -- If the job hasn't started (@{Job:start}), it will start automatically.
 -- @treturn {string}
--- @usage
--- require("plenary.async").void(function()
---     assert.are.same({ "a", "b" }, Job({ cmd = 'echo "a\nb"' }):stdoutput())
--- end)()
 function M:stdoutput()
     if self.state == State.NOT_STARTED then
         self:start()
@@ -260,43 +284,40 @@ end
 --- Retrieves the cached stdoutput as a single string.
 -- If the job hasn't started (@{Job:start}), it will start automatically.
 -- @treturn string
--- @usage
--- require("plenary.async").void(function()
---     assert.are.same("a\nb", Job({ cmd = 'echo "a\nb"' }):stdoutputstr())
--- end)()
 function M:stdoutputstr()
     return table.concat(self:stdoutput(), "\n")
 end
 
 --- Sends a string to the stdin of the job.
--- Thie is useful if the job expects user input. One might need to shutdown the
+-- This is useful if the job expects user input. One might need to shutdown the
 -- job explicitly if the job don't finish on user inputs (see usage below).
--- @treturn nil
+-- @tparam string data The string to be sent to the job stdin
+-- @treturn Job The job
 -- @usage
--- local job = Job({
---     cmd = "cat",
---     on_stdout_buffer_size = sz,
--- })
--- require("plenary.async").void(function()
---     job:start()
--- end)()
--- require("plenary.async").void(function()
---     job:send("hello\n")
---     job:send("world\n")
---     job:shutdown()
---     assert.are.same({ "hello", "world" }, job:stdoutput())
--- end)()
+-- assert.are.same(
+--     { "hello", "world" },
+--     Job({
+--             cmd = "cat",
+--         })
+--         :start()
+--         :send("hello\n")
+--         :send("world\n")
+--         :shutdown()
+--         :stdoutput()
+-- )
 function M:send(data)
     assert(self.state == State.RUNNING)
     self.stdin:write(data)
+    return self
 end
 
 --- Kills the job.
 -- Useful to cancel a job whose output is no longer needed anymore. If accessing
--- the available output is desired, one should use @{Job:shutdown}
--- instead as it not guaranteed the @{Job.start} coroutine finished when `kill`
+-- the available output is desired, one should chain @{Job:wait} or use @{Job:shutdown}
+-- instead as it not guaranteed the @{Job:start} coroutine finished when `kill`
 -- returns.
 -- @tparam[opt=15] number signal The kill signal to sent to the job.
+-- @treturn Job The job
 -- @see Job.shutdown
 function M:kill(signal)
     assert(self.state ~= State.NOT_STARTED)
@@ -306,43 +327,93 @@ function M:kill(signal)
     signal = signal or 15
     self.process:kill(signal)
     self.was_killed = true
+    return self
+end
+
+--- Waits until the job finishes.
+-- @tparam[opt=10] number interval_ms Number of milliseconds to wait between polls.
+-- @treturn Job The job
+function M:wait(interval_ms)
+    vim.validate({ interval_ms = { interval_ms, "n", true } })
+    interval_ms = interval_ms or 10
+    if self.state ~= State.FINISHED then
+        vim.wait(interval_ms, function()
+            return self.state == State.FINISHED
+        end, interval_ms)
+    end
+    return self
 end
 
 --- Shuts down the job.
 -- Useful to cancel a job. It's guaranteed that the job has already finished on
 -- `shutdown` return. Hence @{Job:stdoutput} will returns the available outputs
 -- before the job shutdown.
--- @tparam[opt=10] number wait_time_ms Grace period in ms before sending the
+-- @tparam[opt=15] number signal The kill signal to sent to the job.
+-- @tparam[opt=10] number grace_period Grace period in ms before sending the
 -- signal. Probably only useful for unit test of this module.
 -- @see Job.send
 -- @see Job.kill
-function M:shutdown(wait_time_ms)
-    vim.validate({ wait_time_ms = { wait_time_ms, "n", true } })
+function M:shutdown(signal, grace_period)
+    vim.validate({ signal = { signal, "n", true }, grace_period = { grace_period, "n", true } })
 
     assert(self.state ~= State.NOT_STARTED)
     if self.state == State.FINISHED then
         return
     end
 
-    wait_time_ms = wait_time_ms or 10
-    vim.wait(wait_time_ms, function()
+    signal = signal or 15
+    grace_period = grace_period or 10
+    vim.wait(grace_period, function()
         return not vim.loop.is_active(self.stdout)
     end)
-    self.process:kill(15)
+    self.process:kill(signal)
 
-    -- @{Job:shutdown} is always invoked in a separate coroutine than
-    -- @{Job:start}, but simply killing the Job does not guarantee on_exit
-    -- finishes when we return from shutdown. We thus explicitly wait here to
-    -- guarantee that.
-    if self.state ~= State.FINISHED then
-        vim.wait(10, function()
-            return self.state == State.FINISHED
-        end, 10)
-        return
-    end
+    -- Wait until on_exit returns.
+    self:wait()
+    return self
 end
 
-M.start_all = a.wrap(function(cmds, opts, callback)
+--- Executes the commands asynchronously and simultaneously.
+-- This is beneficial when all commands are i/o bounded. Note that we don't
+-- allow per-command configuration, all the commands will share the same option.
+-- @static
+-- @tparam {string}|{array} cmds The commands for each job.
+-- @tparam[opts={}] table opts All jobs' common options. See @{Job:init} for configuration.
+-- @tparam[opts=nil] function({number})->nil callback The function invoked on
+-- job finish. The argument is an array of the jobs' exit codes. In async
+-- context, the exit codes is the return value of `start_all` and the callback
+-- should not be passed explicitly.
+-- @return
+-- non-async: ({@{Job}}) The array of all jobs
+--
+-- async: ({{number}}) The exit codes
+-- @see Job:init
+-- @usage
+-- Job.start_all({ "ls", "ls no_such_file" }, {}, function(exit_codes)
+--     assert.are.same({ { 0 }, { 2 } }, exit_codes)
+-- end)
+-- @usage
+-- require("plenary.async").void(function()
+--     assert.are.same({ { 0 }, { 2 } }, Job.start_all({ "ls", "ls no_such_file" }))
+-- end)()
+function M.start_all(cmds, opts, callback)
+    vim.validate({ cmds = { cmds, "t" }, opts = { opts, "t", true }, callback = { callback, "f", true } })
+    local num_jobs = #cmds
+    local exit_codes = {}
+    return KVIter(List(cmds)):mapkv(function(i, cmd)
+        return M(vim.tbl_extend("keep", { cmd = cmd }, opts or {})):start(function(exit_code)
+            if callback then
+                exit_codes[i] = { exit_code }
+                num_jobs = num_jobs - 1
+                if num_jobs == 0 then
+                    callback(exit_codes)
+                end
+            end
+        end)
+    end):collect()
+end
+
+M._start_all_async = a.wrap(function(cmds, opts, callback)
     local res_code = {}
     a.run(function()
         res_code = a.util.join(List(cmds):map(function(e)
