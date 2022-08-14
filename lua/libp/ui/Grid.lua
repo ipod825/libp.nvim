@@ -19,7 +19,7 @@ function M:init(opts, root)
         height = opts.height or vim.o.lines - 2,
         row = opts.row or 0,
         col = opts.col or 0,
-        zindex = opts.zindex or 50,
+        zindex = opts.zindex or 1,
         focusable = opts.focusable or false,
         anchor = "NW",
     }

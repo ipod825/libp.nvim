@@ -6,7 +6,7 @@ local win_config = {
     height = 10,
     row = 0,
     col = 0,
-    zindex = 50,
+    zindex = 1,
     focusable = false,
     anchor = "NW",
 }

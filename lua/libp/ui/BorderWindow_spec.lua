@@ -7,7 +7,7 @@ function open_box(b, width, height)
         height = height,
         row = 10,
         col = 20,
-        zindex = 50,
+        zindex = 1,
         anchor = "NW",
     })
 end

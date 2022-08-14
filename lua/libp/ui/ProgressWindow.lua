@@ -46,7 +46,7 @@ function M:open(fwin_cfg)
         height = 1,
         row = vim.o.lines,
         col = 0,
-        zindex = 50,
+        zindex = 1,
         focusable = false,
         anchor = "NW",
     })

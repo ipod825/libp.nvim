@@ -24,7 +24,7 @@ function M:init(opts)
         col = cursor_pos[2] + cursor_offset[2],
         width = 0,
         height = 0,
-        zindex = 50,
+        zindex = 1,
         anchor = "NW",
         border = "none",
     })
