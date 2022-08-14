@@ -2,8 +2,12 @@ local M = require("libp.datatype.Class"):EXTEND()
 local a = require("plenary.async")
 local uv = require("libp.fs.uv")
 
-function M:init(filename)
-    vim.validate({ filename = { filename, "s" } })
+function M:init(filename, opts)
+    vim.validate({ filename = { filename, "s" }, opts = { opts, "t", true } })
+    opts = opts or {}
+    opts.read_bytes = opts.read_bytes or 50000
+    opts.listed = opts.listed or true
+    opts.scratch = opts.scratch or false
 
     if vim.fn.bufexists(filename) > 0 then
         self.id = vim.fn.bufadd(filename)
@@ -22,14 +26,36 @@ function M:init(filename)
     stat, err = uv.fs_fstat(fd)
     assert(not err, err)
 
-    -- Remove last newline
-    local _, content = a.uv.fs_read(fd, stat.size - 1)
-    a.util.scheduler()
-    vim.api.nvim_buf_set_option(self.id, "modifiable", true)
-    vim.api.nvim_buf_set_lines(self.id, -2, -1, false, content:split("\n"))
-    vim.api.nvim_buf_set_option(self.id, "modifiable", false)
-    a.uv.fs_close(fd)
-    a.util.scheduler()
+    -- Remove last newline by reading one less byte.
+    local remain_size = stat.size - 1
+
+    local last_line = ""
+    local offset = 0
+    local num_lines = 0
+    while remain_size > 0 do
+        local content, _ = uv.fs_read(fd, math.min(remain_size, opts.read_bytes), offset)
+        offset = offset + opts.read_bytes
+        remain_size = remain_size - opts.read_bytes
+        if not vim.api.nvim_buf_is_valid(self.id) then
+            uv.fs_close(fd)
+            return
+        end
+
+        -- Though we fill the last line in lines below, we always assume it's
+        -- partial (content did not end with a newline) and overwrite in the
+        -- next loop (note the -1 when we update num_lines). Note that even if
+        -- the content ends with a newline, this still work as in such case, the
+        -- last line in lines is the empty string.
+        local lines = vim.split(content, "\n")
+        lines[1] = last_line .. lines[1]
+
+        vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+        vim.api.nvim_buf_set_lines(self.id, num_lines, -1, false, lines)
+        vim.api.nvim_buf_set_option(self.id, "modifiable", false)
+
+        num_lines = num_lines + #lines - 1
+        last_line = lines[#lines]
+    end
 
     vim.api.nvim_buf_set_name(self.id, filename)
     vim.api.nvim_buf_set_option(self.id, "undolevels", vim.api.nvim_get_option("undolevels"))
