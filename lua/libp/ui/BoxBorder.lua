@@ -13,31 +13,50 @@ function M:init(opts)
 
     self.title = opts.title or ""
     self.border = opts.border or { "┌", "─", "┐", "│", "┘", "─", "└", "│" }
+    self.left_offset = (self.border[1] or self.border[7] or self.border[8]) and 1 or 0
+    self.top_offset = (self.border[1] or self.border[2] or self.border[3]) and 1 or 0
+    self.right_offset = (self.border[3] or self.border[4] or self.border[5]) and 1 or 0
+    self.bottom_offset = (self.border[5] or self.border[6] or self.border[7]) and 1 or 0
 end
 
 function M:_get_title_line(width)
     local title = #self.title > 0 and (" %s "):format(self.title) or ""
-    local pad = width - #title - 2
+    local pad = width - #title - self.left_offset - self.right_offset
     local left_pad = math.floor(pad / 2)
     local right_pad = pad - left_pad
     return ("%s%s%s%s%s"):format(
-        self.border[1],
+        self.border[1] or "",
         self.border[2]:rep(left_pad),
         title,
         self.border[2]:rep(right_pad),
-        self.border[3]
+        self.border[3] or ""
     )
 end
 
 function M:_fill_buffer_content(width, height)
     assert(height >= 3)
     local contents = {}
-    table.insert(contents, self:_get_title_line(width))
-    local middle_line = ("%s%s%s"):format(self.border[8], (" "):rep(width - 2), self.border[4])
-    for _ = 2, height - 1 do
+    if self.top_offset ~= 0 then
+        table.insert(contents, self:_get_title_line(width))
+    end
+    local middle_line = ("%s%s%s"):format(
+        self.border[8] or "",
+        (" "):rep(width - self.left_offset - self.right_offset),
+        self.border[4] or ""
+    )
+    for _ = self.top_offset + 1, height - self.bottom_offset do
         table.insert(contents, middle_line)
     end
-    table.insert(contents, ("%s%s%s"):format(self.border[7], (self.border[6]):rep(width - 2), self.border[5]))
+    if self.bottom_offset ~= 0 then
+        table.insert(
+            contents,
+            ("%s%s%s"):format(
+                self.border[7] or "",
+                (self.border[6]):rep(width - self.left_offset - self.right_offset),
+                self.border[5] or ""
+            )
+        )
+    end
     self.buffer:set_content(contents)
 end
 
@@ -47,7 +66,7 @@ function M:open(fwin_cfg)
     fwin_cfg = vim.tbl_extend("keep", {
         focusable = false,
         border = "none",
-    }, fwin_cfg or {})
+    }, fwin_cfg)
 
     self:_fill_buffer_content(fwin_cfg.width, fwin_cfg.height)
     return self:SUPER():open(fwin_cfg)
