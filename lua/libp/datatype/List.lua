@@ -6,23 +6,24 @@
 -- @classmod List
 local M
 M = require("libp.datatype.Class"):EXTEND({
-    __index = function(tbl, key)
-        return type(key) == "table" and M(vim.list_slice(tbl, key[1], key[2])) or rawget(tbl, key) or M[key]
+    --- Returns a slice of the original list.
+    -- @function __index
+    -- @tparam array indices The indices of the slice, both inclusive. The first
+    -- element is the begin of the slice and the second is the end of the slice. If
+    -- first is nil, then it defaults to 1. If the second is nil, then it defaults
+    -- to the length of the array.
+    -- @treturn List A new List
+    -- @usage
+    -- local lst = List({ 1, 2, 3, 4 })
+    -- assert.are.same(2, lst[2])
+    -- assert.are.same({ 2, 3, 4 }, lst[{ 2 }])
+    -- assert.are.same({ 2, 3 }, lst[{ 2, 3 }])
+    -- assert.are.same({ 1, 2, 3 }, lst[{ nil, 3 }])
+    __index = function(this, key)
+        return type(key) == "table" and M(vim.list_slice(this, key[1], key[2])) or rawget(this, key) or M[key]
     end,
 })
 local VIter = require("libp.datatype.VIter")
-
---- Returns a slice of the original list.
--- @function __index
--- @tparam array indices The indices of the slice, both inclusive. The first
--- element is the begin of the slice and the second is the end of the slice. If
--- first is nil, then it defaults to 1. If the second is nil, then it defaults
--- to the length of the array.
--- @treturn List A new List
--- @usage
--- assert.are.same({ 2, 3, 4 }, List({ 1, 2, 3, 4 })[{ 2 }])
--- assert.are.same({ 2, 3 }, List({ 1, 2, 3, 4 })[{ 2, 3 }])
--- assert.are.same({ 1, 2, 3 }, List({ 1, 2, 3, 4 })[{ nil, 3 }])
 
 --- Constructor.
 -- @tparam[opt={}] array lst Initialization list.

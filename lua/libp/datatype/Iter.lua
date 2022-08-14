@@ -33,6 +33,11 @@
 -- Inherits: @{Class}
 -- @classmod Iter
 local M = require("libp.datatype.Class"):EXTEND({
+    --- Calls @{Iter:next}.
+    -- The `__call` metamethod makes `Iter`'s children classes compatible with
+    -- for-loop.
+    -- @function __call
+    -- @treturn any
     __call = function(this, ...)
         return this:next(...)
     end,
