@@ -7,7 +7,7 @@
 local M
 M = require("libp.datatype.Class"):EXTEND({
     __index = function(tbl, key)
-        return rawget(tbl, key) or M[key] or M(vim.list_slice(tbl, key[1], key[2]))
+        return type(key) == "table" and M(vim.list_slice(tbl, key[1], key[2])) or rawget(tbl, key) or M[key]
     end,
 })
 local VIter = require("libp.datatype.VIter")
