@@ -1,4 +1,4 @@
-local BoxBorder = require("libp.ui.BoxBorder")
+local BorderWindow = require("libp.ui.BorderWindow")
 
 function open_box(b, width, height)
     b:open({
@@ -14,7 +14,7 @@ end
 
 describe("open", function()
     it("Sets the border content", function()
-        local b = BoxBorder({ title = "Title", border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" } })
+        local b = BorderWindow({ title = "Title", border = { "┌", "─", "┐", "│", "┘", "─", "└", "│" } })
         local width = 40
         local height = 5
         open_box(b, width, height)
@@ -36,7 +36,7 @@ describe("open", function()
     end)
 
     it("Does not set title line if top borders are missing", function()
-        local b = BoxBorder({ title = "Title", border = { nil, nil, nil, "│", "┘", "─", "└", "│" } })
+        local b = BorderWindow({ title = "Title", border = { nil, nil, nil, "│", "┘", "─", "└", "│" } })
         local width = 40
         local height = 5
         open_box(b, width, height)
@@ -54,7 +54,7 @@ describe("open", function()
     end)
 
     it("Does not set bottom line if bottom borders are missing", function()
-        local b = BoxBorder({ title = "Title", border = { "┌", "─", "┐", "│", nil, nil, nil, "│" } })
+        local b = BorderWindow({ title = "Title", border = { "┌", "─", "┐", "│", nil, nil, nil, "│" } })
         local width = 40
         local height = 5
         open_box(b, width, height)
@@ -72,7 +72,7 @@ describe("open", function()
     end)
 
     it("Does not set left line if left borders are missing", function()
-        local b = BoxBorder({ title = "Title", border = { nil, "─", "┐", "│", "┘", "─", nil, nil } })
+        local b = BorderWindow({ title = "Title", border = { nil, "─", "┐", "│", "┘", "─", nil, nil } })
         local width = 40
         local height = 5
         open_box(b, width, height)
@@ -94,7 +94,7 @@ describe("open", function()
     end)
 
     it("Does not set right line if right borders are missing", function()
-        local b = BoxBorder({ title = "Title", border = { "┌", "─", nil, nil, nil, "─", "└", "│" } })
+        local b = BorderWindow({ title = "Title", border = { "┌", "─", nil, nil, nil, "─", "└", "│" } })
         local width = 40
         local height = 5
         open_box(b, width, height)

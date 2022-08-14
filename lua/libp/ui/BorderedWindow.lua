@@ -1,5 +1,5 @@
 local M = require("libp.ui.Window"):EXTEND()
-local BoxBorder = require("libp.ui.BoxBorder")
+local BorderWindow = require("libp.ui.BorderWindow")
 
 function M:init(buffer, opts, border_opts)
     vim.validate({
@@ -14,7 +14,7 @@ function M:init(buffer, opts, border_opts)
     })
 
     self:SUPER():init(buffer, opts)
-    self.box_border = BoxBorder(border_opts)
+    self.box_border = BorderWindow(border_opts)
 end
 
 function M:get_border_window()

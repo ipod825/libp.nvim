@@ -7,7 +7,7 @@ local M = {
     InfoBox = require("libp.ui.InfoBox"),
     Menu = require("libp.ui.Menu"),
     Window = require("libp.ui.Window"),
-    BoxBorder = require("libp.ui.BoxBorder"),
+    BorderWindow = require("libp.ui.BorderWindow"),
     BorderedWindow = require("libp.ui.BorderedWindow"),
 }
 local values = require("libp.datatype.itertools").values
