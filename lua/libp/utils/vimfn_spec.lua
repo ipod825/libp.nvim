@@ -144,3 +144,14 @@ describe("editable_width", function()
         vim.o.number = false
     end)
 end)
+
+describe("win_get_var", function()
+    it("Returns nil if variable missing", function()
+        assert.is_nil(vimfn.win_get_var(0, "no_such_var"))
+    end)
+
+    it("Returns the window variable if present", function()
+        vim.api.nvim_win_set_var(0, "var", 1)
+        assert.are.same(1, vimfn.win_get_var(0, "var"))
+    end)
+end)

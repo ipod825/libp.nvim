@@ -24,6 +24,12 @@ function M.last_visible_line()
     return vim.fn.line("w$")
 end
 
+function M.win_get_var(win, name)
+    vim.validate({ win = { win, "n" }, name = { name, "s" } })
+    local succ, var = pcall(vim.api.nvim_win_get_var, win, name)
+    return succ and var or nil
+end
+
 function M.current_row()
     return vim.api.nvim_win_get_cursor(vim.api.nvim_get_current_win())[1]
 end
