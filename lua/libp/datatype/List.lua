@@ -1,19 +1,34 @@
 --- Module: **libp.datatype.List**
 --
--- List class.
+-- List class. Supports slicing/append/map/filter, etc.
 --
 -- Inherits: @{Class}
 -- @classmod List
-local M = require("libp.datatype.Class"):EXTEND()
+local M
+M = require("libp.datatype.Class"):EXTEND({
+    __index = function(tbl, key)
+        return rawget(tbl, key) or M[key] or M(vim.list_slice(tbl, key[1], key[2]))
+    end,
+})
 local VIter = require("libp.datatype.VIter")
+
+--- Returns a slice of the original list.
+-- @function __index
+-- @tparam array indices The indices of the slice, both inclusive. The first
+-- element is the begin of the slice and the second is the end of the slice. If
+-- first is nil, then it defaults to 1. If the second is nil, then it defaults
+-- to the length of the array.
+-- @treturn List A new List
+-- @usage
+-- assert.are.same({ 2, 3, 4 }, List({ 1, 2, 3, 4 })[{ 2 }])
+-- assert.are.same({ 2, 3 }, List({ 1, 2, 3, 4 })[{ 2, 3 }])
+-- assert.are.same({ 1, 2, 3 }, List({ 1, 2, 3, 4 })[{ nil, 3 }])
 
 --- Constructor.
 -- @tparam[opt={}] array lst Initialization list.
 -- @treturn List A new List
 function M:NEW(lst)
-    lst = lst or {}
-    local obj = setmetatable(lst, self)
-    self.__index = self
+    local obj = setmetatable(lst or {}, self)
     return obj
 end
 
