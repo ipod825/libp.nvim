@@ -3,6 +3,7 @@ local M = {
     DiffWindow = require("libp.ui.DiffWindow"),
     TitleWindow = require("libp.ui.TitleWindow"),
     FileBuffer = require("libp.ui.FileBuffer"),
+    FilePreviewBuffer = require("libp.ui.FilePreviewBuffer"),
     Grid = require("libp.ui.Grid"),
     InfoBox = require("libp.ui.InfoBox"),
     Menu = require("libp.ui.Menu"),

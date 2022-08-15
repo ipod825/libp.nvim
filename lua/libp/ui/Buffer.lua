@@ -257,6 +257,7 @@ function M:edit(opts)
     if opts.fill_lines then
         opts.fill_lines()
     end
+    -- buffer's undolevels equals -123456 when global undolevels is to be used.
     vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
 end
 
