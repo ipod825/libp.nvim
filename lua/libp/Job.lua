@@ -16,6 +16,12 @@
 -- For convenience, in non-async context, instead of specifying callback in
 -- @{Job:start}, one could chain the APIs like:
 --    Job({cmd="ls"}):start():wait():stdoutput()
+-- One caveat is that the chain `:start():wait()` won't work in async context as
+-- @{Job:start} returns exit code instead of the job itself in async context.
+-- Given that inconsistency and since most of the time we just want to run the
+-- command and get the output, @{Job:stdoutput} and @{Job:stdoutputstr} performs
+-- the `start` and `wait` automatically:
+--    Job({cmd="ls"}):stdoutput()
 --
 -- Inherits: @{Class}
 -- @classmod Job
@@ -280,17 +286,20 @@ end
 M._start_async = a.wrap(M.start, 2)
 
 --- Retrieves the cached stdoutput.
--- If the job hasn't started (@{Job:start}), it will start automatically.
+-- If the job hasn't started/finished, it will start automatically and wait
+-- until it finished.
 -- @treturn {string}
 function M:stdoutput()
     if self.state == State.NOT_STARTED then
         self:start()
     end
+    self:wait()
     return self.stdout_lines
 end
 
 --- Retrieves the cached stdoutput as a single string.
--- If the job hasn't started (@{Job:start}), it will start automatically.
+-- If the job hasn't started/finished, it will start automatically and wait
+-- until it finished.
 -- @treturn string
 function M:stdoutputstr()
     return table.concat(self:stdoutput(), "\n")

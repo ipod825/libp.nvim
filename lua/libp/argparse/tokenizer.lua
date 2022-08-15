@@ -13,6 +13,7 @@ local vimfn = require("libp.utils.vimfn")
 -- 3. Non space separated characters: this_is-a=token
 -- 4. Combination of 1,3 or 2,3: --this="is a token"
 -- @tparam string str The input string
+-- @treturn {str} The tokens.
 function M.tokenize(str)
     local pos = 1
     local res = {}

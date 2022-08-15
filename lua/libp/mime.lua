@@ -5,9 +5,7 @@ local file_bin_available = vim.fn.executable("file")
 
 function M.info(path)
     if file_bin_available then
-        local job = Job({ cmd = ('file --mime-type "%s"'):format(path) })
-        job:start()
-        return job:wait():stdoutputstr()
+        return Job({ cmd = ('file --mime-type "%s"'):format(path) }):stdoutputstr()
     end
 end
 
