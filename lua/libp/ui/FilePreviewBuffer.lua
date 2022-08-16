@@ -4,10 +4,8 @@ local vimfn = require("libp.utils.vimfn")
 
 function M:init(filename, opts)
     vim.validate({ filename = { filename, "s" }, opts = { opts, "t", true } })
-    opts = opts or {}
+    opts = vim.tbl_extend("keep", opts or {}, { listed = false, scratch = true })
     opts.read_buffer_size = opts.read_buffer_size or 50000
-    opts.listed = opts.listed or false
-    opts.scratch = opts.scratch or true
 
     local fd, stat, err
     fd, err = uv.fs_open(filename, "r", 448)
