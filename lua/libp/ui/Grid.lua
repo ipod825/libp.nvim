@@ -44,8 +44,7 @@ function M:add_row(opts)
     height = math.min(height, self.fwin_cfg.height)
     assert(height > 0, ("Can't add more rows %d %d"):format(height, self.fwin_cfg.height))
 
-    local fwin_cfg = vim.tbl_extend("force", self.fwin_cfg, { height = height })
-    fwin_cfg.focusable = opts.focusable
+    local fwin_cfg = vim.tbl_extend("force", self.fwin_cfg, { height = height, focusable = opts.focusable })
     local row = M(fwin_cfg, self.root)
     table.insert(self.children, row)
     self.fwin_cfg.row = self.fwin_cfg.row + height
@@ -65,8 +64,7 @@ function M:add_column(opts)
     width = math.min(width, self.fwin_cfg.width)
     assert(width > 0, "Can't add more columns")
 
-    local fwin_cfg = vim.tbl_extend("force", self.fwin_cfg, { width = width })
-    fwin_cfg.focusable = opts.focusable
+    local fwin_cfg = vim.tbl_extend("force", self.fwin_cfg, { width = width, focusable = opts.focusable })
     local column = M(fwin_cfg, self.root)
     table.insert(self.children, column)
     self.fwin_cfg.col = self.fwin_cfg.col + width
