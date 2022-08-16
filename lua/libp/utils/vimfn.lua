@@ -4,6 +4,19 @@ function M.info(msg)
     vim.notify(msg, vim.log.levels.INFO)
 end
 
+function M.str_to_char(s)
+    -- TODO: Follow up https://github.com/neovim/neovim/issues/14281
+    local res = {}
+    local i = 0
+    local charnr = vim.fn.strgetchar(s, i)
+    while charnr > 0 do
+        res[#res + 1] = vim.fn.nr2char(charnr)
+        i = i + 1
+        charnr = vim.fn.strgetchar(s, i)
+    end
+    return res
+end
+
 function M.warn(msg)
     vim.notify(msg, vim.log.levels.WARN)
 end
