@@ -8,6 +8,7 @@
 -- Inherits: @{Iter}
 -- @classmod VIter
 local M = require("libp.datatype.Iter"):EXTEND()
+local functional = require("libp.functional")
 
 --- Returns the value type of the **kv iterable** (see @{Iter}) and moves the iterator to the next position.
 -- This function is triggered by the `__call` operator and is thus for-loop
@@ -42,6 +43,33 @@ function M:collect()
         res[#res + 1] = v
     end
     return require("libp.datatype.List")(res)
+end
+
+--- Folds every element into an accumulator by applying an operation, returning
+--the final result.
+-- @treturn VIter
+-- @usage
+-- assert.are.same({ 1, 3, 6, 10 }, VIter({ 1, 2, 3, 4 }):fold(0, functional.binary_op.add):collect())
+function M:fold(init, op)
+    local acc = init
+    return self:map(function(v)
+        if v then
+            acc = op(acc, v)
+            return acc
+        end
+    end)
+end
+
+--- Consumes the iterator, returning the last element.
+-- @treturn any The last element
+-- @usage
+-- assert.are.same(4, VIter({ 1, 2, 3, 4 }):last())
+function M:last()
+    local res
+    for v in self:fold(nil, functional.binary_op.second) do
+        res = v
+    end
+    return res
 end
 
 return M

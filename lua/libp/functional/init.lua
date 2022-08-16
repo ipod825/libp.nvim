@@ -36,4 +36,25 @@ function M.head_tail(arr)
     end
 end
 
+M.binary_op = {
+    add = function(a, b)
+        return a + b
+    end,
+    sub = function(a, b)
+        return a - b
+    end,
+    mult = function(a, b)
+        return a * b
+    end,
+    div = function(a, b)
+        return a / b
+    end,
+    first = function(a, _)
+        return a
+    end,
+    second = function(_, b)
+        return b
+    end,
+}
+
 return M
