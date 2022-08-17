@@ -2,9 +2,14 @@ local M = require("libp.ui.Window"):EXTEND()
 
 function M:init(opts)
     opts = opts or {}
-    vim.validate({ title = { opts.title, "s", true }, border = { opts.border, { "s", "t" }, true } })
+    vim.validate({
+        title = { opts.title, "s", true },
+        highlight = { opts.highlight, "s", true },
+        border = { opts.border, { "s", "t" }, true },
+    })
+    opts.highlight = opts.highlight or "NonText"
     opts.wo = vim.tbl_extend("keep", opts.wo or {}, {
-        winhighlight = "Normal:Normal",
+        winhighlight = "Normal:" .. opts.highlight,
     })
 
     local buffer = require("libp.ui.Buffer")()
