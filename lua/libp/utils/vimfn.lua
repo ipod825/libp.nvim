@@ -84,14 +84,18 @@ function M.get_marked_region(mark1, mark2, options)
     return region, start, finish
 end
 
-function M.setrow(row)
-    vim.validate({ row = {
-        row,
-        function()
-            return row > 0
-        end,
-    } })
-    vim.api.nvim_win_set_cursor(0, { row, 0 })
+function M.setrow(row, win)
+    vim.validate({
+        row = {
+            row,
+            function()
+                return row > 0
+            end,
+        },
+        win = { win, "n", true },
+    })
+    win = win or 0
+    vim.api.nvim_win_set_cursor(win, { row, 0 })
 end
 
 function M.ensure_exit_visual_mode()
