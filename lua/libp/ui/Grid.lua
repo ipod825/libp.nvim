@@ -22,6 +22,7 @@ function M:init(opts, root)
         zindex = opts.zindex or 1,
         focusable = opts.focusable or false,
         anchor = "NW",
+        noautocmd = false,
     }
 
     self.root = root or self
@@ -74,6 +75,7 @@ end
 
 function M:fill_window(window)
     self.window = window
+    return window
 end
 
 function M:vfill_windows(windows)
