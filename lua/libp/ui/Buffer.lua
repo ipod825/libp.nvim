@@ -4,6 +4,8 @@ local a = require("plenary.async")
 local Job = require("libp.Job")
 local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
+local VIter = require("libp.datatype.VIter")
+local KVIter = require("libp.datatype.KVIter")
 local values = require("libp.datatype.itertools").values
 
 global.buffers = global.buffers or {}
@@ -295,6 +297,12 @@ function M:clear_hl(row_start, row_end)
     vim.api.nvim_buf_clear_namespace(self.id, self.namespace, row_start - 1, row_end - 1)
 end
 
+function M:get_attached_wins()
+    return VIter(vim.api.nvim_list_wins()):filter(function(w)
+        return vim.api.nvim_win_get_buf(w) == self.id
+    end):collect()
+end
+
 function M:_clear()
     vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
     vim.api.nvim_buf_set_option(self.id, "modifiable", true)
@@ -337,26 +345,11 @@ function M:reload()
         vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
     end
 
+    local self_buffer_focused = vim.api.nvim_get_current_buf() == self.id
+
     local pbar
     local init_pbar_on_second_stdout = functional.nop
-    local restore_cursor_once = functional.nop
-    local self_buffer_focused = vim.api.nvim_get_current_buf() == self.id
     if self_buffer_focused then
-        local ori_win = vim.api.nvim_get_current_win()
-        local ori_cursor = vim.api.nvim_win_get_cursor(ori_win)
-        -- We only restore cursor once. For content that can be drawn in one
-        -- shot, reload should finish before any new user interaction. Restoring
-        -- the view thus compensate the cursor move due to nvim_buf_set_lines.
-        -- For content that needs to be drawn in multiple run, restoring the
-        -- cursor after every nvim_buf_set_lines just annoyes the user.
-        restore_cursor_once = functional.oneshot(function()
-            if vim.api.nvim_win_is_valid(ori_win) then
-                vim.api.nvim_win_set_cursor(
-                    ori_win,
-                    { math.min(vim.api.nvim_buf_line_count(self.id), ori_cursor[1]), ori_cursor[2] }
-                )
-            end
-        end)
         -- Only show the progress bar if on_stdout is called more than one time.
         init_pbar_on_second_stdout = functional.oneshot(function()
             pbar = ProgressWindow({ desc = "Loading " })
@@ -364,11 +357,36 @@ function M:reload()
         end, 2)
     end
 
+    local focused_win = self_buffer_focused and vim.api.nvim_get_current_win()
+    local affected_win_cursors = KVIter(self:get_attached_wins()):mapkv(function(_, w)
+        return w, vim.api.nvim_win_get_cursor(w)
+    end):collect()
+
+    local restore_count = 0
+    local restore_cursor = function()
+        local line_count = vim.api.nvim_buf_line_count(self.id)
+        for w, cursor in pairs(affected_win_cursors) do
+            if vim.api.nvim_win_is_valid(w) then
+                -- We restore all attached window cursor to compensate cursor
+                -- move when we set the content of the buffer. In job stdout
+                -- case, for the focused window, we only restore the cursor
+                -- once. Because for content that can be drawn in one shot,
+                -- reload should finish before any new user interaction. For
+                -- content that needs to be drawn in multiple run, restoring the
+                -- cursor after every nvim_buf_set_lines just annoys the user.
+                if w ~= focused_win or restore_count == 0 then
+                    vim.api.nvim_win_set_cursor(w, { math.min(line_count, cursor[1]), cursor[2] })
+                end
+            end
+            restore_count = restore_count + 1
+        end
+    end
+
     if type(self.content) == "table" then
         vim.api.nvim_buf_set_option(self.id, "modifiable", true)
         vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
         vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
-        restore_cursor_once()
+        restore_cursor()
     else
         self:_clear()
 
@@ -383,7 +401,7 @@ function M:reload()
                 end
 
                 beg = self:_append(lines, beg)
-                restore_cursor_once()
+                restore_cursor()
                 init_pbar_on_second_stdout()
                 if pbar then
                     pbar:tick()
