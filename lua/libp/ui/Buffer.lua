@@ -316,9 +316,9 @@ function M:get_attached_wins()
 end
 
 function M:get_focused_win()
-    return VIter(vim.api.nvim_tabpage_list_wins(0)):filter(function(w)
-        return vim.api.nvim_win_get_buf(w) == self.id
-    end):collect()[1]
+    local cur_win = vim.api.nvim_get_current_win()
+    require("libp.log").warn(vim.api.nvim_win_get_buf(cur_win), self.id)
+    return vim.api.nvim_win_get_buf(cur_win) == self.id and cur_win or nil
 end
 
 function M:is_focused()

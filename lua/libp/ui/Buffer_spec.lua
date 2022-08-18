@@ -430,6 +430,44 @@ describe("Buffer", function()
         end)
     end)
 
+    describe("get_focused_win", function()
+        it("Returns the current window if the buffer is focused", function()
+            b = Buffer.open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+            assert.are.same(vim.api.nvim_get_current_win(), b:get_focused_win())
+        end)
+
+        it("Returns nil if the buffer is not focused", function()
+            b = Buffer.open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+            vim.cmd("vnew")
+            assert.is_nil(b:get_focused_win())
+        end)
+    end)
+
+    describe("is_focused", function()
+        it("Returns if the buffer is focused", function()
+            b = Buffer.open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+            assert.is_true(b:is_focused())
+        end)
+
+        it("Returns nil if the buffer is not focused", function()
+            b = Buffer.open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+            vim.cmd("vnew")
+            assert.is_false(b:is_focused())
+        end)
+    end)
+
     describe("get_lines", function()
         local get_lines = spy.on(vim.api, "nvim_buf_get_lines")
         local _ = match._
