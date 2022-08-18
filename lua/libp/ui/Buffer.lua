@@ -278,17 +278,29 @@ function M:_unmapfn(mappings)
     end
 end
 
+function M:get_lines(beg, ends, strict_indexing)
+    vim.validate({
+        beg = { beg, "n", true },
+        ends = { ends, "n", true },
+        strict_indexing = { strict_indexing, "b", true },
+    })
+    beg = beg and beg - 1 or 0
+    ends = ends and ends - 1 or -1
+    if strict_indexing == nil then
+        strict_indexing = true
+    end
+    return vim.api.nvim_buf_get_lines(self.id, beg, ends, strict_indexing)
+end
+
+function M:get_line(ind)
+    vim.validate({ ind = { ind, "n" } })
+    return self:get_lines(ind, ind + 1)[1]
+end
+
 function M:set_hl(hl, row, col_start, col_end)
     col_start = col_start or 1
     col_end = col_end or -1
-    vim.api.nvim_buf_add_highlight(
-        self.id,
-        self.namespace,
-        hl,
-        row - 1,
-        col_start - 1,
-        col_end > 0 and col_end or col_end
-    )
+    vim.api.nvim_buf_add_highlight(self.id, self.namespace, hl, row - 1, col_start - 1, col_end)
 end
 
 function M:clear_hl(row_start, row_end)

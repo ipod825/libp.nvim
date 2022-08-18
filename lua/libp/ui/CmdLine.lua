@@ -59,7 +59,7 @@ function M:get_content()
     if not vim.api.nvim_buf_is_valid(self.cmd_buffer.id) then
         return
     end
-    return vim.api.nvim_buf_get_lines(self.cmd_buffer.id, 0, 1, true)[1]
+    return self.cmd_buffer:get_line(1)
 end
 
 M.confirm = a.wrap(function(self, callback)

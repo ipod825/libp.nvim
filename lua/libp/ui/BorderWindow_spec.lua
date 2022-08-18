@@ -19,7 +19,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = vim.api.nvim_buf_get_lines(b.buffer.id, 0, -1, true)
+        local contents = b.buffer:get_lines()
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -41,7 +41,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = vim.api.nvim_buf_get_lines(b.buffer.id, 0, -1, true)
+        local contents = b.buffer:get_lines()
 
         local middle_line = ("│%s│"):format((" "):rep(width - 2))
         for i = 1, height - 1 do
@@ -59,7 +59,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = vim.api.nvim_buf_get_lines(b.buffer.id, 0, -1, true)
+        local contents = b.buffer:get_lines()
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -77,7 +77,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = vim.api.nvim_buf_get_lines(b.buffer.id, 0, -1, true)
+        local contents = b.buffer:get_lines()
 
         assert.is_true(vim.startswith(contents[1], "─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -99,7 +99,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = vim.api.nvim_buf_get_lines(b.buffer.id, 0, -1, true)
+        local contents = b.buffer:get_lines()
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "──"))
