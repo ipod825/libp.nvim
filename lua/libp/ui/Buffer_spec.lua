@@ -20,7 +20,7 @@ describe("Buffer", function()
 
     describe("get_current_buffer", function()
         it("Returns the correct buffer reference. Null if the buffer is not bookkept.", function()
-            b = Buffer.get_or_new({ filename = "test_abc" })
+            b = Buffer:get_or_new({ filename = "test_abc" })
             vim.cmd(("%d b"):format(b.id))
             assert.are.equal(b, Buffer.get_current_buffer())
             vim.cmd("new")
@@ -30,18 +30,18 @@ describe("Buffer", function()
 
     describe("get_or_new", function()
         it("Returns the same buffer on second call", function()
-            b, new = Buffer.get_or_new({ filename = "test_abc" })
+            b, new = Buffer:get_or_new({ filename = "test_abc" })
             assert.is_true(new)
-            local b2, new2 = Buffer.get_or_new({ filename = "test_abc" })
+            local b2, new2 = Buffer:get_or_new({ filename = "test_abc" })
             assert.are.same(b, b2)
             assert.is_false(new2)
         end)
         it("Accepts inherited buffer", function()
             local MyBuffer = Buffer:EXTEND()
-            b, new = Buffer.get_or_new({ filename = "test_abc" }, MyBuffer)
+            b, new = MyBuffer:get_or_new({ filename = "test_abc" })
             assert.is_true(b:IS(MyBuffer))
             assert.is_true(new)
-            local b2, new2 = Buffer.get_or_new({ filename = "test_abc" })
+            local b2, new2 = Buffer:get_or_new({ filename = "test_abc" })
             assert.are.same(b, b2)
             assert.is_false(new2)
         end)
@@ -49,18 +49,18 @@ describe("Buffer", function()
 
     describe("open_or_new", function()
         it("Returns the same buffer on second call", function()
-            b, new = Buffer.open_or_new({ filename = "test_abc", open_cmd = "edit" })
+            b, new = Buffer:open_or_new({ filename = "test_abc", open_cmd = "edit" })
             assert.is_true(new)
-            local b2, new2 = Buffer.open_or_new({ filename = "test_abc", open_cmd = "tabedit" })
+            local b2, new2 = Buffer:open_or_new({ filename = "test_abc", open_cmd = "tabedit" })
             assert.are.same(b, b2)
             assert.is_false(new2)
         end)
         it("Accepts inherited buffer", function()
             local MyBuffer = Buffer:EXTEND()
-            b, new = Buffer.open_or_new({ filename = "test_abc", open_cmd = "edit" }, MyBuffer)
+            b, new = MyBuffer:open_or_new({ filename = "test_abc", open_cmd = "edit" })
             assert.is_true(b:IS(MyBuffer))
             assert.is_true(new)
-            local b2, new2 = Buffer.open_or_new({ filename = "test_abc", open_cmd = "tabedit" })
+            local b2, new2 = Buffer:open_or_new({ filename = "test_abc", open_cmd = "tabedit" })
             assert.are.same(b, b2)
             assert.is_false(new2)
         end)
@@ -70,7 +70,7 @@ describe("Buffer", function()
         describe("builtin autocmds", function()
             describe("BufReadCmd", function()
                 it("Reloads buffer on BufReadCmd", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                     })
@@ -84,7 +84,7 @@ describe("Buffer", function()
 
             describe("BufWipeout", function()
                 it("Calls on_wipeout handler", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                     })
@@ -99,7 +99,7 @@ describe("Buffer", function()
 
             describe("BufEnterReload", function()
                 it("Does not reload on BufEnter if set to false", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                         buf_enter_reload = false,
@@ -112,7 +112,7 @@ describe("Buffer", function()
                 end)
 
                 it("Reloads on BufEnter if set to true", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                         buf_enter_reload = true,
@@ -129,7 +129,7 @@ describe("Buffer", function()
         describe("mappings", function()
             it("Takes single func", function()
                 local var
-                b = Buffer.open_or_new({
+                b = Buffer:open_or_new({
                     filename = "test_abc",
                     open_cmd = "edit",
                     mappings = {
@@ -147,7 +147,7 @@ describe("Buffer", function()
 
             it("Takes table with callback key", function()
                 local var
-                b = Buffer.open_or_new({
+                b = Buffer:open_or_new({
                     filename = "test_abc",
                     open_cmd = "edit",
                     mappings = {
@@ -167,7 +167,7 @@ describe("Buffer", function()
 
             describe("multi_reload_strategy", function()
                 it("Defaults to WAIT to wait existing reload to finish", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                         mappings = {
@@ -189,7 +189,7 @@ describe("Buffer", function()
                     b.is_reloading = false
                 end)
                 it("CANCEL cancels existing reload", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                         mappings = {
@@ -214,7 +214,7 @@ describe("Buffer", function()
                 end)
 
                 it("IGNORE ignores existing reload", function()
-                    b = Buffer.open_or_new({
+                    b = Buffer:open_or_new({
                         filename = "test_abc",
                         open_cmd = "edit",
                         mappings = {
@@ -242,7 +242,7 @@ describe("Buffer", function()
 
         describe("buffer options", function()
             it("Defaults to", function()
-                b = Buffer.open_or_new({
+                b = Buffer:open_or_new({
                     filename = "test_abc",
                     open_cmd = "edit",
                 })
@@ -253,7 +253,7 @@ describe("Buffer", function()
             end)
 
             it("Respects options", function()
-                b = Buffer.open_or_new({
+                b = Buffer:open_or_new({
                     filename = "test_abc",
                     open_cmd = "edit",
                     bo = { bufhidden = "delete" },
@@ -265,7 +265,7 @@ describe("Buffer", function()
 
     describe("set_mappings", function()
         it("Unmaps existing mappings", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 mappings = {
@@ -279,7 +279,7 @@ describe("Buffer", function()
         end)
         it("Add new mappings", function()
             local var
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -298,7 +298,7 @@ describe("Buffer", function()
 
     describe("set_content", function()
         it("Sets array content", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -308,7 +308,7 @@ describe("Buffer", function()
             assert.are.same(content, b:get_lines())
         end)
         a.it("Sets function content", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -321,7 +321,7 @@ describe("Buffer", function()
 
     describe("edit", function()
         it("Deafulats to global undolevels", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -333,7 +333,7 @@ describe("Buffer", function()
 
         it("Respects undolevels in init", function()
             local ori_undolevel = 3
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 bo = { undolevels = ori_undolevel },
@@ -345,7 +345,7 @@ describe("Buffer", function()
         end)
 
         it("Sets up buftype and modifiable", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -358,7 +358,7 @@ describe("Buffer", function()
         end)
 
         it("Respects customized filetypes and modifiable", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 bo = { buftype = "nowrite", modifiable = true },
@@ -372,7 +372,7 @@ describe("Buffer", function()
         end)
 
         it("Unmaps mappings", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 mappings = { n = { a = functional.nop } },
@@ -384,7 +384,7 @@ describe("Buffer", function()
         end)
 
         it("Optionally modifies buffer content", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -415,7 +415,7 @@ describe("Buffer", function()
                 end
             end
 
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -432,7 +432,7 @@ describe("Buffer", function()
 
     describe("get_focused_win", function()
         it("Returns the current window if the buffer is focused", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -440,7 +440,7 @@ describe("Buffer", function()
         end)
 
         it("Returns nil if the buffer is not focused", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -451,7 +451,7 @@ describe("Buffer", function()
 
     describe("is_focused", function()
         it("Returns if the buffer is focused", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -459,7 +459,7 @@ describe("Buffer", function()
         end)
 
         it("Returns nil if the buffer is not focused", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -472,7 +472,7 @@ describe("Buffer", function()
         local get_lines = spy.on(vim.api, "nvim_buf_get_lines")
         local _ = match._
         it("Defaults to get all lines", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -483,7 +483,7 @@ describe("Buffer", function()
         end)
 
         it("Accepts beg, end, strict_indexing", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -495,7 +495,7 @@ describe("Buffer", function()
     end)
 
     describe("get_line", function()
-        b = Buffer.open_or_new({
+        b = Buffer:open_or_new({
             filename = "test_abc",
             content = { "a", "b", "c" },
             open_cmd = "edit",
@@ -509,7 +509,7 @@ describe("Buffer", function()
         local add_highlight = spy.on(vim.api, "nvim_buf_add_highlight")
         local _ = match._
         it("Defaults to set highlight on the whole line", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -520,7 +520,7 @@ describe("Buffer", function()
         end)
 
         it("Accepts col_start and col_end", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -535,7 +535,7 @@ describe("Buffer", function()
         local clear_highlight = spy.on(vim.api, "nvim_buf_clear_namespace")
         local _ = match._
         it("Defaults clear one line", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 content = { "a", "b", "c" },
@@ -549,7 +549,7 @@ describe("Buffer", function()
             clear_highlight:clear()
         end)
         it("Accepts row_end", function()
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
@@ -565,7 +565,7 @@ describe("Buffer", function()
             local add_highlight = spy.on(vim.api, "nvim_buf_add_highlight")
             local _ = match._
 
-            b = Buffer.open_or_new({
+            b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
                 content = { "a", "b", "c" },

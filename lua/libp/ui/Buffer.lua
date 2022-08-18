@@ -14,19 +14,19 @@ function M.get_current_buffer()
     return global.buffers[vim.api.nvim_get_current_buf()]
 end
 
-function M.get_or_new(opts, BufferType)
-    BufferType = BufferType or M
+function M:get_or_new(opts)
     vim.validate({
         filename = { opts.filename, "s" },
     })
 
     local id = vim.fn.bufnr(opts.filename)
     local new = id == -1
-    return (new and BufferType(opts) or global.buffers[id]), new
+    -- self is the Buffer class. This is useful for creating inherited Buffer
+    -- class.
+    return (new and self(opts) or global.buffers[id]), new
 end
 
-function M.open_or_new(opts, BufferType)
-    BufferType = BufferType or M
+function M:open_or_new(opts)
     vim.validate({
         open_cmd = { opts.open_cmd, "s" },
         filename = { opts.filename, "s" },
@@ -35,7 +35,9 @@ function M.open_or_new(opts, BufferType)
     vim.cmd(("%s %s"):format(opts.open_cmd, opts.filename))
     opts.id = vim.api.nvim_get_current_buf()
     local new = global.buffers[opts.id] == nil
-    return (new and BufferType(opts) or global.buffers[opts.id]), new
+    -- self is the Buffer class. This is useful for creating inherited Buffer
+    -- class.
+    return (new and self(opts) or global.buffers[opts.id]), new
 end
 
 function M:init(opts)
