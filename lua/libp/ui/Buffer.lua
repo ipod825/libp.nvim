@@ -315,6 +315,16 @@ function M:get_attached_wins()
     end):collect()
 end
 
+function M:get_focused_win()
+    return VIter(vim.api.nvim_tabpage_list_wins(0)):filter(function(w)
+        return vim.api.nvim_win_get_buf(w) == self.id
+    end):collect()[1]
+end
+
+function M:is_focused()
+    return vim.api.nvim_get_current_buf() == self.id
+end
+
 function M:_clear()
     vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
     vim.api.nvim_buf_set_option(self.id, "modifiable", true)
