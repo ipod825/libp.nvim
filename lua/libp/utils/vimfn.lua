@@ -43,8 +43,9 @@ function M.win_get_var(win, name)
     return succ and var or nil
 end
 
-function M.current_row()
-    return vim.api.nvim_win_get_cursor(vim.api.nvim_get_current_win())[1]
+function M.getrow(winid)
+    winid = winid or vim.api.nvim_get_current_win()
+    return vim.api.nvim_win_get_cursor(winid)[1]
 end
 
 function M.editable_width(win_id)
@@ -88,13 +89,12 @@ function M.setrow(row, win)
     vim.validate({
         row = {
             row,
-            function()
-                return row > 0
-            end,
+            "n",
         },
         win = { win, "n", true },
     })
     win = win or 0
+    row = math.min(math.max(row, 1), vim.api.nvim_buf_line_count(vim.api.nvim_win_get_buf(win)))
     vim.api.nvim_win_set_cursor(win, { row, 0 })
 end
 
