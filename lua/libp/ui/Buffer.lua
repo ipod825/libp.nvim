@@ -287,7 +287,7 @@ function M:set_hl(hl, row, col_start, col_end)
         hl,
         row - 1,
         col_start - 1,
-        col_end > 0 and col_end - 1 or col_end
+        col_end > 0 and col_end or col_end
     )
 end
 

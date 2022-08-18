@@ -451,7 +451,7 @@ describe("Buffer", function()
             })
 
             b:set_hl("Normal", 1, 2, 3)
-            assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 1, 2)
+            assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 1, 3)
             add_highlight:clear()
         end)
     end)
