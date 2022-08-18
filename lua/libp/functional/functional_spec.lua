@@ -37,6 +37,24 @@ describe("oneshot", function()
     end)
 end)
 
+describe("oneshot_if", function()
+    it("Returns a function that will be called only once when condition holds", function()
+        local should_run = false
+        local var = 0
+        local inc = functional.oneshot_if(function()
+            var = var + 1
+            return var
+        end, function()
+            return should_run
+        end)
+        assert.is_nil(inc())
+        should_run = true
+        assert.are.same(1, inc())
+        assert.is_nil(inc())
+        assert.are.same(1, var)
+    end)
+end)
+
 describe("head_tail", function()
     it("Returns the argument", function()
         local arr = { 1, 2, 3 }

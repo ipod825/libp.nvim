@@ -25,6 +25,17 @@ function M.oneshot(f, at_counter)
     end
 end
 
+function M.oneshot_if(f, check)
+    vim.validate({ f = { f, "f" }, check = { check, "f" } })
+    local counter = 1
+    return function()
+        if counter == 1 and check() then
+            counter = counter + 1
+            return f()
+        end
+    end
+end
+
 function M.head_tail(arr)
     assert(vim.tbl_islist(arr))
     if #arr == 0 then
