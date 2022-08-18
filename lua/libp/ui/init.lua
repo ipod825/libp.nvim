@@ -7,6 +7,7 @@ local M = {
     Grid = require("libp.ui.Grid"),
     InfoBox = require("libp.ui.InfoBox"),
     Menu = require("libp.ui.Menu"),
+    CmdLine = require("libp.ui.CmdLine"),
     Window = require("libp.ui.Window"),
     BorderWindow = require("libp.ui.BorderWindow"),
     BorderedWindow = require("libp.ui.BorderedWindow"),
