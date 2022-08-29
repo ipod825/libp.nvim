@@ -356,8 +356,31 @@ function M:wait_reload()
     self.reload_done:wait()
 end
 
-function M:reload_highlight()
-    -- To be implemented by subclass.
+-- Sets the highlights of the buffer. This is invoked at the end of reload so
+-- the subclass can override it to add default highlight behavior after reload.
+-- This can also be called manually by passing a VIter of highlights. Each
+-- element in the VIter is an array of highlights, each of which is of the form
+-- {hl_name, row, col_beg, col_end}. Note that `col_beg` and `col_end` are
+-- optional. See `set_hl` for their default values.
+function M:reload_highlight(highlights)
+    vim.validate({
+        highlights = {
+            highlights,
+            function(e)
+                return e == nil or (e.IS and e:IS(VIter))
+            end,
+            true,
+        },
+    })
+
+    if highlights then
+        self:clear_hl(1, -1)
+        for row_highlights in highlights do
+            for highlight in VIter(row_highlights) do
+                self:set_hl(unpack(highlight))
+            end
+        end
+    end
 end
 
 function M:reload()
