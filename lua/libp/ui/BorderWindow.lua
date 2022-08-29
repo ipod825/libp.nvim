@@ -62,7 +62,7 @@ function M:_fill_buffer_content(width, height)
             )
         )
     end
-    self.buffer:set_content(contents)
+    self.buffer:set_content_and_reload(contents)
 end
 
 function M:open(fwin_cfg)

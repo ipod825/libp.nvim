@@ -6,6 +6,7 @@ local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
 local VIter = require("libp.datatype.VIter")
 local KVIter = require("libp.datatype.KVIter")
+local args = require("libp.utils.args")
 local values = require("libp.datatype.itertools").values
 
 global.buffers = global.buffers or {}
@@ -44,7 +45,7 @@ function M:init(opts)
     opts = opts or {}
     vim.validate({
         filename = { opts.filename, "s", true },
-        content = { opts.content, { "f", "t" }, true },
+        content = { opts.content, { "f", "t", "b" }, true },
         buf_enter_reload = { opts.buf_enter_reload, "b", true },
         mappings = { opts.mappings, "t", true },
         b = { opts.b, "table", true },
@@ -62,7 +63,7 @@ function M:init(opts)
     end
 
     global.buffers[self.id] = self
-    self.content = opts.content or {}
+    self.content = args.get_default(opts.content, {})
     self.mappings = opts.mappings
 
     self:_mapfn(opts.mappings)
@@ -120,7 +121,9 @@ function M:init(opts)
     end
 
     self.reload_done = a.control.Condvar.new()
-    self:reload()
+    if self.content then
+        self:reload()
+    end
 end
 
 function M:on_wipeout()
@@ -288,9 +291,7 @@ function M:get_lines(beg, ends, strict_indexing)
     })
     beg = beg and beg - 1 or 0
     ends = ends and ends - 1 or -1
-    if strict_indexing == nil then
-        strict_indexing = true
-    end
+    strict_indexing = args.get_default(strict_indexing, true)
     return vim.api.nvim_buf_get_lines(self.id, beg, ends, strict_indexing)
 end
 
@@ -319,7 +320,6 @@ end
 
 function M:get_focused_win()
     local cur_win = vim.api.nvim_get_current_win()
-    require("libp.log").warn(vim.api.nvim_win_get_buf(cur_win), self.id)
     return vim.api.nvim_win_get_buf(cur_win) == self.id and cur_win or nil
 end
 
@@ -346,14 +346,18 @@ function M:_append(lines, beg)
     return beg + #lines
 end
 
-function M:set_content(content)
-    vim.validate({ content = { content, { "f", "t" } } })
+function M:set_content_and_reload(content)
+    vim.validate({ content = { content, { "f", "t", "b" } } })
     self.content = content
     self:reload()
 end
 
 function M:wait_reload()
     self.reload_done:wait()
+end
+
+function M:reload_highlight()
+    -- To be implemented by subclass.
 end
 
 function M:reload()
@@ -441,6 +445,7 @@ function M:reload()
 
     self.is_reloading = false
     self.reload_done:notify_all()
+    self:reload_highlight()
 end
 
 return M

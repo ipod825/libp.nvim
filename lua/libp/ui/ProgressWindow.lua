@@ -35,7 +35,7 @@ function M:tick(step)
         else
             content = ("%s%s"):format(self.desc, self.style[self.current % #self.style + 1])
         end
-        self.buffer:set_content({ content })
+        self.buffer:set_content_and_reload({ content })
     end
 end
 

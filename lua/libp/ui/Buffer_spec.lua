@@ -296,7 +296,7 @@ describe("Buffer", function()
         end)
     end)
 
-    describe("set_content", function()
+    describe("set_content_and_reload", function()
         it("Sets array content", function()
             b = Buffer:open_or_new({
                 filename = "test_abc",
@@ -304,7 +304,7 @@ describe("Buffer", function()
             })
             local content = { "a", "b", "c" }
             assert.are_not.same(content, b:get_lines())
-            b:set_content(content)
+            b:set_content_and_reload(content)
             assert.are.same(content, b:get_lines())
         end)
         a.it("Sets function content", function()
@@ -312,7 +312,7 @@ describe("Buffer", function()
                 filename = "test_abc",
                 open_cmd = "edit",
             })
-            b:set_content(function()
+            b:set_content_and_reload(function()
                 return "echo hello"
             end)
             assert.are.same({ "hello" }, b:get_lines())

@@ -7,7 +7,7 @@ function M:init(buffer, opts)
     })
 
     assert(type(buffer.content) == "table")
-    buffer:set_content({ require("libp.ui").center_align_text(buffer.content, vim.o.columns) })
+    buffer:set_content_and_reload({ require("libp.ui").center_align_text(buffer.content, vim.o.columns) })
     self:SUPER():init(buffer, opts)
 end
 
