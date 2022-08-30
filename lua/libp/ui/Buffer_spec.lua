@@ -320,6 +320,18 @@ describe("Buffer", function()
     end)
 
     describe("edit", function()
+        it("is_editing returns if in edit mode", function()
+            b = Buffer:open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+            assert.is_false(b:is_editing())
+            b:edit({
+                get_items = functional.nop,
+                update = functional.nop,
+            })
+            assert.is_true(b:is_editing())
+        end)
         it("Deafulats to global undolevels", function()
             b = Buffer:open_or_new({
                 filename = "test_abc",

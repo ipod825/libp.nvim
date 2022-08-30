@@ -233,6 +233,10 @@ function M:mark(data, max_num_data)
     end
 end
 
+function M:is_editing()
+    return self.ctx.edit ~= nil
+end
+
 function M:_save_edit()
     self.ctx.edit.update(self.ctx.edit.ori_items, self.ctx.edit.get_items())
     self.ctx.edit = nil
@@ -260,10 +264,11 @@ function M:edit(opts)
     })
     self:_unmapfn(self.mappings)
     vim.bo.undolevels = -1
-    vim.bo.modifiable = true
     if opts.fill_lines then
         opts.fill_lines()
     end
+    -- After fill_lines in case modifiable is changed.
+    vim.bo.modifiable = true
     -- buffer's undolevels equals -123456 when global undolevels is to be used.
     vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
 end
