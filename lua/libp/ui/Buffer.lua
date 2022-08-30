@@ -264,10 +264,11 @@ function M:edit(opts)
     })
     self:_unmapfn(self.mappings)
     vim.bo.undolevels = -1
+    vim.bo.modifiable = true
     if opts.fill_lines then
         opts.fill_lines()
     end
-    -- After fill_lines in case modifiable is changed.
+    -- Set it again in case modifiable is changed.
     vim.bo.modifiable = true
     -- buffer's undolevels equals -123456 when global undolevels is to be used.
     vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
