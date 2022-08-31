@@ -1,7 +1,19 @@
 local M = require("libp.ui.FilePreviewBuffer"):EXTEND()
+local uv = require("libp.fs.uv")
 
 function M:init(filename, opts)
     if vim.fn.bufexists(filename) > 0 then
+        self.id = vim.fn.bufadd(filename)
+        return self.id
+    end
+
+    -- For file smaller than 10Mb, use bufadd instead of async file loading
+    -- implemented in FilePreviewBuffer, which would make the shada location
+    -- information lost.
+    local stat, err = uv.fs_stat(filename)
+    if err then
+        return
+    elseif stat.size < 10485760 then
         self.id = vim.fn.bufadd(filename)
         return self.id
     end
