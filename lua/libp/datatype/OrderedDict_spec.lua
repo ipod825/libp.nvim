@@ -29,6 +29,17 @@ describe("OrderedDict", function()
         assert.are.same({ "a", 2 }, { iter:next() })
     end)
 
+    it("Is ordered in pairs after deletion", function()
+        local d = OrderedDict()
+        d.b = 1
+        d.a = 2
+        d.b = nil
+        d.c = 3
+        local iter = OrderedDict.pairs(d)
+        assert.are.same({ "a", 2 }, { iter:next() })
+        assert.are.same({ "c", 3 }, { iter:next() })
+    end)
+
     it("Is ordered in keys", function()
         local d = OrderedDict()
         d.b = 1
@@ -38,6 +49,17 @@ describe("OrderedDict", function()
         assert.are.same("a", iter:next())
     end)
 
+    it("Is ordered in keys after deletion", function()
+        local d = OrderedDict()
+        d.b = 1
+        d.a = 2
+        d.b = nil
+        d.c = 3
+        local iter = OrderedDict.keys(d)
+        assert.are.same("a", iter:next())
+        assert.are.same("c", iter:next())
+    end)
+
     it("Is ordered in values", function()
         local d = OrderedDict()
         d.b = 1
@@ -45,6 +67,17 @@ describe("OrderedDict", function()
         local iter = OrderedDict.values(d)
         assert.are.same(1, iter:next())
         assert.are.same(2, iter:next())
+    end)
+
+    it("Is ordered in values after deletion", function()
+        local d = OrderedDict()
+        d.b = 1
+        d.a = 2
+        d.b = nil
+        d.c = 3
+        local iter = OrderedDict.values(d)
+        assert.are.same(2, iter:next())
+        assert.are.same(3, iter:next())
     end)
 
     it("Works with reference values", function()
