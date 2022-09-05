@@ -175,7 +175,9 @@ function M:_add_key_map(mode, key, fn)
     })
 
     local multi_reload = M.MultiReloadStrategy.WAIT
-    if type(fn) == "table" then
+    -- `fn` might be a functor (table with meta __call implemented). Check if
+    -- `callback` is present to distinguish such case.
+    if type(fn) == "table" and fn.callback then
         multi_reload = fn.multi_reload_strategy
         fn = fn.callback
     end
