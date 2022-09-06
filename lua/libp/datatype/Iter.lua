@@ -107,6 +107,18 @@ function M:pairs()
     return self.next_fn, self.invariant, self.control
 end
 
+-- Returns the number of elements from the iterator.
+-- @treturn number
+-- @usage
+-- assert.are.same(3, VIter({ 1, 2, 3 }):count())
+function M:count()
+    local res = 0
+    for _ in self:pairs() do
+        res = res + 1
+    end
+    return res
+end
+
 --- Returns a new iterator that transforms the key/value with a map function.
 -- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
 -- The mapped iterator will return `map_fn(k1, v1), map_fn(k2, v2)` ...

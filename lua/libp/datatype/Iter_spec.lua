@@ -53,6 +53,13 @@ describe("pairs", function()
     end)
 end)
 
+describe("count", function()
+    it("Returns the number of elements", function()
+        local iter = MyIter({ k = "v", k2 = "v2" })
+        assert.are.same(2, iter:count())
+    end)
+end)
+
 describe("mapkv", function()
     it("Works", function()
         local ori_iter = MyIter({ k = "v" })
