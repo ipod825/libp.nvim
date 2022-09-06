@@ -4,11 +4,13 @@ local BorderedWindow = require("libp.ui.BorderedWindow")
 local functional = require("libp.functional")
 local a = require("plenary.async")
 local values = require("libp.datatype.itertools").values
+local vimfn = require("libp.utils.vimfn")
 
 function M:init(opts)
     vim.validate({
         title = { opts.title, { "s" }, true },
         content = { opts.content, "t" },
+        select_map = { opts.select_map, "t", true },
         fwin_cfg = { opts.fwin_cfg, "t", true },
         cursor_offset = { opts.cursor_offset, "t", true },
         wo = { opts.wo, "t", true },
@@ -58,9 +60,9 @@ function M:init(opts)
         mappings = {
             n = {
                 ["<cr>"] = function()
-                    local text = vim.fn.getline(".")
+                    local res = opts.select_map and opts.select_map[vimfn.getrow()] or vim.fn.getline(".")
                     vim.api.nvim_win_close(0, true)
-                    self.on_select(text)
+                    self.on_select(res)
                 end,
             },
         },
