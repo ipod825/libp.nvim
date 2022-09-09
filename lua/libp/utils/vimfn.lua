@@ -4,6 +4,11 @@ function M.info(msg)
     vim.notify(msg, vim.log.levels.INFO)
 end
 
+function M.set_cwd(path)
+    vim.validate({ path = { path, "s" } })
+    vim.cmd("lcd " .. path:gsub(" ", "\\ "))
+end
+
 function M.str_to_char(s)
     -- TODO: Follow up https://github.com/neovim/neovim/issues/14281
     local res = {}
