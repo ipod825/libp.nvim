@@ -5,12 +5,14 @@ local functional = require("libp.functional")
 local a = require("plenary.async")
 local values = require("libp.datatype.itertools").values
 local vimfn = require("libp.utils.vimfn")
+local KVIter = require("libp.datatype.KVIter")
 
 function M:init(opts)
     vim.validate({
         title = { opts.title, { "s" }, true },
         content = { opts.content, "t" },
         select_map = { opts.select_map, "t", true },
+        short_key_map = { opts.short_key_map, "t", true },
         fwin_cfg = { opts.fwin_cfg, "t", true },
         cursor_offset = { opts.cursor_offset, "t", true },
         wo = { opts.wo, "t", true },
@@ -31,12 +33,23 @@ function M:init(opts)
         border = "none",
     })
 
+    self.select_map = opts.select_map
     self.border_opts = opts.border_opts or {}
     self.border_opts.title = self.border_opts.title or opts.title
     self.on_select = opts.on_select or functional.nop
     self.wo = opts.wo or {}
 
     local content = opts.content or {}
+    local mappings = {
+        ["<cr>"] = self:BIND(self.confirm),
+    }
+    if opts.short_key_map then
+        assert(#content == #opts.short_key_map)
+        for i, key in KVIter(opts.short_key_map) do
+            content[i] = ("%s.%s"):format(opts.short_key_map[i], opts.content[i])
+            mappings[key] = self:BIND(self.confirm, i)
+        end
+    end
 
     self.fwin_cfg.height = #content
     for c in values(content) do
@@ -58,15 +71,29 @@ function M:init(opts)
     self.buffer = Buffer({
         content = content,
         mappings = {
-            n = {
-                ["<cr>"] = function()
-                    local res = opts.select_map and opts.select_map[vimfn.getrow()] or vim.fn.getline(".")
-                    vim.api.nvim_win_close(0, true)
-                    self.on_select(res)
-                end,
-            },
+            n = mappings,
         },
     })
+end
+
+function M:confirm(row)
+    if row then
+        vimfn.setrow(row)
+    end
+
+    local res
+    if self.select_map then
+        res = self.select_map[vimfn.getrow()]
+    else
+        res = vim.fn.getline(".")
+        if row then
+            res = res:gsub("^.-%.", "")
+        end
+    end
+    require("libp.log").warn(row, res)
+
+    vim.api.nvim_win_close(0, true)
+    self.on_select(res)
 end
 
 function M:get_border_window()
