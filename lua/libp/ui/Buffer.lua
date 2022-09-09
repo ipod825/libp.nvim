@@ -146,7 +146,9 @@ function M:_mapfn(mappings)
             mode_mappings = { mode_mappings, "t" },
         })
         for key, fn in pairs(mode_mappings) do
-            self:_add_key_map(mode, key, fn)
+            if type(fn) ~= "boolean" then
+                self:_add_key_map(mode, key, fn)
+            end
         end
     end
 end
@@ -285,8 +287,10 @@ function M:_unmapfn(mappings)
             mode = { mode, "s" },
             mode_mappings = { mode_mappings, "t" },
         })
-        for key, _ in pairs(mode_mappings) do
-            vim.keymap.del(mode, key, { buffer = self.id })
+        for key, fn in pairs(mode_mappings) do
+            if type(fn) ~= "boolean" then
+                vim.keymap.del(mode, key, { buffer = self.id })
+            end
         end
     end
 end
