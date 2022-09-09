@@ -46,7 +46,7 @@ function M:init(opts)
     if opts.short_key_map then
         assert(#content == #opts.short_key_map)
         for i, key in KVIter(opts.short_key_map) do
-            content[i] = ("%s.%s"):format(opts.short_key_map[i], opts.content[i])
+            content[i] = ("%s. %s"):format(opts.short_key_map[i], opts.content[i])
             mappings[key] = self:BIND(self.confirm, i)
         end
     end
@@ -87,7 +87,7 @@ function M:confirm(row)
     else
         res = vim.fn.getline(".")
         if row then
-            res = res:gsub("^.-%.", "")
+            res = res:gsub("^.-%. ", "")
         end
     end
     require("libp.log").warn(row, res)
