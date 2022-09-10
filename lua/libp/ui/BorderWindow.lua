@@ -5,6 +5,7 @@ function M:init(opts)
     vim.validate({
         title = { opts.title, "s", true },
         highlight = { opts.highlight, "s", true },
+        title_highlight = { opts.title_highlight, "s", true },
         border = { opts.border, { "s", "t" }, true },
     })
     opts.highlight = opts.highlight or "NonText"
@@ -17,6 +18,7 @@ function M:init(opts)
     self:SUPER():init(buffer, opts)
 
     self.title = opts.title or ""
+    self.title_highlight = opts.title_highlight or "Normal"
     self.border = opts.border or { "┌", "─", "┐", "│", "┘", "─", "└", "│" }
     self.left_offset = (self.border[1] or self.border[7] or self.border[8]) and 1 or 0
     self.top_offset = (self.border[1] or self.border[2] or self.border[3]) and 1 or 0
@@ -63,6 +65,10 @@ function M:_fill_buffer_content(width, height)
         )
     end
     self.buffer:set_content_and_reload(contents)
+    if self.top_offset ~= 0 and #self.title > 0 then
+        local title_beg, title_end = self.buffer:get_line(1):find(self.title)
+        self.buffer:set_hl(self.title_highlight, 1, title_beg, title_end)
+    end
 end
 
 function M:open(fwin_cfg)
