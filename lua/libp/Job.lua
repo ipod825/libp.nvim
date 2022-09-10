@@ -113,7 +113,7 @@ M.StderrDumpLevel = {
 -- command. If `env` is of table type, each key is the variable name and each
 -- value is the variable value (converted to string type). If `env` is of string
 -- array type, each must be of the form `name=value`
--- @tparam[opt=false] boolean opts.detached Whether to detach the job, i.e. to keep the job running after vim exists.
+-- @tparam[opt=false] boolean opts.detach Whether to detach the job, i.e. to keep the job running after vim exists.
 -- @treturn Job The new job
 -- @usage
 -- local res = {}
@@ -143,7 +143,7 @@ function M:init(opts)
         stderr_dump_level = { opts.stderr_dump_level, "n", true },
         cwd = { opts.cwd, "s", true },
         env = { opts.env, "table", true },
-        detached = { opts.detached, "boolean", true },
+        detach = { opts.detach, "boolean", true },
     })
 
     self.state = State.NOT_STARTED
@@ -268,7 +268,7 @@ function M:start(callback)
         stdio = { self.stdin, self.stdout, stderr },
         args = args,
         cwd = opts.cwd,
-        detached = opts.detached,
+        detach = opts.detach,
         env = transform_env(opts.env),
     }, vim.schedule_wrap(on_exit))
 
