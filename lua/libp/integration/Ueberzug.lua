@@ -54,6 +54,9 @@ function M:init(opts)
         })
     end
 
+    if not vim.api.nvim_win_is_valid(opts.win_id) then
+        return
+    end
     self.buf_id = vim.api.nvim_win_get_buf(opts.win_id)
     self.identifier = vim.fn.tempname()
     self.channel = vim.fn.jobstart("ueberzug layer --parser json")
