@@ -183,6 +183,10 @@ function M:add(opts)
             wait_ms = 600,
         })
     elseif mime_str:match("application/pdf") then
+        if not osfn.is_in_path("pdftoppm") then
+            return false
+        end
+
         local image = self:get_or_gen_preview(opts.path, "pdf", function(dst_dir)
             Job({ cmd = ("pdftoppm -png -singlefile %s %s/a.png"):format(opts.path, dst_dir) }):start()
         end)
