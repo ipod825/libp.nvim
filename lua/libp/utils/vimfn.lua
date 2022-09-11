@@ -75,7 +75,6 @@ function M.getrow(winid)
 end
 
 function M.tabline_end_pos()
-    require("libp.log").warn(vim.go.showtabline, #vim.api.nvim_list_tabpages())
     if vim.go.showtabline == 0 then
         return 1
     elseif vim.go.showtabline == 2 then

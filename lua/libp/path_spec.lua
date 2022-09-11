@@ -1,5 +1,5 @@
+require("libp.utils.string_extension")
 local path = require("libp.path")
-local reflection = require("libp.debug.reflection")
 
 describe("dirname", function()
     it("Returns parent for file", function()
