@@ -1,3 +1,4 @@
+require("plenary.async").tests.add_to_env()
 local functional = require("libp.functional")
 
 describe("nop", function()
@@ -107,5 +108,24 @@ describe("binary_op", function()
         assert.are.same(0.5, op.div(1, 2))
         assert.are.same(1, op.first(1, 2))
         assert.are.same(2, op.second(1, 2))
+    end)
+end)
+
+describe("debounce", function()
+    a.it("Works", function()
+        local count = 0
+        functional.debounce({
+            body = function()
+                count = count + 1
+                return count <= 1
+            end,
+            wait_ms = 10,
+            first_wait_ms = 1,
+        })
+        assert.are.same(0, count)
+        a.util.sleep(5)
+        assert.are.same(1, count)
+        a.util.sleep(10)
+        assert.are.same(2, count)
     end)
 end)

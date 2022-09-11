@@ -1,4 +1,5 @@
 local M = {}
+local args = require("libp.utils.args")
 
 function M.nop(...) end
 
@@ -11,6 +12,24 @@ function M.bind(fn, ...)
     local argc = select("#", ...)
     assert(argc > 0 and argc < #bind_tbl, "bind supports args between 1 and " .. #bind_tbl)
     return bind_tbl[argc](fn, ...)
+end
+
+function M.debounce(opts)
+    vim.validate({
+        body = { opts.body, "f" },
+        wait_ms = args.positive(opts.wait_ms),
+        first_wait_ms = args.null_or.positive(opts.first_wait_ms),
+    })
+
+    opts = vim.tbl_extend("keep", opts or {}, { first_wait_ms = 0 })
+
+    local handle
+    handle = function()
+        if opts.body() then
+            vim.defer_fn(handle, opts.wait_ms)
+        end
+    end
+    vim.defer_fn(handle, opts.first_wait_ms)
 end
 
 function M.oneshot(f, at_counter)
