@@ -210,3 +210,70 @@ describe("set_cwd", function()
         assert.are.same(path.dirname(ori_cwd), vim.fn.getcwd())
     end)
 end)
+
+describe("tabline_end_pos", function()
+    it("Returns 1 if tabline not visible", function()
+        assert.are.same(1, vimfn.tabline_end_pos())
+
+        local ori = vim.o.showtabline
+        vim.o.showtabline = 0
+
+        vim.cmd("tabe")
+        assert.are.same(1, vimfn.tabline_end_pos())
+
+        vim.cmd("tabc")
+        vim.o.showtabline = ori
+    end)
+
+    it("Returns 2 if tabline is shown", function()
+        assert.are.same(1, vimfn.tabline_end_pos())
+
+        local ori = vim.o.showtabline
+        vim.o.showtabline = 1
+
+        vim.cmd("tabe")
+        assert.are.same(2, vimfn.tabline_end_pos())
+
+        vim.cmd("tabc")
+        vim.o.showtabline = ori
+    end)
+
+    it("Returns 2 if tabline always shown", function()
+        local ori = vim.o.showtabline
+        vim.o.showtabline = 2
+
+        vim.cmd("tabe")
+        assert.are.same(2, vimfn.tabline_end_pos())
+
+        vim.cmd("tabc")
+        vim.o.showtabline = ori
+    end)
+end)
+
+describe("buf_get_option_and_set", function()
+    it("Get nil when buf is invalid", function()
+        assert.is_nil(vimfn.buf_get_option_and_set(-1))
+    end)
+    it("Set the option and returns the original", function()
+        local expected = vim.api.nvim_buf_get_option(0, "autoindent")
+        local ori = vimfn.buf_get_option_and_set(0, "autoindent", not expected)
+        assert.are.same(expected, ori)
+        assert.are.not_same(expected, vim.api.nvim_buf_get_option(0, "autoindent"))
+        vimfn.buf_get_option_and_set(0, "autoindent", ori)
+        assert.are.same(expected, vim.api.nvim_buf_get_option(0, "autoindent"))
+    end)
+end)
+
+describe("win_get_option_and_set", function()
+    it("Get nil when win is invalid", function()
+        assert.is_nil(vimfn.win_get_option_and_set(-1))
+    end)
+    it("Set the option and returns the original", function()
+        local expected = vim.api.nvim_win_get_option(0, "breakindent")
+        local ori = vimfn.win_get_option_and_set(0, "breakindent", not expected)
+        assert.are.same(expected, ori)
+        assert.are.not_same(expected, vim.api.nvim_win_get_option(0, "breakindent"))
+        vimfn.win_get_option_and_set(0, "breakindent", ori)
+        assert.are.same(expected, vim.api.nvim_win_get_option(0, "breakindent"))
+    end)
+end)

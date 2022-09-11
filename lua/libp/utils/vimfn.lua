@@ -1,4 +1,5 @@
 local M = {}
+local args = require("libp.args")
 
 function M.info(msg)
     vim.notify(msg, vim.log.levels.INFO)
@@ -48,9 +49,40 @@ function M.win_get_var(win, name)
     return succ and var or nil
 end
 
+function M.buf_get_option_and_set(buf, name, new_value)
+    if not vim.api.nvim_buf_is_valid(buf) then
+        return
+    end
+    vim.validate({ buf = { buf, "n" }, name = { name, "s" }, new_value = args.non_nil(new_value) })
+    local ori = vim.api.nvim_buf_get_option(buf, name)
+    vim.api.nvim_buf_set_option(buf, name, new_value)
+    return ori
+end
+
+function M.win_get_option_and_set(win, name, new_value)
+    if not vim.api.nvim_buf_is_valid(win) then
+        return
+    end
+    vim.validate({ win = { win, "n" }, name = { name, "s" }, new_value = args.non_nil(new_value) })
+    local ori = vim.api.nvim_win_get_option(win, name)
+    vim.api.nvim_win_set_option(win, name, new_value)
+    return ori
+end
+
 function M.getrow(winid)
     winid = winid or vim.api.nvim_get_current_win()
     return vim.api.nvim_win_get_cursor(winid)[1]
+end
+
+function M.tabline_end_pos()
+    require("libp.log").warn(vim.go.showtabline, #vim.api.nvim_list_tabpages())
+    if vim.go.showtabline == 0 then
+        return 1
+    elseif vim.go.showtabline == 2 then
+        return 2
+    else
+        return #vim.api.nvim_list_tabpages() > 1 and 2 or 1
+    end
 end
 
 function M.editable_width(win_id)
