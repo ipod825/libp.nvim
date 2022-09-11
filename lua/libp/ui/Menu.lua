@@ -3,7 +3,7 @@ local Buffer = require("libp.ui.Buffer")
 local BorderedWindow = require("libp.ui.BorderedWindow")
 local functional = require("libp.functional")
 local a = require("plenary.async")
-local values = require("libp.datatype.itertools").values
+local values = require("libp.itertools").values
 local vimfn = require("libp.utils.vimfn")
 local KVIter = require("libp.datatype.KVIter")
 

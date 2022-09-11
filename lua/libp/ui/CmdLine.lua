@@ -4,7 +4,7 @@ local functional = require("libp.functional")
 local Window = require("libp.ui.Window")
 local a = require("plenary.async")
 local Grid = require("libp.ui.Grid")
-local values = require("libp.datatype.itertools").values
+local values = require("libp.itertools").values
 
 function M:init(opts)
     vim.validate({

@@ -11,7 +11,7 @@
 -- @classmod Set
 local M = {}
 local VIter = require("libp.datatype.VIter")
-local values = require("libp.datatype.itertools").values
+local values = require("libp.itertools").values
 
 local size_key = {}
 

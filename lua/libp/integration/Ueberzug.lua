@@ -9,7 +9,7 @@ local VIter = require("libp.datatype.VIter")
 local functional = require("libp.functional")
 local LruDict = require("libp.datatype.LruDict")
 local mime = require("libp.mime")
-local itt = require("libp.datatype.itertools")
+local itt = require("libp.itertools")
 
 local cache = LruDict(100)
 

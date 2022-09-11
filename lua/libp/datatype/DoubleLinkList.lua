@@ -1,5 +1,5 @@
 local M = require("libp.datatype.Class"):EXTEND()
-local values = require("libp.datatype.itertools").values
+local values = require("libp.itertools").values
 
 local Node = require("libp.datatype.Class"):EXTEND()
 function Node:init(val)

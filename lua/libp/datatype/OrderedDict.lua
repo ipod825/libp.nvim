@@ -7,7 +7,7 @@
 local M = require("libp.datatype.Class"):EXTEND()
 local KVIter = require("libp.datatype.KVIter")
 local VIter = require("libp.datatype.VIter")
-local values = require("libp.datatype.itertools").values
+local values = require("libp.itertools").values
 
 --- Constructor.
 -- @treturn OrderedDict A new OrderedDict

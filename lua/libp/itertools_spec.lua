@@ -1,4 +1,4 @@
-local itertools = require("libp.datatype.itertools")
+local itertools = require("libp.itertools")
 local Set = require("libp.datatype.Set")
 
 describe("from_range", function()
