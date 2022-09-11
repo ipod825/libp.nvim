@@ -16,6 +16,16 @@ function M.get_default_lazy(val, default_fn, ...)
     end
 end
 
+function M.non_nil(e)
+    return {
+        e,
+        function()
+            return e ~= nil
+        end,
+        "non-nil",
+    }
+end
+
 function M.positive(e)
     return {
         e,
