@@ -1,5 +1,5 @@
 local M = {}
-local args = require("libp.utils.args")
+local args = require("libp.args")
 
 function M.nop(...) end
 

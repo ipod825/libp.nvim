@@ -1,4 +1,4 @@
-local args = require("libp.utils.args")
+local args = require("libp.args")
 local identity = require("libp.functional").identity
 
 describe("get_default", function()

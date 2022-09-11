@@ -6,7 +6,7 @@ local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
 local VIter = require("libp.datatype.VIter")
 local KVIter = require("libp.datatype.KVIter")
-local args = require("libp.utils.args")
+local args = require("libp.args")
 local values = require("libp.datatype.itertools").values
 
 global.buffers = global.buffers or {}

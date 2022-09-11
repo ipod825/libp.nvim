@@ -32,7 +32,7 @@
 --
 -- Inherits: @{Class}
 -- @classmod Iter
-local args = require("libp.utils.args")
+local args = require("libp.args")
 
 local M = require("libp.datatype.Class"):EXTEND({
     --- Calls @{Iter:next}.
