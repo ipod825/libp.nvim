@@ -16,4 +16,14 @@ function M.get_default_lazy(val, default_fn, ...)
     end
 end
 
+function M.positive(e)
+    return {
+        e,
+        function()
+            return type(e) == "number" and e > 0
+        end,
+        "positive number",
+    }
+end
+
 return M
