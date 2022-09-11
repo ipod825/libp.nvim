@@ -146,7 +146,10 @@ function M:add(opts)
         end
 
         local images = self:get_or_gen_preview(opts.path, "gif", function(dst_dir)
-            Job({ cmd = ('convert -deconstruct "%s" "%s/a.png"'):format(opts.path, dst_dir) }):start()
+            Job({
+                cmd = ('convert -deconstruct "%s" "%s/a.png"'):format(opts.path, dst_dir),
+                stderr_dump_level = Job.StderrDumpLevel.SILENT,
+            }):start()
         end)
         images = VIter(images):cycle()
 
@@ -172,6 +175,7 @@ function M:add(opts)
                         i,
                         i * 20
                     ),
+                    stderr_dump_level = Job.StderrDumpLevel.SILENT,
                 }):start()
             end
         end)
@@ -191,7 +195,10 @@ function M:add(opts)
         end
 
         local image = self:get_or_gen_preview(opts.path, "pdf", function(dst_dir)
-            Job({ cmd = ("pdftoppm -png -singlefile %s %s/a.png"):format(opts.path, dst_dir) }):start()
+            Job({
+                cmd = ("pdftoppm -png -singlefile %s %s/a.png"):format(opts.path, dst_dir),
+                stderr_dump_level = Job.StderrDumpLevel.SILENT,
+            }):start()
         end)
         self:send(vim.tbl_extend("force", opts, { path = image }))
     else
