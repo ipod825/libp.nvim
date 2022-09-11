@@ -32,6 +32,8 @@
 --
 -- Inherits: @{Class}
 -- @classmod Iter
+local args = require("libp.utils.args")
+
 local M = require("libp.datatype.Class"):EXTEND({
     --- Calls @{Iter:next}.
     -- The `__call` metamethod makes `Iter`'s children classes compatible with
@@ -117,6 +119,43 @@ function M:count()
         res = res + 1
     end
     return res
+end
+
+--- Returns a new iterator that repeats indefinitely.
+-- @treturn Iter
+-- @usage
+-- local iter = VIter({ 1 }):cycle()
+-- assert.are.same(1, iter:next())
+-- assert.are.same(1, iter:next())
+function M:cycle()
+    return self:CLASS()(nil, function()
+        local v
+        self.control, v = self.next_fn(self.invariant, self.control)
+        if not self.control then
+            self.control, v = self.next_fn(self.invariant, self.control)
+        end
+        return self.control, v
+    end)
+end
+
+--- Returns a new iterator that takes only the first n elements.
+-- @treturn Iter
+-- @usage
+-- assert.are.same({ 1, 2 }, VIter({ 1, 2, 3 }):take(2):collect())
+function M:take(n)
+    vim.validate({
+        n = args.positive(n),
+    })
+    local count = 0
+    return self:CLASS()(nil, function()
+        if count == n then
+            return
+        end
+        local v
+        count = count + 1
+        self.control, v = self.next_fn(self.invariant, self.control)
+        return self.control, v
+    end)
 end
 
 --- Returns a new iterator that transforms the key/value with a map function.
