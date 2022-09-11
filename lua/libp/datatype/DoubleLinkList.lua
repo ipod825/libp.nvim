@@ -142,6 +142,28 @@ function M:pop_back()
     return res
 end
 
+function M:remove(node)
+    if not node then
+        return
+    end
+
+    if node.left then
+        node.left:link_right(node.right)
+        self:_set_tail_if_no_right(node.left)
+    end
+    if node.right then
+        node.right:link_left(node.left)
+        self:_set_head_if_no_left(node.right)
+    end
+
+    if node == self.head then
+        self.head = node.right
+    elseif node == self.tail then
+        self.tail = node.left
+    end
+    self:_ensure_head_tail_correct()
+end
+
 function M:splice_same(paste_before, slice_beg, slice_end)
     -- We cut slice_end and then paste to paste_before. If they are the same, we
     -- will paste to an invalid node.
