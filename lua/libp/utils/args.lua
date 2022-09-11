@@ -26,4 +26,18 @@ function M.positive(e)
     }
 end
 
+M.null_or = {}
+local function add_null_or_fn(name, fn)
+    M.null_or[name] = function(e)
+        local ori_result = fn(e)
+        local ori_check = ori_result[2]
+        ori_result[2] = function()
+            return not e or ori_check(e)
+        end
+        return ori_result
+    end
+end
+
+add_null_or_fn("positive", M.positive)
+
 return M
