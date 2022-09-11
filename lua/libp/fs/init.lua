@@ -56,6 +56,12 @@ function M.get_mode(path)
     return mathfn.decimal_to_octal(bit.band(res.mode, k777))
 end
 
+function M.mkdir(path, mode)
+    vim.validate({ path = { path, "s" }, mode = { mode, "n", true } })
+    mode = mode or 750
+    return uv.fs_mkdir(path, M.stat_mode_num(mode))
+end
+
 function M.touch(path)
     vim.validate({ path = { path, "s" } })
     local fd, err = uv.fs_open(path, "a", k640)
