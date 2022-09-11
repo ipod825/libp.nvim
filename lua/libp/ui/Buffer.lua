@@ -203,13 +203,7 @@ end
 
 function M:mark(data, max_num_data)
     vim.validate({
-        max_num_data = {
-            max_num_data,
-            function(e)
-                return e > 0
-            end,
-            true,
-        },
+        max_num_data = args.positive(max_num_data),
     })
 
     -- ctx.mark gets cleared on full. _mark_linenrs is a shadow buffer

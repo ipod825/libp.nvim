@@ -172,7 +172,7 @@ end
 --     end):collect()
 -- )
 function M:mapkv(map_fn)
-    vim.validate({ map_fn = { map_fn, "function" } })
+    vim.validate({ map_fn = { map_fn, "f" } })
     -- Note that the next_fn of the returned iterator actually doesn't use its
     -- arguments (invariant and control). Therefore, if we have a long chain of
     -- map/filter, only the control of the original iterator (first level) is
@@ -206,7 +206,7 @@ end
 --     end):collect()
 -- )
 function M:map(map_fn)
-    vim.validate({ map_fn = { map_fn, "function" } })
+    vim.validate({ map_fn = { map_fn, "f" } })
     -- See comments in mapkv.
     return self:CLASS()(nil, function()
         local v
@@ -231,7 +231,7 @@ end
 --     end):collect()
 -- )
 function M:filterkv(filter_fn)
-    vim.validate({ filter_fn = { filter_fn, "function" } })
+    vim.validate({ filter_fn = { filter_fn, "f" } })
     -- See comments in mapkv.
     return self:CLASS()(nil, function()
         repeat
@@ -258,7 +258,7 @@ end
 --     end):collect()
 -- )
 function M:filter(filter_fn)
-    vim.validate({ filter_fn = { filter_fn, "function" } })
+    vim.validate({ filter_fn = { filter_fn, "f" } })
     -- See comments in mapkv.
     return self:CLASS()(nil, function()
         repeat
