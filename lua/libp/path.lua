@@ -82,4 +82,9 @@ function M.basename(str)
     return name
 end
 
+function M.extension(str)
+    vim.validate({ std = { str, "s" } })
+    return str:find_pattern("[^%.]+%.(.+)$")
+end
+
 return M
