@@ -325,7 +325,7 @@ describe("Buffer", function()
                 filename = "test_abc",
                 open_cmd = "edit",
             })
-            assert.is_false(b:is_editing())
+            assert.is_falsy(b:is_editing())
             b:edit({
                 get_items = functional.nop,
                 update = functional.nop,

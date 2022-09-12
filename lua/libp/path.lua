@@ -1,3 +1,4 @@
+require("libp.utils.string_extension")
 local M = {}
 local values = require("libp.itertools").values
 
