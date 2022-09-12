@@ -37,7 +37,6 @@ function M.positive(e)
 end
 
 function M.is_class(e, Cls, cls_name)
-    require("libp.log").warn(debug.getinfo(M.is_class))
     return {
         e,
         function()

@@ -90,7 +90,6 @@ function M:confirm(row)
             res = res:gsub("^.-%. ", "")
         end
     end
-    require("libp.log").warn(row, res)
 
     vim.api.nvim_win_close(0, true)
     self.on_select(res)
