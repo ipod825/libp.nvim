@@ -172,6 +172,27 @@ M.icons = {
             cterm_fg = "179",
         },
     },
+    ["COPYING"] = {
+        icon = "",
+        hl = {
+            fg = "#d0bf41",
+            cterm_fg = "179",
+        },
+    },
+    ["COPYING.LESSER"] = {
+        icon = "",
+        hl = {
+            fg = "#d0bf41",
+            cterm_fg = "179",
+        },
+    },
+    ["license"] = {
+        icon = "",
+        hl = {
+            fg = "#d0bf41",
+            cterm_fg = "179",
+        },
+    },
     ["R"] = {
         icon = "ﳒ",
         hl = {
@@ -1520,16 +1541,6 @@ M.icons = {
     },
 }
 
-local file_name_alias = {
-    ["COPYING"] = "LICENSE",
-    ["COPYING.LESSER"] = "LICENSE",
-    ["license"] = "LICENSE",
-}
-
-function M.get_hl_group(ft)
-    return "LibpDevIcon" .. ft
-end
-
 function M.setup(opts)
     if M.loaded then
         return
@@ -1551,16 +1562,17 @@ function M.setup(opts)
     })
 end
 
+function M.get_hl_group(ft)
+    return "LibpDevIcon" .. ft
+end
+
 function M.get(file_path)
     M.setup()
 
     -- First check special name that vim can't detect filetypes.
-    local basename = path.basename(file_path)
-    basename = file_name_alias[basename] or basename
-    local ft = basename
+    local ft = path.basename(file_path)
 
-    local data = M.icons[basename]
-    if not data then
+    if not M.icons[ft] then
         -- Try detect file type.
         if vim.version().minor <= 7 then
             local ori_eventignore = vim.o.eventignore
@@ -1569,7 +1581,7 @@ function M.get(file_path)
             local buf = vim.api.nvim_create_buf(false, true)
             vim.filetype.match(file_path, buf)
             ft = vim.api.nvim_buf_get_option(buf, "filetype")
-            vim.cmd("bwipe " .. buf)
+            vim.cmd("silent! bwipe " .. buf)
 
             vim.o.eventignore = ori_eventignore
         else
@@ -1581,12 +1593,11 @@ function M.get(file_path)
         if ft == "" then
             ft = path.extension(file_path) or ft
         end
-
-        -- Use default if not found.
-        data = M.icons[ft] or M.icons["default"]
     end
 
-    return vim.tbl_extend("keep", data, { hl_group = M.get_hl_group(ft) })
+    -- Use default if not found.
+    local res = M.icons[ft] or M.icons["default"]
+    return vim.tbl_extend("keep", res, { hl_group = M.get_hl_group(ft) })
 end
 
 return M
