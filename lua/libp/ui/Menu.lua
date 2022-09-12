@@ -34,6 +34,7 @@ function M:init(opts)
     })
 
     self.select_map = opts.select_map
+    self.short_key_map = opts.short_key_map
     self.border_opts = opts.border_opts or {}
     self.border_opts.title = self.border_opts.title or opts.title
     self.on_select = opts.on_select or functional.nop
@@ -86,7 +87,7 @@ function M:confirm(row)
         res = self.select_map[vimfn.getrow()]
     else
         res = vim.fn.getline(".")
-        if row then
+        if self.short_key_map then
             res = res:gsub("^.-%. ", "")
         end
     end
