@@ -232,12 +232,13 @@ function M:mark(data, max_num_data)
 end
 
 function M:is_editing()
-    return self.ctx.edit ~= nil
+    return self._is_editing
 end
 
 function M:_save_edit()
     self.ctx.edit.update(self.ctx.edit.ori_items, self.ctx.edit.get_items())
     self.ctx.edit = nil
+    self._is_editing = false
     vim.bo.buftype = self.bo.buftype
     vim.bo.modifiable = self.bo.modifiable
     vim.bo.undolevels = self.bo.undolevels
@@ -251,6 +252,17 @@ function M:edit(opts)
         update = { opts.update, "f" },
         fill_lines = { opts.fill_lines, "f", true },
     })
+    self._is_editing = true
+
+    self:_unmapfn(self.mappings)
+    vim.bo.undolevels = -1
+    vim.bo.modifiable = true
+    if opts.fill_lines then
+        opts.fill_lines()
+    end
+    -- Set it again in case modifiable is changed.
+    vim.bo.modifiable = true
+
     self.ctx.edit = vim.tbl_extend("error", opts, { ori_items = opts.get_items() })
     vim.bo.buftype = "acwrite"
     vim.api.nvim_create_autocmd("BufWriteCmd", {
@@ -260,14 +272,6 @@ function M:edit(opts)
             global.buffers[self.id]:_save_edit()
         end),
     })
-    self:_unmapfn(self.mappings)
-    vim.bo.undolevels = -1
-    vim.bo.modifiable = true
-    if opts.fill_lines then
-        opts.fill_lines()
-    end
-    -- Set it again in case modifiable is changed.
-    vim.bo.modifiable = true
     -- buffer's undolevels equals -123456 when global undolevels is to be used.
     vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
 end
