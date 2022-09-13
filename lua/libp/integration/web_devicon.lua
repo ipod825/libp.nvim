@@ -1553,12 +1553,18 @@ M.icons = {
     },
 }
 
-function M.setup(opts)
-    if M.loaded then
-        return
+function M.define_highlights()
+    for ft, icon_data in KVIter(M.icons) do
+        if ft == "ranger" then
+            require("libp.log").warn(M.get_hl_group(ft), icon_data)
+        end
+        if icon_data.hl then
+            vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
+        end
     end
-    M.loaded = true
+end
 
+function M.setup(opts)
     opts = opts or {}
     vim.validate({ icons = { opts.icons, "t", true }, alias = { opts.alias, "t", true } })
 
@@ -1569,13 +1575,7 @@ function M.setup(opts)
 
     vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("LipbWebDevicons", {}),
-        callback = function()
-            for ft, icon_data in KVIter(M.icons) do
-                if icon_data.hl then
-                    vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
-                end
-            end
-        end,
+        callback = M.define_highlights,
     })
 end
 
@@ -1585,9 +1585,14 @@ function M.get_hl_group(ft)
     return "LibpDevIcon" .. ft
 end
 
+local lazy_loaded = false
 function M.get(file_path)
     vim.validate({ file_path = { file_path, "s" } })
-    M.setup()
+
+    if not lazy_loaded then
+        M.setup()
+        lazy_loaded = true
+    end
 
     -- First check special name that vim can't detect filetypes.
     local ft = path.basename(file_path)

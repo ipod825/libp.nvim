@@ -2,10 +2,35 @@ local devicon = require("libp.integration.web_devicon")
 local reflection = require("libp.debug.reflection")
 
 describe("setup", function()
-    it("Has no error", function()
-        assert.has_no_error(function()
-            devicon.setup()
-        end)
+    it("Default setup has no error", function()
+        devicon.setup()
+    end)
+
+    it("setup with icon", function()
+        devicon.setup({
+            icons = {
+                ranger = {
+                    icon = "",
+                },
+            },
+        })
+        assert.are.same("", devicon.get("a.ranger").icon)
+    end)
+
+    it("setup with icon and highlight", function()
+        devicon.setup({
+            icons = {
+                ranger = {
+                    icon = "",
+                    hl = {
+                        fg = "#ffffff",
+                        ctermfg = "white",
+                    },
+                },
+            },
+        })
+        devicon.define_highlights()
+        assert.is_truthy(vim.api.nvim_get_hl_by_name("LibpDevIconranger", false))
     end)
 end)
 
