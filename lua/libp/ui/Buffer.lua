@@ -15,7 +15,10 @@ function M.get_current_buffer()
     return global.buffers[vim.api.nvim_get_current_buf()]
 end
 
+-- Note that although this is defined as a member function, it's intended to be
+-- used as a class function, i.e. Buffer:get_or_new.
 function M:get_or_new(opts)
+    opts = opts or {}
     vim.validate({
         filename = { opts.filename, "s" },
     })
@@ -27,7 +30,10 @@ function M:get_or_new(opts)
     return (new and self(opts) or global.buffers[id]), new
 end
 
+-- Note that although this is defined as a member function, it's intended to be
+-- used as a class function, i.e. Buffer:open_or_new.
 function M:open_or_new(opts)
+    opts = opts or {}
     vim.validate({
         open_cmd = { opts.open_cmd, "s" },
         filename = { opts.filename, "s" },
