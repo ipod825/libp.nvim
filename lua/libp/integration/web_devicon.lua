@@ -8,532 +8,532 @@ M.icons = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     [".babelrc"] = {
         icon = "ﬥ",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     [".bash_profile"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     [".bashrc"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     [".DS_Store"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     [".gitattributes"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["gitconfig"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     [".gitignore"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     [".gitlab-ci.yml"] = {
         icon = "",
         hl = {
             fg = "#e24329",
-            cterm_fg = "166",
+            ctermfg = 166,
         },
     },
     [".gitmodules"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     [".gvimrc"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     [".npmignore"] = {
         icon = "",
         hl = {
             fg = "#E8274B",
-            cterm_fg = "161",
+            ctermfg = 161,
         },
     },
     [".npmrc"] = {
         icon = "",
         hl = {
             fg = "#E8274B",
-            cterm_fg = "161",
+            ctermfg = 161,
         },
     },
     [".settings.json"] = {
         icon = "",
         hl = {
             fg = "#854CC7",
-            cterm_fg = "98",
+            ctermfg = 98,
         },
     },
     [".vimrc"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     [".zprofile"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     [".zshenv"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     [".zshrc"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     ["Brewfile"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["CMakeLists.txt"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["gitcommit"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["Dockerfile"] = {
         icon = "",
         hl = {
             fg = "#384d54",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["Gemfile"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["LICENSE"] = {
         icon = "",
         hl = {
             fg = "#d0bf41",
-            cterm_fg = "179",
+            ctermfg = 179,
         },
     },
     ["COPYING"] = {
         icon = "",
         hl = {
             fg = "#d0bf41",
-            cterm_fg = "179",
+            ctermfg = 179,
         },
     },
     ["COPYING.LESSER"] = {
         icon = "",
         hl = {
             fg = "#d0bf41",
-            cterm_fg = "179",
+            ctermfg = 179,
         },
     },
     ["license"] = {
         icon = "",
         hl = {
             fg = "#d0bf41",
-            cterm_fg = "179",
+            ctermfg = 179,
         },
     },
     ["R"] = {
         icon = "ﳒ",
         hl = {
             fg = "#358a5b",
-            cterm_fg = "65",
+            ctermfg = 65,
         },
     },
     ["Rmd"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["Vagrantfile"] = {
         icon = "",
         hl = {
             fg = "#1563FF",
-            cterm_fg = "27",
+            ctermfg = 27,
         },
     },
     ["_gvimrc"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["_vimrc"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["postscr"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["awk"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["bash"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     ["dosbatch"] = {
         icon = "",
         hl = {
             fg = "#C1F12E",
-            cterm_fg = "154",
+            ctermfg = 154,
         },
     },
     ["bmp"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["c"] = {
         icon = "",
         hl = {
             fg = "#599eff",
-            cterm_fg = "75",
+            ctermfg = 75,
         },
     },
     ["c++"] = {
         icon = "",
         hl = {
             fg = "#f34b7d",
-            cterm_fg = "204",
+            ctermfg = 204,
         },
     },
     ["cbl"] = {
         icon = "⚙",
         hl = {
             fg = "#005ca5",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["cc"] = {
         icon = "",
         hl = {
             fg = "#f34b7d",
-            cterm_fg = "204",
+            ctermfg = 204,
         },
     },
     ["cfg"] = {
         icon = "",
         hl = {
             fg = "#ECECEC",
-            cterm_fg = "231",
+            ctermfg = 231,
         },
     },
     ["clojure"] = {
         icon = "",
         hl = {
             fg = "#8dc149",
-            cterm_fg = "107",
+            ctermfg = 107,
         },
     },
     ["cljc"] = {
         icon = "",
         hl = {
             fg = "#8dc149",
-            cterm_fg = "107",
+            ctermfg = 107,
         },
     },
     ["cljs"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["cljd"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["cmake"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["cob"] = {
         icon = "⚙",
         hl = {
             fg = "#005ca5",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["cobol"] = {
         icon = "⚙",
         hl = {
             fg = "#005ca5",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["coffee"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["conf"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["config.ru"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["cp"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["cpp"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["cpy"] = {
         icon = "⚙",
         hl = {
             fg = "#005ca5",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["cr"] = {
         icon = "",
         hl = {
             fg = "#000000",
-            cterm_fg = "16",
+            ctermfg = 16,
         },
     },
     ["cs"] = {
         icon = "",
         hl = {
             fg = "#596706",
-            cterm_fg = "58",
+            ctermfg = 58,
         },
     },
     ["csh"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["cson"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["css"] = {
         icon = "",
         hl = {
             fg = "#42a5f5",
-            cterm_fg = "39",
+            ctermfg = 39,
         },
     },
     ["csv"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     ["cxx"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["d"] = {
         icon = "",
         hl = {
             fg = "#427819",
-            cterm_fg = "64",
+            ctermfg = 64,
         },
     },
     ["dart"] = {
         icon = "",
         hl = {
             fg = "#03589C",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["db"] = {
         icon = "",
         hl = {
             fg = "#dad8d8",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["desktop"] = {
         icon = "",
         hl = {
             fg = "#563d7c",
-            cterm_fg = "60",
+            ctermfg = 60,
         },
     },
     ["diff"] = {
         icon = "",
         hl = {
             fg = "#41535b",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["doc"] = {
         icon = "",
         hl = {
             fg = "#185abd",
-            cterm_fg = "25",
+            ctermfg = 25,
         },
     },
     ["dockerfile"] = {
         icon = "",
         hl = {
             fg = "#384d54",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["drl"] = {
         icon = "",
         hl = {
             fg = "#ffafaf",
-            cterm_fg = "217",
+            ctermfg = 217,
         },
     },
     ["dropbox"] = {
         icon = "",
         hl = {
             fg = "#0061FE",
-            cterm_fg = "27",
+            ctermfg = 27,
         },
     },
     ["dump"] = {
         icon = "",
         hl = {
             fg = "#dad8d8",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["edn"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["eex"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["ejs"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["elm"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["epuppet"] = {
@@ -544,448 +544,448 @@ M.icons = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["erlang"] = {
         icon = "",
         hl = {
             fg = "#B83998",
-            cterm_fg = "132",
+            ctermfg = 132,
         },
     },
     ["elixir"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["exs"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["favicon.ico"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["fennel"] = {
-        color = "#fff3d7",
+        icon = "🌜",
         hl = {
-            fg = "🌜",
-            cterm_fg = "230",
+            fg = "#fff3d7",
+            ctermfg = 230,
         },
     },
     ["fish"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["fsharp"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["fsi"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["fsscript"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["fsx"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["gd"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["gemspec"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["gif"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["git"] = {
         icon = "",
         hl = {
             fg = "#F14C28",
-            cterm_fg = "202",
+            ctermfg = 202,
         },
     },
     ["glb"] = {
         icon = "",
         hl = {
             fg = "#FFB13B",
-            cterm_fg = "215",
+            ctermfg = 215,
         },
     },
     ["go"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["godot"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["gruntfile"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["gulpfile"] = {
         icon = "",
         hl = {
             fg = "#cc3e44",
-            cterm_fg = "167",
+            ctermfg = 167,
         },
     },
     ["h"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["haml"] = {
         icon = "",
         hl = {
             fg = "#eaeae1",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["hbs"] = {
         icon = "",
         hl = {
             fg = "#f0772b",
-            cterm_fg = "208",
+            ctermfg = 208,
         },
     },
     ["heex"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["hh"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["hpp"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["hrl"] = {
         icon = "",
         hl = {
             fg = "#B83998",
-            cterm_fg = "132",
+            ctermfg = 132,
         },
     },
     ["haskell"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["htm"] = {
         icon = "",
         hl = {
             fg = "#e34c26",
-            cterm_fg = "166",
+            ctermfg = 166,
         },
     },
     ["html"] = {
         icon = "",
         hl = {
             fg = "#e44d26",
-            cterm_fg = "202",
+            ctermfg = 202,
         },
     },
     ["hxx"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["ico"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["import"] = {
         icon = "",
         hl = {
             fg = "#ECECEC",
-            cterm_fg = "231",
+            ctermfg = 231,
         },
     },
     ["dosini"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["java"] = {
         icon = "",
         hl = {
             fg = "#cc3e44",
-            cterm_fg = "167",
+            ctermfg = 167,
         },
     },
     ["julia"] = {
         icon = "",
         hl = {
             fg = "#a270ba",
-            cterm_fg = "133",
+            ctermfg = 133,
         },
     },
     ["jpeg"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["jpg"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["javascript"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["json"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["javascriptreact"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["ksh"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["kotlin"] = {
         icon = "𝙆",
         hl = {
             fg = "#F88A02",
-            cterm_fg = "208",
+            ctermfg = 208,
         },
     },
     ["kts"] = {
         icon = "𝙆",
         hl = {
             fg = "#F88A02",
-            cterm_fg = "208",
+            ctermfg = 208,
         },
     },
     ["leex"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["less"] = {
         icon = "",
         hl = {
             fg = "#563d7c",
-            cterm_fg = "60",
+            ctermfg = 60,
         },
     },
     ["lhaskell"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["lua"] = {
         icon = "",
         hl = {
             fg = "#51a0cf",
-            cterm_fg = "74",
+            ctermfg = 74,
         },
     },
     ["make"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["markdown"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["material"] = {
         icon = "",
         hl = {
             fg = "#B83998",
-            cterm_fg = "132",
+            ctermfg = 132,
         },
     },
     ["md"] = {
         icon = "",
         hl = {
             fg = "#ffffff",
-            cterm_fg = "white",
+            ctermfg = "white",
         },
     },
     ["mdx"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["mint"] = {
         icon = "",
         hl = {
             fg = "#87c095",
-            cterm_fg = "108",
+            ctermfg = 108,
         },
     },
     ["mix.lock"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["mjs"] = {
         icon = "",
         hl = {
             fg = "#f1e05a",
-            cterm_fg = "221",
+            ctermfg = 221,
         },
     },
     ["ocaml"] = {
         icon = "λ",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["mli"] = {
         icon = "λ",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["mustache"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["nim"] = {
         icon = "👑",
         hl = {
             fg = "#f3d400",
-            cterm_fg = "220",
+            ctermfg = 220,
         },
     },
     ["nix"] = {
         icon = "",
         hl = {
             fg = "#7ebae4",
-            cterm_fg = "110",
+            ctermfg = 110,
         },
     },
     ["node_modules"] = {
         icon = "",
         hl = {
             fg = "#E8274B",
-            cterm_fg = "161",
+            ctermfg = 161,
         },
     },
     ["opus"] = {
         icon = "",
         hl = {
             fg = "#F88A02",
-            cterm_fg = "208",
+            ctermfg = 208,
         },
     },
     ["otf"] = {
         icon = "",
         hl = {
             fg = "#ECECEC",
-            cterm_fg = "231",
+            ctermfg = 231,
         },
     },
     ["package.json"] = {
@@ -1000,42 +1000,42 @@ M.icons = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["pdf"] = {
         icon = "",
         hl = {
             fg = "#b30b00",
-            cterm_fg = "124",
+            ctermfg = 124,
         },
     },
     ["php"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["perl"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["pm"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["png"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["puppet"] = {
@@ -1046,497 +1046,497 @@ M.icons = {
         icon = "",
         hl = {
             fg = "#cb4a32",
-            cterm_fg = "167",
+            ctermfg = 167,
         },
     },
     ["idlang"] = {
         icon = "",
         hl = {
             fg = "#e4b854",
-            cterm_fg = "179",
+            ctermfg = 179,
         },
     },
     ["Procfile"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["ps1"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["psb"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["psd"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["python"] = {
         icon = "",
         hl = {
             fg = "#ffbc03",
-            cterm_fg = "61",
+            ctermfg = 61,
         },
     },
     ["pyc"] = {
         icon = "",
         hl = {
             fg = "#ffe291",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["pyd"] = {
         icon = "",
         hl = {
             fg = "#ffe291",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["pyo"] = {
         icon = "",
         hl = {
             fg = "#ffe291",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["r"] = {
         icon = "ﳒ",
         hl = {
             fg = "#358a5b",
-            cterm_fg = "65",
+            ctermfg = 65,
         },
     },
     ["rake"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["rakefile"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["ruby"] = {
         icon = "",
         hl = {
             fg = "#701516",
-            cterm_fg = "52",
+            ctermfg = 52,
         },
     },
     ["rlib"] = {
         icon = "",
         hl = {
             fg = "#dea584",
-            cterm_fg = "180",
+            ctermfg = 180,
         },
     },
     ["rmd"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["rproj"] = {
         icon = "鉶",
         hl = {
             fg = "#358a5b",
-            cterm_fg = "65",
+            ctermfg = 65,
         },
     },
     ["rust"] = {
         icon = "",
         hl = {
             fg = "#dea584",
-            cterm_fg = "180",
+            ctermfg = 180,
         },
     },
     ["rss"] = {
         icon = "",
         hl = {
             fg = "#FB9D3B",
-            cterm_fg = "215",
+            ctermfg = 215,
         },
     },
     ["sass"] = {
         icon = "",
         hl = {
             fg = "#f55385",
-            cterm_fg = "204",
+            ctermfg = 204,
         },
     },
     ["scala"] = {
         icon = "",
         hl = {
             fg = "#cc3e44",
-            cterm_fg = "167",
+            ctermfg = 167,
         },
     },
     ["scss"] = {
         icon = "",
         hl = {
             fg = "#f55385",
-            cterm_fg = "204",
+            ctermfg = 204,
         },
     },
     ["sh"] = {
         icon = "",
         hl = {
             fg = "#4d5a5e",
-            cterm_fg = "59",
+            ctermfg = 59,
         },
     },
     ["lprolog"] = {
         icon = "λ",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["slim"] = {
         icon = "",
         hl = {
             fg = "#e34c26",
-            cterm_fg = "166",
+            ctermfg = 166,
         },
     },
     ["sln"] = {
         icon = "",
         hl = {
             fg = "#854CC7",
-            cterm_fg = "98",
+            ctermfg = 98,
         },
     },
     ["sml"] = {
         icon = "λ",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["sql"] = {
         icon = "",
         hl = {
             fg = "#dad8d8",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["sqlite"] = {
         icon = "",
         hl = {
             fg = "#dad8d8",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["sqlite3"] = {
         icon = "",
         hl = {
             fg = "#dad8d8",
-            cterm_fg = "188",
+            ctermfg = 188,
         },
     },
     ["styl"] = {
         icon = "",
         hl = {
             fg = "#8dc149",
-            cterm_fg = "107",
+            ctermfg = 107,
         },
     },
     ["sublime"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "98",
+            ctermfg = 98,
         },
     },
     ["suo"] = {
         icon = "",
         hl = {
             fg = "#854CC7",
-            cterm_fg = "98",
+            ctermfg = 98,
         },
     },
     ["systemverilog"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["svelte"] = {
         icon = "",
         hl = {
             fg = "#ff3e00",
-            cterm_fg = "202",
+            ctermfg = 202,
         },
     },
     ["svh"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["svg"] = {
         icon = "ﰟ",
         hl = {
             fg = "#FFB13B",
-            cterm_fg = "215",
+            ctermfg = 215,
         },
     },
     ["swift"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["tads"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["tbc"] = {
         icon = "﯑",
         hl = {
             fg = "#1e5cb3",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["tcl"] = {
         icon = "﯑",
         hl = {
             fg = "#1e5cb3",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["terminal"] = {
         icon = "",
         hl = {
             fg = "#31B53E",
-            cterm_fg = "71",
+            ctermfg = 71,
         },
     },
     ["tex"] = {
         icon = "ﭨ",
         hl = {
             fg = "#3D6117",
-            cterm_fg = "58",
+            ctermfg = 58,
         },
     },
     ["toml"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["tres"] = {
         icon = "",
         hl = {
             fg = "#cbcb41",
-            cterm_fg = "185",
+            ctermfg = 185,
         },
     },
     ["typescript"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["tscn"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["typescriptreact"] = {
         icon = "",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["twig"] = {
         icon = "",
         hl = {
             fg = "#8dc149",
-            cterm_fg = "107",
+            ctermfg = 107,
         },
     },
     ["txt"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     ["verilog"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["vh"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["vhdl"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["vim"] = {
         icon = "",
         hl = {
             fg = "#019833",
-            cterm_fg = "29",
+            ctermfg = 29,
         },
     },
     ["vue"] = {
         icon = "﵂",
         hl = {
             fg = "#8dc149",
-            cterm_fg = "107",
+            ctermfg = 107,
         },
     },
     ["webmanifest"] = {
         icon = "",
         hl = {
             fg = "#f1e05a",
-            cterm_fg = "221",
+            ctermfg = 221,
         },
     },
     ["webp"] = {
         icon = "",
         hl = {
             fg = "#a074c4",
-            cterm_fg = "140",
+            ctermfg = 140,
         },
     },
     ["webpack"] = {
         icon = "ﰩ",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     ["xcplayground"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["xls"] = {
         icon = "",
         hl = {
             fg = "#207245",
-            cterm_fg = "23",
+            ctermfg = 23,
         },
     },
     ["xml"] = {
         icon = "謹",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["xul"] = {
         icon = "",
         hl = {
             fg = "#e37933",
-            cterm_fg = "173",
+            ctermfg = 173,
         },
     },
     ["yaml"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["yml"] = {
         icon = "",
         hl = {
             fg = "#6d8086",
-            cterm_fg = "66",
+            ctermfg = 66,
         },
     },
     ["zig"] = {
         icon = "",
         hl = {
             fg = "#f69a1b",
-            cterm_fg = "208",
+            ctermfg = 208,
         },
     },
     ["zsh"] = {
         icon = "",
         hl = {
             fg = "#89e051",
-            cterm_fg = "113",
+            ctermfg = 113,
         },
     },
     ["solidity"] = {
         icon = "ﲹ",
         hl = {
             fg = "#519aba",
-            cterm_fg = "67",
+            ctermfg = 67,
         },
     },
     [".env"] = {
         icon = "",
         hl = {
             fg = "#faf743",
-            cterm_fg = "226",
+            ctermfg = 226,
         },
     },
     ["prisma"] = {
         icon = "卑",
         hl = {
             fg = "#ffffff",
-            cterm_fg = "white",
+            ctermfg = "white",
         },
     },
     ["lock"] = {
         icon = "",
         hl = {
             fg = "#bbbbbb",
-            cterm_fg = "250",
+            ctermfg = 250,
         },
     },
     ["log"] = {
         icon = "",
         hl = {
             fg = "#ffffff",
-            cterm_fg = "white",
+            ctermfg = "white",
         },
     },
 }
