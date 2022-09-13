@@ -3,7 +3,9 @@ local reflection = require("libp.debug.reflection")
 
 describe("setup", function()
     it("Has no error", function()
-        devicon.setup()
+        assert.has_no_error(function()
+            devicon.setup()
+        end)
     end)
 end)
 
