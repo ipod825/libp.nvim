@@ -1571,7 +1571,9 @@ function M.setup(opts)
         group = vim.api.nvim_create_augroup("LipbWebDevicons", {}),
         callback = function()
             for ft, icon_data in KVIter(M.icons) do
-                vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
+                if icon_data.hl then
+                    vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
+                end
             end
         end,
     })
