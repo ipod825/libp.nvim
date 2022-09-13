@@ -1611,7 +1611,7 @@ function M.get(file_path)
 
     ft = ft or "default"
     -- Use default if not found.
-    local res = M.icons[ft]
+    local res = M.icons[ft] or M.icons['default']
     return vim.tbl_extend("keep", res, { hl_group = M.get_hl_group(ft) })
 end
 
