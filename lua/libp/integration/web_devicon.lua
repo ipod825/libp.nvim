@@ -1575,10 +1575,12 @@ function M.setup(opts)
 end
 
 function M.get_hl_group(ft)
+    vim.validate({ ft = { ft, 's' } })
     return "LibpDevIcon" .. ft
 end
 
 function M.get(file_path)
+    vim.validate({ file_path = { file_path, 's' } })
     M.setup()
 
     -- First check special name that vim can't detect filetypes.
@@ -1602,13 +1604,14 @@ function M.get(file_path)
 
         -- If vim can't detect filetype from file content. Use extension as the
         -- last resort.
-        if ft == "" then
+        if not ft or ft == "" then
             ft = path.extension(file_path) or ft
         end
     end
 
+    ft = ft or "default"
     -- Use default if not found.
-    local res = M.icons[ft] or M.icons["default"]
+    local res = M.icons[ft]
     return vim.tbl_extend("keep", res, { hl_group = M.get_hl_group(ft) })
 end
 
