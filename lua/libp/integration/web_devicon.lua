@@ -1003,7 +1003,7 @@ M.icons = {
         hl = {
             fg = "#7a0d21",
             ctermfg = 88,
-        }
+        },
     },
     ["pck"] = {
         icon = "",
@@ -1578,13 +1578,13 @@ function M.setup(opts)
 end
 
 function M.get_hl_group(ft)
-    vim.validate({ ft = { ft, 's' } })
-    ft = ft:gsub('[%.%+%-]', '')
+    vim.validate({ ft = { ft, "s" } })
+    ft = ft:gsub("[%.%+%-]", "")
     return "LibpDevIcon" .. ft
 end
 
 function M.get(file_path)
-    vim.validate({ file_path = { file_path, 's' } })
+    vim.validate({ file_path = { file_path, "s" } })
     M.setup()
 
     -- First check special name that vim can't detect filetypes.
@@ -1606,12 +1606,16 @@ function M.get(file_path)
             ft = vim.filetype.match({ filename = file_path })
         end
 
-        ft = ft == '' and nil or ft
+        if ft == "" then
+            ft = nil
+        end
+
+        ft = ft ~= "" and ft or nil
 
         -- It might be a special buffer created by some plugin. And the plugin might already sets its filetype.
-        if not ft and vim.fn.bufexists(file_path) then
-            ft = vim.api.nvim_buf_get_option(vim.fn.bufadd(file_path), 'filetype')
-            ft = ft == 'on' and nil or ft
+        if not ft and vim.fn.bufexists(file_path) > 0 then
+            ft = vim.api.nvim_buf_get_option(vim.fn.bufadd(file_path), "filetype")
+            ft = ft ~= "on" and ft or nil
         end
 
         -- Use extension as the last resort.
@@ -1621,7 +1625,7 @@ function M.get(file_path)
     ft = ft or "default"
     ft = M.alias[ft] and M.alias[ft] or ft
     -- Use default if not found.
-    local res = M.icons[ft] or M.icons['default']
+    local res = M.icons[ft] or M.icons["default"]
     return vim.tbl_extend("keep", res, { hl_group = M.get_hl_group(ft) })
 end
 
