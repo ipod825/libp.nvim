@@ -1,5 +1,5 @@
 --- Useful functions related to @{Iter}
--- @module libp.datatype.itertools
+-- @module libp.itertools
 local M = {}
 local VIter = require("libp.datatype.VIter")
 

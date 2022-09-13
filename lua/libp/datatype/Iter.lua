@@ -28,7 +28,7 @@
 -- the value types of the iterable and @{KVIter} returns the key/value pairs.
 --
 -- @{Iter} can also be constructed from a generator function whose return values
--- should be key/value pairs. @{libp.datatype.itertools.range} is a good example for this.
+-- should be key/value pairs. @{libp.itertools.range} is a good example for this.
 --
 -- Inherits: @{Class}
 -- @classmod Iter
