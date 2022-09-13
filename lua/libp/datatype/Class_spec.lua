@@ -23,6 +23,7 @@ describe("Class", function()
             function Child:fn(arg)
                 return "Child" .. arg
             end
+
             assert.are.same("Childarg", Child():fn("arg"))
             assert.are.same("Childarg", GrandChild():fn("arg"))
         end)
@@ -94,9 +95,11 @@ describe("Class", function()
             function Child:fn(arg)
                 return "Child" .. arg
             end
+
             function GrandChild:fn(arg)
                 return "GrandChild" .. arg
             end
+
             assert.are.same("Childarg", Child():fn("arg"))
             assert.are.same("GrandChildarg", GrandChild():fn("arg"))
         end)
@@ -136,6 +139,7 @@ describe("Class", function()
             function Child:init(num)
                 self.num = num
             end
+
             assert.are.same(1, Child(1).num)
             assert.are.same(1, GrandChild(1).num)
         end)
@@ -144,9 +148,11 @@ describe("Class", function()
             function Child:init(num)
                 self.num = num
             end
+
             function GrandChild:init(num)
                 self.num = 2 * num
             end
+
             assert.are.same(1, Child(1).num)
             assert.are.same(2, GrandChild(1).num)
         end)
@@ -157,10 +163,12 @@ describe("Class", function()
             function Child:init()
                 self.num = 1
             end
+
             function Child:add(a, b)
                 self.num = self.num + a + b
                 return self.num
             end
+
             local c = Child()
             local f = c:BIND(c.add, 1)
             assert.are.same(4, f(2))
@@ -176,6 +184,7 @@ describe("Class", function()
             function Child:append(arr, e)
                 table.insert(arr, e)
             end
+
             local arr = {}
             local c = Child()
             local f = c:BIND(c.append, arr)
@@ -189,6 +198,7 @@ describe("Class", function()
             function Child:nil_to_string(a, b, c)
                 return tostring(a), tostring(b), tostring(c)
             end
+
             local c = Child()
             local f = c:BIND(c.nil_to_string)
             assert.are.same({ "nil", "1", "2" }, { f(nil, 1, 2) })
@@ -202,6 +212,7 @@ describe("Class", function()
             function Child:init()
                 self.num = 1
             end
+
             function GrandChild:init()
                 self.num = 2
             end
@@ -249,6 +260,7 @@ describe("Class", function()
             function Child:Clone()
                 return self:CLASS()()
             end
+
             assert.is_true(Child():Clone():IS(Child))
             assert.is_true(GrandChild():Clone():IS(GrandChild))
         end)

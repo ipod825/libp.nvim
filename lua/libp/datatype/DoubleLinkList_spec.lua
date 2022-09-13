@@ -1,5 +1,4 @@
 local DoubleLinkList = require("libp.datatype.DoubleLinkList")
-local Node = DoubleLinkList.Node
 
 describe("form_list / to_list / to_reverse_list", function()
     it("Forms a list", function()

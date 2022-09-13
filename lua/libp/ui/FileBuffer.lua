@@ -19,8 +19,7 @@ function M:init(filename, opts)
     end
 
     opts = opts or {}
-    opts.bo =
-        vim.tbl_extend("force", opts.bo or {}, { bufhidden = vim.o.hidden and "hide" or "unload", modifiable = true })
+    opts.bo = vim.tbl_extend("force", opts.bo or {}, { bufhidden = vim.o.hidden and "hide" or "unload", modifiable = true })
     opts.listed = true
     opts.scratch = false
 

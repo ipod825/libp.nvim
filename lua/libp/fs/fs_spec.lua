@@ -2,7 +2,6 @@ require("plenary.async").tests.add_to_env()
 local a = require("plenary.async")
 local path_join = require("libp.path").join
 local fs = require("libp.fs")
-local uv = require("libp.fs.uv")
 local reflection = require("libp.debug.reflection")
 
 assert:register("assertion", "fs_succ", function(state, arguments)

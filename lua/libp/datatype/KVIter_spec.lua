@@ -28,13 +28,13 @@ describe("collect", function()
         assert.are.same(
             { c = 6, d = 8 },
             KVIter({ a = 1, b = 2, c = 3, d = 4 })
-                :map(function(v)
-                    return v * 2
-                end)
-                :filter(function(v)
-                    return v > 4
-                end)
-                :collect()
+            :map(function(v)
+                return v * 2
+            end)
+            :filter(function(v)
+                return v > 4
+            end)
+            :collect()
         )
     end)
 
@@ -42,13 +42,13 @@ describe("collect", function()
         assert.are.same(
             { a = 2, b = 4 },
             KVIter({ a = 1, b = 2, c = 3, d = 4 })
-                :filter(function(v)
-                    return v < 3
-                end)
-                :map(function(v)
-                    return v * 2
-                end)
-                :collect()
+            :filter(function(v)
+                return v < 3
+            end)
+            :map(function(v)
+                return v * 2
+            end)
+            :collect()
         )
     end)
 end)

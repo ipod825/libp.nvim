@@ -115,4 +115,5 @@ function M:unbox_if_one()
     end
     return self
 end
+
 return M

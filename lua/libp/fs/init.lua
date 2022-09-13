@@ -10,6 +10,7 @@ function M.stat_mode_num(human_repr)
     vim.validate({ human_repr = { human_repr, "n" } })
     return tonumber(tostring(human_repr), 8)
 end
+
 local k777 = M.stat_mode_num(777)
 local k640 = M.stat_mode_num(640)
 local k100 = M.stat_mode_num(100)

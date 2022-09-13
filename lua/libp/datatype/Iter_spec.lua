@@ -11,6 +11,7 @@ end
 describe("Extension", function()
     it("Makes the __call method of dreived classes invokes its next", function()
         function MyIter:next() end
+
         local myit = MyIter({})
         local nxt = spy.on(myit, "next")
         myit()
