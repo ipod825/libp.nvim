@@ -1560,9 +1560,12 @@ function M.setup(opts)
     M.loaded = true
 
     opts = opts or {}
+    vim.validate({ icons = { opts.icons, "t", true }, alias = { opts.alias, "t", true } })
+
     if opts.icons then
         M.icons = vim.tbl_deep_extend("force", M.icons, opts.icons)
     end
+    M.alias = opts.alias or {}
 
     vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("LipbWebDevicons", {}),
@@ -1576,6 +1579,7 @@ end
 
 function M.get_hl_group(ft)
     vim.validate({ ft = { ft, 's' } })
+    ft = ft:gsub('[%.%+%-]', '')
     return "LibpDevIcon" .. ft
 end
 
@@ -1602,14 +1606,20 @@ function M.get(file_path)
             ft = vim.filetype.match({ filename = file_path })
         end
 
-        -- If vim can't detect filetype from file content. Use extension as the
-        -- last resort.
-        if not ft or ft == "" then
-            ft = path.extension(file_path) or ft
+        ft = ft == '' and nil or ft
+
+        -- It might be a special buffer created by some plugin. And the plugin might already sets its filetype.
+        if not ft and vim.fn.bufexists(file_path) then
+            ft = vim.api.nvim_buf_get_option(vim.fn.bufadd(file_path), 'filetype')
+            ft = ft == 'on' and nil or ft
         end
+
+        -- Use extension as the last resort.
+        ft = ft or path.extension(file_path)
     end
 
     ft = ft or "default"
+    ft = M.alias[ft] and M.alias[ft] or ft
     -- Use default if not found.
     local res = M.icons[ft] or M.icons['default']
     return vim.tbl_extend("keep", res, { hl_group = M.get_hl_group(ft) })
