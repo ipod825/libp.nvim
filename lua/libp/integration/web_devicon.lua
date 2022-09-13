@@ -538,7 +538,10 @@ M.icons = {
     },
     ["epuppet"] = {
         icon = "",
-        color = "#FFA61A",
+        hl = {
+            fg = "#FFA61A",
+            ctermfg = 15,
+        },
     },
     ["eruby"] = {
         icon = "",
@@ -990,11 +993,17 @@ M.icons = {
     },
     ["package.json"] = {
         icon = "",
-        color = "#e8274b",
+        hl = {
+            fg = "#e8274b",
+            ctermfg = 196,
+        },
     },
     ["package-lock.json"] = {
         icon = "",
-        color = "#7a0d21",
+        hl = {
+            fg = "#7a0d21",
+            ctermfg = 88,
+        }
     },
     ["pck"] = {
         icon = "",
@@ -1040,7 +1049,10 @@ M.icons = {
     },
     ["puppet"] = {
         icon = "",
-        color = "#FFA61A",
+        hl = {
+            fg = "#FFA61A",
+            ctermfg = 15,
+        },
     },
     ["ppt"] = {
         icon = "",
