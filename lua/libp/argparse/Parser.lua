@@ -76,12 +76,12 @@ end
 function M:is_parsed_args_invalid(parsed_res, check_positional)
     vim.validate({ parsed_res = { parsed_res, "t" }, check_positional = { check_positional, "b", true } })
     local arg_props = check_positional
-        and vim.tbl_extend(
-            "error",
-            OrderedDict.data(self.arg_props[ArgType.POSITION]),
-            self.arg_props[ArgType.FLAG],
-            self.arg_props[ArgType.LONG_FLAG]
-        )
+            and vim.tbl_extend(
+                "error",
+                OrderedDict.data(self.arg_props[ArgType.POSITION]),
+                self.arg_props[ArgType.FLAG],
+                self.arg_props[ArgType.LONG_FLAG]
+            )
         or vim.tbl_extend("error", self.arg_props[ArgType.FLAG], self.arg_props[ArgType.LONG_FLAG])
 
     for arg, arg_prop in pairs(arg_props) do

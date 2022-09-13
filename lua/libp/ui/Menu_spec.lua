@@ -1,5 +1,11 @@
 local Menu = require("libp.ui.Menu")
 
+local fwin_cfg = {
+    relative = "cursor",
+    row = 10,
+    col = 10,
+}
+
 describe("init", function()
     describe("width/height", function()
         it("Works with no title", function()

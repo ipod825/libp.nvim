@@ -1,6 +1,6 @@
 local BorderWindow = require("libp.ui.BorderWindow")
 
-local function open_box(b, width, height)
+function open_box(b, width, height)
     b:open({
         relative = "editor",
         width = width,

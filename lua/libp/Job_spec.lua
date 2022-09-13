@@ -50,7 +50,6 @@ describe("start", function()
             end)
         end)
     end
-
     test_buffer_size(1)
     test_buffer_size(2)
     test_buffer_size(3)
@@ -182,13 +181,13 @@ describe("non-async context", function()
         assert.are.same(
             { "hello", "world" },
             Job({
-                cmd = "cat",
-            })
-            :start()
-            :send("hello\n")
-            :send("world\n")
-            :shutdown()
-            :stdoutput()
+                    cmd = "cat",
+                })
+                :start()
+                :send("hello\n")
+                :send("world\n")
+                :shutdown()
+                :stdoutput()
         )
     end)
 end)

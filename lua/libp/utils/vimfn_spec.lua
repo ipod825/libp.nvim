@@ -1,5 +1,6 @@
 local vimfn = require("libp.utils.vimfn")
 local spy = require("luassert.spy")
+local reflection = require("libp.debug.reflection")
 local path = require("libp.path")
 
 describe("notify family", function()

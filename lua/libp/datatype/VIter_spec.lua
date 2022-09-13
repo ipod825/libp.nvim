@@ -46,13 +46,13 @@ describe("collect", function()
         assert.are.same(
             { 6, 8 },
             VIter({ 1, 2, 3, 4 })
-            :map(function(v)
-                return v * 2
-            end)
-            :filter(function(v)
-                return v > 4
-            end)
-            :collect()
+                :map(function(v)
+                    return v * 2
+                end)
+                :filter(function(v)
+                    return v > 4
+                end)
+                :collect()
         )
     end)
 
@@ -60,13 +60,13 @@ describe("collect", function()
         assert.are.same(
             { 2, 4 },
             VIter({ 1, 2, 3, 4 })
-            :filter(function(v)
-                return v < 3
-            end)
-            :map(function(v)
-                return v * 2
-            end)
-            :collect()
+                :filter(function(v)
+                    return v < 3
+                end)
+                :map(function(v)
+                    return v * 2
+                end)
+                :collect()
         )
     end)
 end)
