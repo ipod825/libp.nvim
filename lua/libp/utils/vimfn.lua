@@ -74,6 +74,11 @@ function M.getrow(winid)
     return vim.api.nvim_win_get_cursor(winid)[1]
 end
 
+function M.getcol(winid)
+    winid = winid or vim.api.nvim_get_current_win()
+    return vim.api.nvim_win_get_cursor(winid)[2] + 1
+end
+
 function M.tabline_end_pos()
     if vim.go.showtabline == 0 then
         return 1
@@ -132,6 +137,20 @@ function M.setrow(row, win)
     win = win or 0
     row = math.min(math.max(row, 1), vim.api.nvim_buf_line_count(vim.api.nvim_win_get_buf(win)))
     vim.api.nvim_win_set_cursor(win, { row, 0 })
+end
+
+function M.setcol(col, win)
+    vim.validate({
+        col = {
+            col,
+            "n",
+        },
+        win = { win, "n", true },
+    })
+    win = win or 0
+    local row = M.getrow(win)
+    col = math.min(math.max(col, 1), #vim.api.nvim_buf_get_lines(0, row - 1, row, true)[1])
+    vim.api.nvim_win_set_cursor(win, { row, col - 1 })
 end
 
 function M.ensure_exit_visual_mode()
