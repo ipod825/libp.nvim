@@ -1555,9 +1555,6 @@ M.icons = {
 
 function M.define_highlights()
     for ft, icon_data in KVIter(M.icons) do
-        if ft == "ranger" then
-            require("libp.log").warn(M.get_hl_group(ft), icon_data)
-        end
         if icon_data.hl then
             vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
         end
