@@ -24,7 +24,7 @@ assert:register("assertion", "fs_fail", function(state, arguments)
     Passed in:
     %s, %s
     Expected:
-    non-nil, nil
+    nil, non-nil
     ]]):format(res, err)
     return res == nil and err
 end, "pos", "neg")
@@ -177,6 +177,33 @@ describe("mkdir", function()
         assert.is.fs_succ(fs.mkdir(tmp, 640))
         assert.is.fs_succ(fs.is_readable(tmp))
         assert.are.same(640, fs.get_mode(tmp))
+    end)
+end)
+
+a.describe("rmdir", function()
+    itsa("Returns fail if the path is not a directory", function()
+        assert.is_fs_fail(fs.rmdir("no_such_dir"))
+        local tmp = create_file()
+        assert.is_fs_fail(fs.rmdir(tmp))
+    end)
+
+    itsa("Returns fail if the path is not readable", function()
+        local tmp = create_dir()
+        fs.chmod(tmp, 000)
+        assert.is_fs_fail(fs.rmdir(tmp))
+    end)
+
+    it("Fails on non-readable directory but removes other file/directories", function()
+        local root = create_dir()
+        local dir1 = create_dir(root, "dir1")
+        fs.chmod(dir1, 000)
+        local dir2 = create_dir(root, "dir2")
+        local file1 = create_dir(root, "file1")
+        assert.is_fs_fail(fs.rmdir(root))
+        assert.are.same(1, vim.fn.isdirectory(root))
+        assert.are.same(1, vim.fn.isdirectory(dir1))
+        assert.are.same(0, vim.fn.isdirectory(dir2))
+        assert.are.same(0, vim.fn.filereadable(file1))
     end)
 end)
 

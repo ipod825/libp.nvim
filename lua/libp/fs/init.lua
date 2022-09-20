@@ -62,6 +62,44 @@ function M.mkdir(path, mode)
     return uv.fs_mkdir(path, M.stat_mode_num(mode))
 end
 
+function M.rmdir(path)
+    if not M.is_directory(path) then
+        return nil, ("%s is not a directory"):format(path)
+    end
+
+    local handle, err
+    handle, err = uv.fs_scandir(path)
+    if err then
+        return nil, err
+    end
+
+    err = ""
+    while true do
+        local name = uv.fs_scandir_next(handle)
+        if not name then
+            break
+        end
+
+        local new_path = path_join(path, name)
+        local new_err
+        if M.is_directory(new_path) then
+            require("libp.log").warn(new_path)
+            _, new_err = M.rmdir(new_path)
+        else
+            _, new_err = uv.fs_unlink(new_path)
+        end
+        if new_err then
+            err = err .. new_err
+        end
+    end
+    if err == "" then
+        uv.fs_rmdir(path)
+        return true, nil
+    else
+        return nil, err
+    end
+end
+
 function M.touch(path)
     vim.validate({ path = { path, "s" } })
     local fd, err = uv.fs_open(path, "a", k640)
