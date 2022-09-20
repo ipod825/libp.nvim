@@ -1,6 +1,6 @@
 require("plenary.async").tests.add_to_env()
 local a = require("plenary.async")
-local path_join = require("libp.path").join
+local pathfn = require("libp.utils.pathfn")
 local fs = require("libp.fs")
 local uv = require("libp.fs.uv")
 local reflection = require("libp.debug.reflection")
@@ -37,7 +37,7 @@ end
 local function create_file(...)
     local name
     if select("#", ...) > 0 then
-        name = path_join(...)
+        name = pathfn.join(...)
     else
         name = vim.fn.tempname()
     end
@@ -48,7 +48,7 @@ end
 local function create_dir(...)
     local name
     if select("#", ...) > 0 then
-        name = path_join(...)
+        name = pathfn.join(...)
     else
         name = vim.fn.tempname()
     end
@@ -274,6 +274,6 @@ a.describe("copy", function()
         create_file(src_dir, "a")
         assert.is_true(fs.copy(src_dir, dst_dir))
         assert.is_true(fs.is_readable(dst_dir))
-        assert.is_true(fs.is_readable(path_join(dst_dir, "a")))
+        assert.is_true(fs.is_readable(pathfn.join(dst_dir, "a")))
     end)
 end)

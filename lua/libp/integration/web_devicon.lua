@@ -1,7 +1,7 @@
 -- Modified from https://github.com/kyazdani42/nvim-web-devicons
 local M = {}
 local KVIter = require("libp.datatype.KVIter")
-local path = require("libp.path")
+local pathfn = require("libp.utils.pathfn")
 
 M.icons = {
     default = {
@@ -1592,7 +1592,7 @@ function M.get(file_path)
     end
 
     -- First check special name that vim can't detect filetypes.
-    local ft = path.basename(file_path)
+    local ft = pathfn.basename(file_path)
 
     if not M.icons[ft] then
         -- Try detect file type.
@@ -1623,7 +1623,7 @@ function M.get(file_path)
         end
 
         -- Use extension as the last resort.
-        ft = ft or path.extension(file_path)
+        ft = ft or pathfn.extension(file_path)
     end
 
     ft = ft or "default"

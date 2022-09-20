@@ -1,5 +1,5 @@
 local uv = require("libp.fs.uv")
-local path_join = require("libp.path").join
+local pathfn = require("libp.utils.pathfn")
 local mathfn = require("libp.utils.mathfn")
 local VIter = require("libp.datatype.VIter")
 local M = {
@@ -80,7 +80,7 @@ function M.rmdir(path)
             break
         end
 
-        local new_path = path_join(path, name)
+        local new_path = pathfn.join(path, name)
         local new_err
         if M.is_directory(new_path) then
             require("libp.log").warn(new_path)
@@ -164,7 +164,7 @@ function M.copy(src, dst, opts)
                 break
             end
 
-            _, err = M.copy(path_join(src, name), path_join(dst, name), opts)
+            _, err = M.copy(pathfn.join(src, name), pathfn.join(dst, name), opts)
             if err then
                 return nil, err
             end

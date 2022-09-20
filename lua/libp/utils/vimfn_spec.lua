@@ -1,7 +1,7 @@
 local vimfn = require("libp.utils.vimfn")
 local spy = require("luassert.spy")
 local reflection = require("libp.debug.reflection")
-local path = require("libp.path")
+local pathfn = require("libp.utils.pathfn")
 
 describe("notify family", function()
     local notify = spy.on(vim, "notify")
@@ -278,7 +278,7 @@ describe("set_cwd", function()
     it("sets the cwd", function()
         local ori_cwd = vim.fn.getcwd()
         vimfn.set_cwd(vim.fn.getcwd() .. "/..")
-        assert.are.same(path.dirname(ori_cwd), vim.fn.getcwd())
+        assert.are.same(pathfn.dirname(ori_cwd), vim.fn.getcwd())
     end)
 end)
 
