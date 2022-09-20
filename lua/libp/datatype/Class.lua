@@ -25,6 +25,11 @@
 --
 -- @classmod Class
 local M = {}
+setmetatable(M, {
+    __call = function(cls, ...)
+        return cls:NEW(...)
+    end,
+})
 M.__index = M
 
 local global = require("libp.global")("libp")
@@ -77,7 +82,9 @@ end
 function M:EXTEND(metamethods)
     -- New class's metatable will be the current class (self).
     local mt = self
-    -- New class's __call operator will invoke the constructor NEW.
+    -- New class's __call operator will invoke the constructor NEW. Relying on
+    -- Class' default implementation at the beginning of this file is not
+    -- enough. See the explanation for overriding __call below.
     mt.__call = function(cls, ...)
         return cls:NEW(...)
     end
