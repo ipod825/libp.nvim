@@ -83,7 +83,6 @@ function M.rmdir(path)
         local new_path = pathfn.join(path, name)
         local new_err
         if M.is_directory(new_path) then
-            require("libp.log").warn(new_path)
             _, new_err = M.rmdir(new_path)
         else
             _, new_err = uv.fs_unlink(new_path)
