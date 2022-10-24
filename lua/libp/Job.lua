@@ -241,7 +241,8 @@ function M:start(callback)
 
         if exit_code ~= 0 then
             if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
-                vimfn.error(("Error message from\n%s\n\n%s"):format(opts.cmd, stderr_lines))
+                local cmd = type(opts.cmd) == "string" and opts.cmd or table.concat(opts.cmd, " ")
+                vimfn.error(("Error message from\n%s\n\n%s"):format(cmd, stderr_lines))
             end
         end
 
