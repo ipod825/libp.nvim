@@ -161,6 +161,11 @@ function M:init(opts)
 
     opts.stderr_dump_level = opts.stderr_dump_level or M.StderrDumpLevel.ON_ERROR
     self.opts = opts
+    self.is_done = coroutine.running() and a.control.Condvar.new()
+        or {
+            wait = function() end,
+            notify_all = function() end,
+        }
 end
 
 --- Executes the command asynchronously.
@@ -264,6 +269,7 @@ function M:start(callback)
             callback(exit_code)
         end
         self.state = State.FINISHED
+        self.is_done:notify_all()
     end
     self.process, self.pid = vim.loop.spawn(cmd, {
         stdio = { self.stdin, self.stdout, stderr },
@@ -353,11 +359,15 @@ end
 -- @treturn Job The job
 function M:wait(interval_ms)
     vim.validate({ interval_ms = { interval_ms, "n", true } })
+    -- This is a nop for non-async context.
+    self.is_done:wait()
+
+    -- This only runs under non-async context.
     interval_ms = interval_ms or 10
-    if self.state ~= State.FINISHED then
+    while self.state ~= State.FINISHED do
         vim.wait(interval_ms, function()
             return self.state == State.FINISHED
-        end, interval_ms)
+        end)
     end
     return self
 end
