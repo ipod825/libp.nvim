@@ -49,6 +49,12 @@ function M.win_get_var(win, name)
     return succ and var or nil
 end
 
+function M.buf_get_var(buf, name)
+    vim.validate({ buf = { buf, "n" }, name = { name, "s" } })
+    local succ, var = pcall(vim.api.nvim_buf_get_var, buf, name)
+    return succ and var or nil
+end
+
 function M.buf_get_option_and_set(buf, name, new_value)
     if not vim.api.nvim_buf_is_valid(buf) then
         return

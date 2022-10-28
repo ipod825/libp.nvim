@@ -264,6 +264,17 @@ describe("win_get_var", function()
     end)
 end)
 
+describe("buf_get_var", function()
+    it("Returns nil if variable missing", function()
+        assert.is_nil(vimfn.buf_get_var(0, "no_such_var"))
+    end)
+
+    it("Returns the bufdow variable if present", function()
+        vim.api.nvim_buf_set_var(0, "var", 1)
+        assert.are.same(1, vimfn.buf_get_var(0, "var"))
+    end)
+end)
+
 describe("str_to_char", function()
     it("Returns characters of a string", function()
         assert.are.same({ "中", "文" }, vimfn.str_to_char("中文"))
