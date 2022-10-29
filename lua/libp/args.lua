@@ -46,6 +46,16 @@ function M.is_class(e, Cls, cls_name)
     }
 end
 
+function M.is_callable(e)
+    return {
+        e,
+        function()
+            return vim.is_callable(e)
+        end,
+        "callable",
+    }
+end
+
 M.null_or = {}
 local function add_null_or_fn(name, fn)
     M.null_or[name] = function(e)
@@ -59,6 +69,6 @@ local function add_null_or_fn(name, fn)
 end
 
 add_null_or_fn("positive", M.positive)
-add_null_or_fn("is_class", M.is_class)
+add_null_or_fn("is_callable", M.is_callable)
 
 return M
