@@ -9,7 +9,7 @@ function M:init(opts)
         border = { opts.border, { "s", "t" }, true },
     })
     opts.highlight = opts.highlight or "NonText"
-    opts.wo = vim.tbl_extend("keep", opts.wo or {}, {
+    opts.wo = vim.tbl_extend("keep", opts.wo or { number = false, wrap = false }, {
         winhighlight = "Normal:" .. opts.highlight,
     })
 
