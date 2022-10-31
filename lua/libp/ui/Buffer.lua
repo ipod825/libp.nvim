@@ -209,12 +209,13 @@ end
 
 function M:mark(data, max_num_data)
     vim.validate({
-        max_num_data = args.positive(max_num_data),
+        max_num_data = args.null_or.positive(max_num_data),
     })
 
     -- ctx.mark gets cleared on full. _mark_linenrs is a shadow buffer
     -- containing the line numbers for highlight usage.
     self.ctx.mark = self.ctx.mark or {}
+    local max_num_data_not_specified = max_num_data == nil
     max_num_data = max_num_data or #self.ctx.mark + 1
 
     self._mark_linenrs = self._mark_linenrs or {}
@@ -232,8 +233,14 @@ function M:mark(data, max_num_data)
     self.ctx.mark[index] = data
     self._mark_linenrs[index] = vim.fn.line(".")
 
-    for i, linenr in ipairs(self._mark_linenrs) do
-        self:set_hl("LibpBufferMark" .. i, linenr)
+    if max_num_data_not_specified then
+        for linenr in values(self._mark_linenrs) do
+            self:set_hl("LibpBufferMark1", linenr)
+        end
+    else
+        for i, linenr in ipairs(self._mark_linenrs) do
+            self:set_hl("LibpBufferMark" .. i, linenr)
+        end
     end
 end
 
