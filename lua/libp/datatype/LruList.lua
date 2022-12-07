@@ -8,6 +8,18 @@ function M:init(capacity)
     self.size = 0
 end
 
+function M:remove(target)
+    local new_lru = M(self.capacity)
+    for _, val in ipairs(self.lst:to_reverse_list()) do
+        if val ~= target then
+            new_lru:add(val)
+        end
+    end
+    self.lst = new_lru.lst
+    self.val_to_node = new_lru.val_to_node
+    self.size = new_lru.size
+end
+
 function M:add(val)
     if not val then
         return
