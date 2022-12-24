@@ -25,8 +25,7 @@ function M:show()
     local grid = Grid({ height = vim.o.lines })
     grid:add_row({ height = vim.o.lines - 1 })
     local row = grid:add_row({ height = 1 })
-    row
-        :add_column({ width = vim.fn.strwidth(self.hint) })
+    row:add_column({ width = vim.fn.strwidth(self.hint) })
         :fill_window(Window(Buffer({ content = { self.hint } }), { wo = self.wo }))
 
     self.cmd_buffer = Buffer({
