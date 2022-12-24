@@ -30,8 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -OL https://raw.githubusercontent.com/norcalli/bot-ci/master/scripts/github-actions-setup.sh
-          source github-actions-setup.sh nightly-x64
+          nvim --version
           git config --global user.name "foo"
           git config --global user.email "foo@bar.com"
           make test
