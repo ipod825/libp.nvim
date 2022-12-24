@@ -4,19 +4,25 @@ on: [push, pull_request]
 
 jobs:
   test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     name: Test
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: date +%F > todays-date
-      - name: Restore cache for today's nightly.
-        uses: actions/cache@v2
-        with:
-          path: |
-            _neovim
-          key: ${{ runner.os }}-x64-${{ hashFiles('todays-date') }}
-
-      - name: Prepare
+      - name: Install Neovim
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            wget -q https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb -O /tmp/nvim.deb
+            sudo dpkg -i /tmp/nvim.deb
+          else
+            choco install neovim --pre
+            echo "C:/tools/neovim/nvim-win64/bin" >> $GITHUB_PATH
+          fi
+      - name: Install dependencies
         run: |
           mkdir -p ~/.local/share/nvim/site/pack/vendor/start
           git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
@@ -34,7 +40,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: JohnnyMorganz/stylua-action@1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
