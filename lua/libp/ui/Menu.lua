@@ -45,7 +45,7 @@ function M:init(opts)
     local mappings = {
         ["<cr>"] = self:BIND(self.confirm),
         ["<esc>"] = bind(vim.api.nvim_win_close, 0, true),
-["q"] = bind(vim.api.nvim_win_close, 0, true)
+        ["q"] = bind(vim.api.nvim_win_close, 0, true),
     }
     if opts.short_key_map then
         assert(#content == #opts.short_key_map)
