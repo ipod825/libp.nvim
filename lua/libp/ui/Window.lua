@@ -19,6 +19,10 @@ end
 function M:open(fwin_cfg)
     vim.validate({ fwin_cfg = { fwin_cfg, "t" } })
     self.id = vim.api.nvim_open_win(self.buffer.id, self.focus_on_open, fwin_cfg)
+    if vim.api.nvim_buf_get_option(self.buffer.id, "filetype") == "" then
+        vim.api.nvim_buf_set_option(self.buffer.id, "filetype", "libpwindow")
+    end
+
     -- Call self:close in case closed by vim.api.nvim_win_close.
     vim.api.nvim_create_autocmd("WinClosed", {
         pattern = tostring(self.id),
