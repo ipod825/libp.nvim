@@ -6,6 +6,7 @@ local a = require("plenary.async")
 local values = require("libp.itertools").values
 local vimfn = require("libp.utils.vimfn")
 local KVIter = require("libp.datatype.KVIter")
+local bind = require("libp.functional").bind
 
 function M:init(opts)
     vim.validate({
@@ -43,6 +44,8 @@ function M:init(opts)
     local content = opts.content or {}
     local mappings = {
         ["<cr>"] = self:BIND(self.confirm),
+        ["<esc>"] = bind(vim.api.nvim_win_close, 0, true),
+["q"] = bind(vim.api.nvim_win_close, 0, true)
     }
     if opts.short_key_map then
         assert(#content == #opts.short_key_map)
