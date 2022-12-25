@@ -13,7 +13,7 @@ function M:init(buffer, opts)
     self.focus_on_open = opts.focus_on_open
     self.buffer = buffer
     self.w = opts.w or {}
-    self.wo = opts.wo or {}
+    self.wo = vim.tbl_extend("keep", opts.wo or {}, { number = false, relativenumber = false })
 end
 
 function M:open(fwin_cfg)

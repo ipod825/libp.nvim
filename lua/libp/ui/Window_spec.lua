@@ -35,8 +35,15 @@ describe("open", function()
         assert.are.same(w.id, vim.api.nvim_get_current_win())
     end)
 
+    it("Sets Default options", function()
+        w = ui.Window(b)
+        w:open(win_config)
+        assert.is_false(vim.api.nvim_win_get_option(w.id, "number"))
+        assert.is_false(vim.api.nvim_win_get_option(w.id, "relativenumber"))
+    end)
+
     it("Sets passed in window option", function()
-        local wo = { wrap = false, cursorline = true, scrolloff = 3 }
+        local wo = { number = true, wrap = false, cursorline = true, scrolloff = 3 }
         w = ui.Window(b, { wo = wo })
         w:open(win_config)
         for k, v in pairs(wo) do
