@@ -71,6 +71,7 @@ function M:add_argument(provided_name, opts)
         type = "string",
     })
     self.arg_props[arg_type][arg] = arg_prop
+    return self
 end
 
 function M:is_parsed_args_invalid(parsed_res, check_positional)
