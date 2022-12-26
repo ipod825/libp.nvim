@@ -8,7 +8,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     name: Test
-    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - run: date +%F > todays-date
