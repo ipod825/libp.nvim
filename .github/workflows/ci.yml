@@ -6,12 +6,11 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
     name: Test
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - run: date +%F > todays-date
       - name: Install Neovim
         shell: bash
         run: |
@@ -24,9 +23,10 @@ jobs:
           fi
       - name: Install dependencies
         run: |
-          mkdir -p ~/.local/share/nvim/site/pack/vendor/start
-          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
-          ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
+          export NVIM_PACKAGE_DIR=$HOME/.local/share/nvim/site/pack/vendor/start
+          mkdir -p $NVIM_PACKAGE_DIR
+          git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $NVIM_PACKAGE_DIR/plenary.nvim
+          ln -s $(pwd) $NVIM_PACKAGE_DIR
 
       - name: Run tests
         run: |
@@ -36,7 +36,6 @@ jobs:
           make test
 
   lint:
-    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
