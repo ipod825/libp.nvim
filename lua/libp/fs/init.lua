@@ -35,6 +35,7 @@ function M.is_readable(path)
 end
 
 function M.is_executable(path)
+    vim.validate({ path = { path, "s" } })
     local res, err = uv.fs_stat(path)
     if err then
         return false
@@ -62,7 +63,17 @@ function M.mkdir(path, mode)
     return uv.fs_mkdir(path, M.stat_mode_num(mode))
 end
 
+function M.rm(path)
+    vim.validate({ path = { path, "s" } })
+    if M.is_directory(path) then
+        return M.rmdir(path)
+    else
+        return uv.fs_unlink(path)
+    end
+end
+
 function M.rmdir(path)
+    vim.validate({ path = { path, "s" } })
     if not M.is_directory(path) then
         return nil, ("%s is not a directory"):format(path)
     end
