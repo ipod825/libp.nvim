@@ -3,12 +3,17 @@ local term = require("libp.utils.term")
 local List = require("libp.datatype.List")
 
 function M:init(opts)
-    opts = vim.tbl_extend("force", opts or {}, {
+    opts = vim.tbl_extend("keep", opts or {}, {
+        -- For very long outputs, frequent calls to nvim_buf_add_highlight makes
+        -- UI less responsible. Hence, we use a smaller batch size here.
+        job_on_stdout_buffer_size = 500,
         content_highlight_fn = function(beg, _, lines, ctx)
             if beg == 0 then
                 ctx.highlight_attributes = nil
             end
-            return term.get_ansi_code_highlight(lines, ctx.highlight_attributes)
+            local marks
+            marks, ctx.highlight_attributes = term.get_ansi_code_highlight(lines, ctx.highlight_attributes, beg)
+            return marks
         end,
         content_map_fn = function(lines)
             return List(lines):map(function(line)

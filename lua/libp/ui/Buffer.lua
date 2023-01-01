@@ -54,6 +54,7 @@ function M:init(opts)
         content = { opts.content, { "f", "t", "b" }, true },
         content_map_fn = { opts.content_map_fn, "f", true },
         content_highlight_fn = { opts.content_highlight_fn, "f", true },
+        job_on_stdout_buffer_size = { opts.job_on_stdout_buffer_size, "n", true },
         buf_enter_reload = { opts.buf_enter_reload, "b", true },
         mappings = { opts.mappings, "t", true },
         b = { opts.b, "table", true },
@@ -74,6 +75,7 @@ function M:init(opts)
     self.content = args.get_default(opts.content, {})
     self.content_map_fn = opts.content_map_fn or functional.identity
     self.content_highlight_fn = opts.content_highlight_fn or functional.nop
+    self.job_on_stdout_buffer_size = opts.job_on_stdout_buffer_size or 5000
     self.mappings = opts.mappings
 
     self:_mapfn(opts.mappings)
@@ -365,9 +367,16 @@ end
 function M:set_lines(beg, ends, lines)
     local marks = self.content_highlight_fn(beg, ends, lines, self.ctx) or {}
 
+    if not vim.api.nvim_buf_is_valid(self.id) then
+        return
+    end
+
     vim.api.nvim_buf_set_lines(self.id, beg, ends, false, self.content_map_fn(lines))
 
     for _, mark in ipairs(marks) do
+        if not vim.api.nvim_buf_is_valid(self.id) then
+            return
+        end
         -- Use namespace -1 as the highlight never needs to be cleared manually.
         vim.api.nvim_buf_add_highlight(self.id, -1, mark.hl_group, mark.line, mark.col_start, mark.col_end)
     end
@@ -483,6 +492,7 @@ function M:reload()
         local job
         job = Job({
             cmd = self.content(),
+            on_stdout_buffer_size = self.job_on_stdout_buffer_size,
             on_stdout = function(lines)
                 if not vim.api.nvim_buf_is_valid(self.id) or self.cancel_reload then
                     job:kill()

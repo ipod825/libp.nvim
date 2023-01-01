@@ -169,4 +169,11 @@ describe("get_ansi_code_highlight", function()
         }, marks)
         assert.are.same({ italic = true }, attributes)
     end)
+
+    it("Accepts optional row_offset", function()
+        local marks, attributes = highlight.get_ansi_code_highlight({ "B[m[3mC[m" }, nil, 10)
+        assert.are.same({
+            { hl_group = "libpterm_itl", line = 10, col_start = 1, col_end = 2 },
+        }, marks)
+    end)
 end)

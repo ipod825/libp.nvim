@@ -168,14 +168,21 @@ local function get_highlight_group(attributes)
 end
 
 -- Returns an array of nvim_buf_add_highlight arguments for `lines` for lines
--- with ansi escape characters. Note that the caller is assumed to remove the
--- escape characters and the positions returned take that into consideration.
--- The second return value is the remained attributes for the last element in
--- `lines`. If this function is called multiple times for highlighting
--- consecutive lines, the caller should catch the returned attributed and pass
--- in last returned attributes.
-function M.get_ansi_code_highlight(lines, attributes)
+-- with ansi escape characters. Note:
+-- 1. The return rows are their indices (zero-based) in `lines` plus
+--    `row_offset` (default 0). Caller can pass in `row_offset`  if calling this
+--    function for highlighting consecutive lines.
+-- 2. The caller is assumed to remove the escape characters and the columns
+--    returned take that into consideration.
+-- 3. As ansi escape control carries over lines, to support multiple to this
+--    function for consecutive lines, this function returns the carried over
+--    ansi escape control attributes as the second argument. If this function is
+--    called multiple times for highlighting consecutive lines, the caller
+--    must catch the returned attributed and pass in last returned attributes.
+function M.get_ansi_code_highlight(lines, attributes, row_offset)
+    vim.validate({ lines = { lines, "t" }, attributes = { attributes, "t", true }, row_offset = { row_offset, "n", true } })
     attributes = attributes or {}
+    row_offset = row_offset or 0
 
     -- For each line
     -- 1. Find the first control mark.
@@ -212,7 +219,7 @@ function M.get_ansi_code_highlight(lines, attributes)
                     if next_mark_beg - last_mark_end > 1 then
                         res:append({
                             hl_group = get_highlight_group(attributes),
-                            line = i - 1,
+                            line = i - 1 + row_offset,
                             col_start = last_mark_end - total_line_control_char_length,
                             col_end = next_mark_beg - total_line_control_char_length - 1,
                         })
@@ -221,7 +228,7 @@ function M.get_ansi_code_highlight(lines, attributes)
                     -- Skip highlighting if no last_mark_end is the last bytes.
                     res:append({
                         hl_group = get_highlight_group(attributes),
-                        line = i - 1,
+                        line = i - 1 + row_offset,
                         col_start = last_mark_end - total_line_control_char_length,
                         col_end = #line - total_line_control_char_length,
                     })
