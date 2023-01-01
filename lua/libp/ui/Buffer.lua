@@ -52,6 +52,8 @@ function M:init(opts)
     vim.validate({
         filename = { opts.filename, "s", true },
         content = { opts.content, { "f", "t", "b" }, true },
+        content_map_fn = { opts.content_map_fn, "f", true },
+        content_highlight_fn = { opts.content_highlight_fn, "f", true },
         buf_enter_reload = { opts.buf_enter_reload, "b", true },
         mappings = { opts.mappings, "t", true },
         b = { opts.b, "table", true },
@@ -70,6 +72,8 @@ function M:init(opts)
 
     global.buffers[self.id] = self
     self.content = args.get_default(opts.content, {})
+    self.content_map_fn = opts.content_map_fn or functional.identity
+    self.content_highlight_fn = opts.content_highlight_fn or functional.nop
     self.mappings = opts.mappings
 
     self:_mapfn(opts.mappings)
@@ -358,11 +362,22 @@ function M:_clear()
     vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels)
 end
 
+function M:set_lines(beg, ends, lines)
+    local marks = self.content_highlight_fn(beg, ends, lines, self.ctx) or {}
+
+    vim.api.nvim_buf_set_lines(self.id, beg, ends, false, self.content_map_fn(lines))
+
+    for _, mark in ipairs(marks) do
+        -- Use namespace -1 as the highlight never needs to be cleared manually.
+        vim.api.nvim_buf_add_highlight(self.id, -1, mark.hl_group, mark.line, mark.col_start, mark.col_end)
+    end
+end
+
 function M:_append(lines, beg)
     vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
     vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 
-    vim.api.nvim_buf_set_lines(self.id, beg, -1, false, lines)
+    self:set_lines(beg, -1, lines)
 
     vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
     vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels)
@@ -458,7 +473,7 @@ function M:reload()
 
     if type(self.content) == "table" then
         vim.api.nvim_buf_set_option(self.id, "modifiable", true)
-        vim.api.nvim_buf_set_lines(self.id, 0, -1, false, self.content)
+        self:set_lines(0, -1, self.content)
         vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
         restore_cursor()
     else
