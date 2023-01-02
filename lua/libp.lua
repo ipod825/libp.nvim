@@ -5,6 +5,20 @@ function M.setup(opts)
     opts = vim.tbl_deep_extend("force", default_config, opts or {})
     require("libp.integration.web_devicon").setup(opts.integration.web_devicon)
     require("libp.utils.term").setup(opts.utils.term)
+    M.define_highlights(opts)
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("libp_define_highlight", {}),
+        callback = function()
+            M.define_highlights(opts)
+        end,
+    })
+end
+
+function M.define_highlights(opts)
+    for group, color in pairs(opts.highlights) do
+        require("libp.log").warn(group, color)
+        vim.api.nvim_set_hl(0, group, color)
+    end
 end
 
 function M.check_setup(numargs, ...)

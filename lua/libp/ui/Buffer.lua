@@ -338,7 +338,6 @@ function M:set_hl(opts)
         col_end = { opts.col_end, "n", true },
         namespace = { opts.namespace, "n", true },
     })
-    require("libp.log").warn(opts)
     opts.col_start = opts.col_start or 1
     opts.col_end = opts.col_end or -1
     opts.namespace = opts.namespace or self.content_hl_namespace

@@ -1,4 +1,10 @@
 return {
+    highlights = {
+        LibpBufferMark1 = { link = "Search" },
+        LibpBufferMark2 = { ctermfg=0, ctermbg = 46, fg = "#000000", bg = "#98be65" },
+        LibpBufferMark3 = { ctermfg=0, ctermbg = 14, fg = "#000000", bg = "#36d0e0" },
+        LibpTitleWindow = { link = "Title" },
+    },
     integration = {
         web_devicon = {
             -- Overriding default icons and their highlight. The key is valid
