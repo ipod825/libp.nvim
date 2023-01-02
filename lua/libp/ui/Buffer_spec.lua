@@ -526,8 +526,19 @@ describe("Buffer", function()
                 open_cmd = "edit",
             })
 
-            b:set_hl("Normal", 1)
+            b:set_hl({ hl_group = "Normal", row = 1 })
             assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 0, -1)
+            add_highlight:clear()
+        end)
+
+        it("Accepts namespace", function()
+            b = Buffer:open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+            })
+
+            b:set_hl({ hl_group = "Normal", row = 1, namespace = 10 })
+            assert.spy(add_highlight).was_called_with(b.id, 10, "Normal", 0, 0, -1)
             add_highlight:clear()
         end)
 
@@ -537,7 +548,7 @@ describe("Buffer", function()
                 open_cmd = "edit",
             })
 
-            b:set_hl("Normal", 1, 2, 3)
+            b:set_hl({ hl_group = "Normal", row = 1, col_start = 2, col_end = 3 })
             assert.spy(add_highlight).was_called_with(b.id, _, "Normal", 0, 1, 3)
             add_highlight:clear()
         end)
@@ -553,21 +564,41 @@ describe("Buffer", function()
                 content = { "a", "b", "c" },
             })
 
-            b:clear_hl(1)
+            b:clear_hl({ row_start = 1 })
             assert.spy(clear_highlight).was_called_with(b.id, _, 0, 1)
             clear_highlight:clear()
-            b:clear_hl(2)
+            b:clear_hl({ row_start = 2 })
             assert.spy(clear_highlight).was_called_with(b.id, _, 1, 2)
             clear_highlight:clear()
         end)
+
+        it("Accepts row_end", function()
+            b = Buffer:open_or_new({
+                filename = "test_abc",
+                open_cmd = "edit",
+                content = { "a", "b", "c" },
+            })
+
+            b:clear_hl({ row_start = 1, namespace = 10 })
+            assert.spy(clear_highlight).was_called_with(b.id, 10, 0, 1)
+            clear_highlight:clear()
+            b:clear_hl({ row_start = 2, namespace = 10 })
+            assert.spy(clear_highlight).was_called_with(b.id, 10, 1, 2)
+            clear_highlight:clear()
+        end)
+
         it("Accepts row_end", function()
             b = Buffer:open_or_new({
                 filename = "test_abc",
                 open_cmd = "edit",
             })
 
-            b:clear_hl(1, 5)
+            b:clear_hl({ row_start = 1, row_end = 5 })
             assert.spy(clear_highlight).was_called_with(b.id, _, 0, 4)
+            clear_highlight:clear()
+
+            b:clear_hl({ row_start = 1, row_end = -1 })
+            assert.spy(clear_highlight).was_called_with(b.id, _, 0, -1)
             clear_highlight:clear()
         end)
     end)

@@ -84,7 +84,8 @@ function M:init(opts)
     local ctx = {}
     self.ctx = setmetatable({}, { __index = ctx, __newindex = ctx })
 
-    self.namespace = vim.api.nvim_create_namespace("")
+    self.mark_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_mark")
+    self.content_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_content")
 
     for k, v in pairs(opts.b or {}) do
         vim.api.nvim_buf_set_var(self.id, k, v)
@@ -230,7 +231,7 @@ function M:mark(data, max_num_data)
         self.ctx.mark = {}
         -- Clears all previous mark highlight
         for line in values(self._mark_linenrs) do
-            self:clear_hl(line)
+            self:clear_hl({ row_start = line, namespace = self.mark_hl_namespace })
         end
         self._mark_linenrs = {}
     end
@@ -241,11 +242,11 @@ function M:mark(data, max_num_data)
 
     if max_num_data_not_specified then
         for linenr in values(self._mark_linenrs) do
-            self:set_hl("LibpBufferMark1", linenr)
+            self:set_hl({ hl_group = "LibpBufferMark1", row = linenr, namespace = self.mark_hl_namespace })
         end
     else
         for i, linenr in ipairs(self._mark_linenrs) do
-            self:set_hl("LibpBufferMark" .. i, linenr)
+            self:set_hl({ hl_group = "LibpBufferMark" .. i, row = linenr, namespace = self.mark_hl_namespace })
         end
     end
 end
@@ -329,16 +330,42 @@ function M:get_line(ind)
     return self:get_lines(ind, ind + 1)[1]
 end
 
-function M:set_hl(hl, row, col_start, col_end)
-    col_start = col_start or 1
-    col_end = col_end or -1
-    vim.api.nvim_buf_add_highlight(self.id, self.namespace, hl, row - 1, col_start - 1, col_end)
+function M:set_hl(opts)
+    vim.validate({
+        hl_group = { opts.hl_group, "s" },
+        row = { opts.row, "n" },
+        col_start = { opts.col_start, "n", true },
+        col_end = { opts.col_end, "n", true },
+        namespace = { opts.namespace, "n", true },
+    })
+    require("libp.log").warn(opts)
+    opts.col_start = opts.col_start or 1
+    opts.col_end = opts.col_end or -1
+    opts.namespace = opts.namespace or self.content_hl_namespace
+    vim.api.nvim_buf_add_highlight(
+        self.id,
+        opts.namespace,
+        opts.hl_group,
+        opts.row - 1,
+        opts.col_start - 1,
+        opts.col_end
+    )
 end
 
-function M:clear_hl(row_start, row_end)
-    vim.validate({ row_start = { row_start, "n" } })
-    row_end = row_end or row_start + 1
-    vim.api.nvim_buf_clear_namespace(self.id, self.namespace, row_start - 1, row_end - 1)
+function M:clear_hl(opts)
+    vim.validate({
+        row_start = { opts.row_start, "n" },
+        row_end = { opts.row_end, "n", true },
+        namespace = { opts.namespace, "n", true },
+    })
+    opts.row_end = opts.row_end or opts.row_start + 1
+    opts.namespace = opts.namespace or self.content_hl_namespace
+    vim.api.nvim_buf_clear_namespace(
+        self.id,
+        opts.namespace,
+        opts.row_start - 1,
+        opts.row_end < 0 and opts.row_end or opts.row_end - 1
+    )
 end
 
 function M:get_attached_wins()
@@ -365,7 +392,7 @@ function M:_clear()
 end
 
 function M:set_lines(beg, ends, lines)
-    local marks = self.content_highlight_fn(beg, ends, lines, self.ctx) or {}
+    local marks = self.content_highlight_fn(self, beg, ends, lines, self.ctx) or {}
 
     if not vim.api.nvim_buf_is_valid(self.id) then
         return
@@ -377,8 +404,14 @@ function M:set_lines(beg, ends, lines)
         if not vim.api.nvim_buf_is_valid(self.id) then
             return
         end
-        -- Use namespace -1 as the highlight never needs to be cleared manually.
-        vim.api.nvim_buf_add_highlight(self.id, -1, mark.hl_group, mark.line, mark.col_start, mark.col_end)
+        vim.api.nvim_buf_add_highlight(
+            self.id,
+            self.content_hl_namespace,
+            mark.hl_group,
+            mark.line,
+            mark.col_start or 0,
+            mark.col_end or -1
+        )
     end
 end
 
@@ -401,33 +434,6 @@ end
 
 function M:wait_reload()
     self.reload_done:wait()
-end
-
--- Sets the highlights of the buffer. This is invoked at the end of reload so
--- the subclass can override it to add default highlight behavior after reload.
--- This can also be called manually by passing a VIter of highlights. Each
--- element in the VIter is an array of highlights, each of which is of the form
--- {hl_name, row, col_beg, col_end}. Note that `col_beg` and `col_end` are
--- optional. See `set_hl` for their default values.
-function M:reload_highlight(highlights)
-    vim.validate({
-        highlights = {
-            highlights,
-            function(e)
-                return e == nil or (e.IS and e:IS(VIter))
-            end,
-            true,
-        },
-    })
-
-    if highlights then
-        self:clear_hl(1, -1)
-        for row_highlights in highlights do
-            for highlight in VIter(row_highlights) do
-                self:set_hl(unpack(highlight))
-            end
-        end
-    end
 end
 
 function M:reload()
@@ -480,6 +486,8 @@ function M:reload()
         end
     end
 
+    vim.api.nvim_buf_clear_namespace(self.id, self.content_hl_namespace, 0, -1)
+
     if type(self.content) == "table" then
         vim.api.nvim_buf_set_option(self.id, "modifiable", true)
         self:set_lines(0, -1, self.content)
@@ -516,7 +524,6 @@ function M:reload()
 
     self.is_reloading = false
     self.reload_done:notify_all()
-    self:reload_highlight()
 end
 
 return M

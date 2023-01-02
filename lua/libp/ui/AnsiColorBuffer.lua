@@ -7,7 +7,7 @@ function M:init(opts)
         -- For very long outputs, frequent calls to nvim_buf_add_highlight makes
         -- UI less responsible. Hence, we use a smaller batch size here.
         job_on_stdout_buffer_size = 500,
-        content_highlight_fn = function(beg, _, lines, ctx)
+        content_highlight_fn = function(_, beg, _, lines, ctx)
             if beg == 0 then
                 ctx.highlight_attributes = nil
             end
