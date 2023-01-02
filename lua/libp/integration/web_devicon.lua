@@ -1563,10 +1563,10 @@ end
 
 function M.setup(opts)
     opts = opts or {}
-    vim.validate({ icons = { opts.icons, "t" }, alias = { opts.alias, "t" } })
+    vim.validate({ icons = { opts.icons, "t", true }, alias = { opts.alias, "t", true } })
 
-    M.icons = vim.tbl_deep_extend("force", M.icons, opts.icons)
-    M.alias = opts.alias
+    M.icons = vim.tbl_deep_extend("force", M.icons, opts.icons or {})
+    M.alias = opts.alias or {}
 
     vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("LipbWebDevicons", {}),
@@ -1581,7 +1581,7 @@ function M.get_hl_group(ft)
 end
 
 function M.get(file_path)
-    require("libp").check_setup(2,  M.alias, M.icons )
+    require("libp").check_setup(2, M.alias, M.icons)
 
     -- First check special name that vim can't detect filetypes.
     local ft = pathfn.basename(file_path)
