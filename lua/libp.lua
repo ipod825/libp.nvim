@@ -16,7 +16,6 @@ end
 
 function M.define_highlights(opts)
     for group, color in pairs(opts.highlights) do
-        require("libp.log").warn(group, color)
         vim.api.nvim_set_hl(0, group, color)
     end
 end
