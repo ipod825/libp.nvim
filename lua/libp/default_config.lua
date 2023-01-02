@@ -18,7 +18,7 @@ return {
             -- Aliases to icons' keys. Useful for mapping new filetype to
             -- existing icons without defining the same icon entry for the new
             -- filetype. For example, if you use fugitive, you might want to add
-            -- the following aliases: 
+            -- the following aliases:
             -- alias = { fugitive = "git" },
             alias = {},
         },

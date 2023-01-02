@@ -181,7 +181,11 @@ end
 --    must catch the returned attributed and pass in last returned attributes.
 function M.get_ansi_code_highlight(lines, attributes, row_offset)
     require("libp").check_setup(2, M.highlight_groups, M.color256_map)
-    vim.validate({ lines = { lines, "t" }, attributes = { attributes, "t", true }, row_offset = { row_offset, "n", true } })
+    vim.validate({
+        lines = { lines, "t" },
+        attributes = { attributes, "t", true },
+        row_offset = { row_offset, "n", true },
+    })
     attributes = attributes or {}
     row_offset = row_offset or 0
 

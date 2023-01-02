@@ -1,5 +1,5 @@
 local M = {
-   get_ansi_code_highlight = require("libp.utils.term.highlight").get_ansi_code_highlight
+    get_ansi_code_highlight = require("libp.utils.term.highlight").get_ansi_code_highlight,
 }
 
 function M.setup(opts)
