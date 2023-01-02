@@ -1581,7 +1581,7 @@ function M.get_hl_group(ft)
 end
 
 function M.get(file_path)
-    vim.validate({ file_path = { file_path, "s" } })
+    require("libp").check_setup(2,  M.alias, M.icons )
 
     -- First check special name that vim can't detect filetypes.
     local ft = pathfn.basename(file_path)
