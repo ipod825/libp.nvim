@@ -1,3 +1,4 @@
+require("plenary.async").tests.add_to_env()
 local throttle = require("libp.utils.throttle")
 
 describe("max_per_second", function()
@@ -42,5 +43,38 @@ describe("max_per_second", function()
             end
         end
         assert.are.same({ 1, 2, 3, 4, 5 }, res)
+    end)
+end)
+
+describe("delay_call_last", function()
+    a.it("Only calls the last", function()
+        local res = {}
+        local d = throttle.delay_call_last(50, function(i)
+            table.insert(res, i)
+        end)
+
+        for i = 1, 10 do
+            d(i)
+        end
+        a.util.sleep(50)
+        assert.are.same({ 10 }, res)
+    end)
+
+    a.it("Calls the two last in two time span", function()
+        local res = {}
+        local d = throttle.delay_call_last(50, function(i)
+            table.insert(res, i)
+        end)
+
+        for i = 1, 5 do
+            d(i)
+        end
+        a.util.sleep(50)
+
+        for i = 6, 10 do
+            d(i)
+        end
+        a.util.sleep(50)
+        assert.are.same({5, 10 }, res)
     end)
 end)

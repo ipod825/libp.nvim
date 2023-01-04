@@ -5,6 +5,7 @@ local M = {}
 -- value of the function indicates whether `fn` was invoked or not. If invoked,
 -- the return values of `fn` are appended as varargs.
 function M.max_per_second(rate_limit, fn)
+    vim.validate({ rate_limit = { rate_limit, "n", true }, fn = { fn, "f", true } })
     rate_limit = rate_limit or 1
     fn = fn or functional.nop
     local current_tokens = rate_limit
@@ -25,6 +26,23 @@ function M.max_per_second(rate_limit, fn)
         else
             return false
         end
+    end
+end
+
+function M.delay_call_last(wait_ms, fn)
+    vim.validate({ wait_ms = { wait_ms, "n" }, fn = { fn, "f" } })
+    local counter = 0
+
+    return function(...)
+        counter = counter + 1
+        local call_index = counter
+        local args = { ... }
+        vim.defer_fn(function()
+            if call_index == counter then
+                counter = 0
+                fn(unpack(args))
+            end
+        end, wait_ms)
     end
 end
 
