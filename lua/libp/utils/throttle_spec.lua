@@ -75,6 +75,6 @@ describe("delay_call_last", function()
             d(i)
         end
         a.util.sleep(50)
-        assert.are.same({5, 10 }, res)
+        assert.are.same({ 5, 10 }, res)
     end)
 end)
