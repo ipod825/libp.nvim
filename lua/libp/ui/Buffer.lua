@@ -1,3 +1,9 @@
+--- Module: **libp.ui.Buffer**
+--
+-- Buffer class. Wrapping vim buffer to display lines and output from jobs.
+--
+-- Inherits: @{Class}
+-- @classmod Buffer
 local M = require("libp.datatype.Class"):EXTEND()
 local global = require("libp.global")("libp")
 local a = require("plenary.async")
@@ -11,12 +17,28 @@ local values = require("libp.itertools").values
 
 global.buffers = global.buffers or {}
 
+--- Returns the Buffer corresponding to the current vim buffer, might be nil if no
+--wrapping buffer exists.
+-- @treturn Buffer The Buffer object.
+-- @usage assert.are.same(Buffer.get_current_buffer().id, vim.api.nvim_get_current_buf())
 function M.get_current_buffer()
     return global.buffers[vim.api.nvim_get_current_buf()]
 end
 
--- Note that although this is defined as a member function, it's intended to be
--- used as a class function, i.e. Buffer:get_or_new.
+--- Returns a new Buffer or an existing one.
+-- Note that although this is defined as a member function, the caller should be
+-- the Buffer class or classes inheriting buffer. The return type is the caller
+-- class. The main difference between this function and @{open_or_new} is
+-- that it does not open the Buffer in any window. The caller can then decide
+-- how to open the Buffer later (even in a floating window).
+-- @tparam table opts
+-- @tparam string opts.filename The file name of the corresponding vim buffer.
+-- @treturn Buffer The Buffer object.
+-- @see Buffer:open_or_new
+-- @usage
+-- local InheritedBuffer = require("libp.ui.Buffer"):EXTEND()
+-- local existing_or_new = InheritedBuffer:get_or_new({ filename = "filename" })
+-- assert(existing_or_new:IS(InheritedBuffer))
 function M:get_or_new(opts)
     opts = opts or {}
     vim.validate({
@@ -30,8 +52,19 @@ function M:get_or_new(opts)
     return (new and self(opts) or global.buffers[id]), new
 end
 
--- Note that although this is defined as a member function, it's intended to be
--- used as a class function, i.e. Buffer:open_or_new.
+--- Returns a new Buffer or an existing one and opens the buffer using `opts.open_cmd`
+-- Note that although this is defined as a member function, the caller should be
+-- the Buffer class or classes inheriting buffer. The return type is the caller
+-- class.
+-- @tparam table opts
+-- @tparam string opts.filename The file name of the corresponding vim buffer.
+-- @tparam string opts.open_cmd A valid vim command that opens a file.
+-- @treturn Buffer The Buffer object.
+-- @see Buffer:get_or_new
+-- @usage
+-- local InheritedBuffer = require("libp.ui.Buffer"):EXTEND()
+-- local existing_or_new = InheritedBuffer:open_or_new({ open_cmd = "tabedit", filename = "filename" })
+-- assert(existing_or_new:IS(InheritedBuffer))
 function M:open_or_new(opts)
     opts = opts or {}
     vim.validate({
@@ -47,6 +80,57 @@ function M:open_or_new(opts)
     return (new and self(opts) or global.buffers[opts.id]), new
 end
 
+---
+-- @field id The id of the vim buffer.
+
+---
+-- @field ctx A table for storing arbitrary variables per buffer.
+
+---
+-- @field content_hl_namespace The highlight name space used by @{reload}
+-- @{set_hl} and @{clear_hl}
+
+---
+-- @field is_reloading Whether @{reload} is running
+
+--- Constructor.
+-- @tparam table opts
+-- @tparam[opt=nil] string opts.filename The file name of the corresponding vim buffer.
+-- @tparam[opt={}] {string}|function opts.content The content to be filled in
+-- the corresponding vim buffer. Could be direct content of type array of string
+-- or a function that returns a string, which is passed as `cmd` to @{Job:init}.
+-- @tparam[opt=identity] function({string})->string opts.content_map_fn The function that maps
+-- each line of the content before it's filled in the vim buffer. Should only be
+-- useful when `content` is from @{Job}.
+-- @tparam[opt=nop] function(buffer,beg,ends,lines,context)->table opts.content_highlight_fn
+-- The function that returns highlight info for the content. The signature of
+-- `content_highlight_fn` is:
+--
+-- * buffer: The buffer under operation.
+-- * beg: The start line number, see `:help api-indexing`.
+-- * ends: The ending line number, see `:help api-indexing`.
+-- * context: Arbitrary table for the callee to store internal states (per Buffer).
+-- * return: a table with keys of names as `vim.api.nvim_buf_add_highlight`'s arguments'.
+-- @tparam[opt=5000] number opts.job_on_stdout_buffer_size Passed to @{Job:init}'s
+-- on_stdout_buffer_size for optimizing buffer loading speed.
+-- @tparam[opt=nil] boolean opts.buffe_enter_reload Whether to invoke @{reload} on BufEnter.
+-- @tparam[opt=nil] table opts.mappings The table defining mappings in all modes. For e.g.
+--
+--      mappings = {
+--          n = { j = function() end },
+--          v = { k = function() end },
+--      }
+--
+-- Note that the functions are invoked inside in `plenary.async.void` such that
+-- you could define async action for key mappings. Also note that if a Buffer is
+-- also constructed inside a `plenary.async.void` context. The user might
+-- trigger the mapping before your Buffer's internal states are fully
+-- initialized and hit error. In such case, use @{set_mappings} to set the
+-- mappings after initialization is done.
+-- @tparam[b={}] table opts.b buffer
+-- variables to be
+-- set. See `:help vim.b`.
+-- @tparam[bo={}] table opts.bo buffer options to be set. See `:help vim.bo`.
 function M:init(opts)
     opts = opts or {}
     vim.validate({
@@ -72,11 +156,11 @@ function M:init(opts)
     end
 
     global.buffers[self.id] = self
-    self.content = args.get_default(opts.content, {})
-    self.content_map_fn = opts.content_map_fn or functional.identity
-    self.content_highlight_fn = opts.content_highlight_fn or functional.nop
-    self.job_on_stdout_buffer_size = opts.job_on_stdout_buffer_size or 5000
-    self.mappings = opts.mappings
+    self._content = args.get_default(opts.content, {})
+    self._content_map_fn = opts.content_map_fn or functional.identity
+    self._content_highlight_fn = opts.content_highlight_fn or functional.nop
+    self._job_on_stdout_buffer_size = opts.job_on_stdout_buffer_size or 5000
+    self._mappings = opts.mappings
 
     self:_mapfn(opts.mappings)
 
@@ -84,7 +168,7 @@ function M:init(opts)
     local ctx = {}
     self.ctx = setmetatable({}, { __index = ctx, __newindex = ctx })
 
-    self.mark_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_mark")
+    self._mark_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_mark")
     self.content_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_content")
 
     for k, v in pairs(opts.b or {}) do
@@ -101,7 +185,7 @@ function M:init(opts)
     for k, v in pairs(bo) do
         vim.api.nvim_buf_set_option(self.id, k, v)
     end
-    self.bo = bo
+    self._bo = bo
 
     -- The following autocmds might not be triggered due to nested autocmds. The
     -- handlers are invoked manually in other places when necessary.
@@ -133,20 +217,25 @@ function M:init(opts)
         })
     end
 
-    self.reload_done = a.control.Condvar.new()
-    if self.content then
+    self._reload_done = a.control.Condvar.new()
+    if self._content then
         self:reload()
     end
 end
 
+--- Removes the Buffer from the global buffer list. Usually should be called on
+-- BufWipeout autocmd. But in case that doesn't happen. One could invoke this
+-- function to do it manually.
 function M:on_wipeout()
     global.buffers[self.id] = nil
 end
 
+--- Sets the mappings of the buffer. Prefer passing `mappings` to @{init} if possible.
+-- @tparam table mappings The mappings.
 function M:set_mappings(mappings)
-    self:_unmapfn(self.mappings)
-    self.mappings = mappings
-    self:_mapfn(self.mappings)
+    self:_unmapfn(self._mappings)
+    self._mappings = mappings
+    self:_mapfn(self._mappings)
 end
 
 function M:_mapfn(mappings)
@@ -231,7 +320,7 @@ function M:mark(data, max_num_data)
         self.ctx.mark = {}
         -- Clears all previous mark highlight
         for line in values(self._mark_linenrs) do
-            self:clear_hl({ row_start = line, namespace = self.mark_hl_namespace })
+            self:clear_hl({ row_start = line, namespace = self._mark_hl_namespace })
         end
         self._mark_linenrs = {}
     end
@@ -242,11 +331,11 @@ function M:mark(data, max_num_data)
 
     if max_num_data_not_specified then
         for linenr in values(self._mark_linenrs) do
-            self:set_hl({ hl_group = "LibpBufferMark1", row = linenr, namespace = self.mark_hl_namespace })
+            self:set_hl({ hl_group = "LibpBufferMark1", row = linenr, namespace = self._mark_hl_namespace })
         end
     else
         for i, linenr in ipairs(self._mark_linenrs) do
-            self:set_hl({ hl_group = "LibpBufferMark" .. i, row = linenr, namespace = self.mark_hl_namespace })
+            self:set_hl({ hl_group = "LibpBufferMark" .. i, row = linenr, namespace = self._mark_hl_namespace })
         end
     end
 end
@@ -259,10 +348,10 @@ function M:_save_edit()
     self.ctx.edit.update(self.ctx.edit.ori_items, self.ctx.edit.get_items())
     self.ctx.edit = nil
     self._is_editing = false
-    vim.bo.buftype = self.bo.buftype
-    vim.bo.modifiable = self.bo.modifiable
-    vim.bo.undolevels = self.bo.undolevels
-    self:_mapfn(self.mappings)
+    vim.bo.buftype = self._bo.buftype
+    vim.bo.modifiable = self._bo.modifiable
+    vim.bo.undolevels = self._bo.undolevels
+    self:_mapfn(self._mappings)
     self:reload()
 end
 
@@ -274,7 +363,7 @@ function M:edit(opts)
     })
     self._is_editing = true
 
-    self:_unmapfn(self.mappings)
+    self:_unmapfn(self._mappings)
     vim.bo.undolevels = -1
     vim.bo.modifiable = true
     if opts.fill_lines then
@@ -293,7 +382,7 @@ function M:edit(opts)
         end),
     })
     -- buffer's undolevels equals -123456 when global undolevels is to be used.
-    vim.bo.undolevels = (self.bo.undolevels > 0) and self.bo.undolevels or vim.go.undolevels
+    vim.bo.undolevels = (self._bo.undolevels > 0) and self._bo.undolevels or vim.go.undolevels
 end
 
 function M:_unmapfn(mappings)
@@ -313,6 +402,9 @@ function M:_unmapfn(mappings)
     end
 end
 
+--- Get the lines of the buffer.
+-- @tparam[opt=1] number beg The starting row  (1-based, inclusive)
+-- @tparam[opt=-1] number ends The starting row  (1-based, exclusive, -1 denotes last)
 function M:get_lines(beg, ends, strict_indexing)
     vim.validate({
         beg = { beg, "n", true },
@@ -325,11 +417,25 @@ function M:get_lines(beg, ends, strict_indexing)
     return vim.api.nvim_buf_get_lines(self.id, beg, ends, strict_indexing)
 end
 
+--- Get a single line of the buffer.
+-- @tparam[opt=1] number ind The starting row  (1-based, inclusive)
 function M:get_line(ind)
     vim.validate({ ind = { ind, "n" } })
     return self:get_lines(ind, ind + 1)[1]
 end
 
+--- Sets the highlight of the buffer. Prefer passing `content_highlight_fn` to
+-- @{init} if highlighting happens only during @{reload}.
+-- @tparam table opts
+-- @tparam string opts.hl_group The highlight group name.
+-- @tparam number opts.row The (starting) row to be highlighted (1-based,
+-- inclusive)
+-- @tparam[opt=1] number opts.col_start The starting column be highlighted
+-- (1-based, inclusive, byte index) @tparam[opt=-1] number
+-- opts.col_end The starting column be highlighted (0-based, exclusive, byte
+-- index, -1 denotes last)
+-- @tparam[opt] number opts.namespace. The highlighting namespace. Default to
+-- `Buffer.content_highlight_fn`.
 function M:set_hl(opts)
     vim.validate({
         hl_group = { opts.hl_group, "s" },
@@ -351,6 +457,15 @@ function M:set_hl(opts)
     )
 end
 
+--- Clears the highlight of the buffer. Prefer passing `content_highlight_fn` to
+-- @{init} if highlighting happens only during @{reload}.
+-- @tparam table opts
+-- @tparam number opts.row_start The starting row to clear the highlight (1-based,
+-- inclusive)
+-- @tparam number opts.row_end The starting row to clear the highlight (1-based,
+-- exclusive, -1 denotes last)
+-- @tparam[opt] number opts.namespace. The highlighting namespace. Default to
+-- `Buffer.content_highlight_fn`.
 function M:clear_hl(opts)
     vim.validate({
         row_start = { opts.row_start, "n" },
@@ -367,37 +482,46 @@ function M:clear_hl(opts)
     )
 end
 
+--- Returns an array of windows where the Buffer is visible.
+-- @treturn {number} The window ids.
 function M:get_attached_wins()
     return VIter(vim.api.nvim_list_wins()):filter(function(w)
         return vim.api.nvim_win_get_buf(w) == self.id
     end):collect()
 end
 
+--- Returns the focus window id of the Buffer or nil if no such window exists
+--(or focused).
+-- @treturn nil|number The window id.
 function M:get_focused_win()
     local cur_win = vim.api.nvim_get_current_win()
     return vim.api.nvim_win_get_buf(cur_win) == self.id and cur_win or nil
 end
 
+--- Returns whether the Buffer is focused now.
+-- @treturn boolean
 function M:is_focused()
     return vim.api.nvim_get_current_buf() == self.id
 end
 
+-- Clear the buffer.
 function M:_clear()
     vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
     vim.api.nvim_buf_set_option(self.id, "modifiable", true)
     vim.api.nvim_buf_set_lines(self.id, 0, -1, false, {})
-    vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels)
+    vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
+    vim.api.nvim_buf_set_option(self.id, "undolevels", self._bo.undolevels)
 end
 
-function M:set_lines(beg, ends, lines)
-    local marks = self.content_highlight_fn(self, beg, ends, lines, self.ctx) or {}
+-- Sets the lines and applies highlight.
+function M:_set_lines(beg, ends, lines)
+    local marks = self._content_highlight_fn(self, beg, ends, lines, self.ctx) or {}
 
     if not vim.api.nvim_buf_is_valid(self.id) then
         return
     end
 
-    vim.api.nvim_buf_set_lines(self.id, beg, ends, false, self.content_map_fn(lines))
+    vim.api.nvim_buf_set_lines(self.id, beg, ends, false, self._content_map_fn(lines))
 
     for _, mark in ipairs(marks) do
         if not vim.api.nvim_buf_is_valid(self.id) then
@@ -414,27 +538,36 @@ function M:set_lines(beg, ends, lines)
     end
 end
 
+-- Append lines to the buffer from row beg (0-based, inclusive)
 function M:_append(lines, beg)
     vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
     vim.api.nvim_buf_set_option(self.id, "modifiable", true)
 
-    self:set_lines(beg, -1, lines)
+    self:_set_lines(beg, -1, lines)
 
-    vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels)
+    vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
+    vim.api.nvim_buf_set_option(self.id, "undolevels", self._bo.undolevels)
     return beg + #lines
 end
 
+--- Sets the content to `content` and invokes @{reload}.
+-- @tparam {string}|function content @see @{init}
 function M:set_content_and_reload(content)
     vim.validate({ content = { content, { "f", "t", "b" } } })
-    self.content = content
+    self._content = content
     self:reload()
 end
 
+--- Waits existing @{reload} calls to finish. Note that if there's no existing
+-- @{reload} call, it waits forever. Better check `Buffer.is_reloading` before
+-- calling this function.
+-- @treturn boolean
 function M:wait_reload()
-    self.reload_done:wait()
+    self._reload_done:wait()
 end
 
+--- Reloads the buffer by filling the contents (invoking content generating Job)
+-- and apply the highlight function.
 function M:reload()
     if self.is_reloading then
         return
@@ -444,8 +577,8 @@ function M:reload()
     self.ctx.mark = nil
     self.cancel_reload = false
 
-    if self.bo.filetype then
-        vim.api.nvim_buf_set_option(self.id, "filetype", self.bo.filetype)
+    if self._bo.filetype then
+        vim.api.nvim_buf_set_option(self.id, "filetype", self._bo.filetype)
     end
 
     local self_buffer_focused = vim.api.nvim_get_current_buf() == self.id
@@ -487,10 +620,10 @@ function M:reload()
 
     vim.api.nvim_buf_clear_namespace(self.id, self.content_hl_namespace, 0, -1)
 
-    if type(self.content) == "table" then
+    if type(self._content) == "table" then
         vim.api.nvim_buf_set_option(self.id, "modifiable", true)
-        self:set_lines(0, -1, self.content)
-        vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
+        self:_set_lines(0, -1, self._content)
+        vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
         restore_cursor()
     else
         self:_clear()
@@ -498,8 +631,8 @@ function M:reload()
         local beg = 0
         local job
         job = Job({
-            cmd = self.content(),
-            on_stdout_buffer_size = self.job_on_stdout_buffer_size,
+            cmd = self._content(),
+            on_stdout_buffer_size = self._job_on_stdout_buffer_size,
             on_stdout = function(lines)
                 if not vim.api.nvim_buf_is_valid(self.id) or self.cancel_reload then
                     job:kill()
@@ -522,7 +655,7 @@ function M:reload()
     end
 
     self.is_reloading = false
-    self.reload_done:notify_all()
+    self._reload_done:notify_all()
 end
 
 return M
