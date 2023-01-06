@@ -127,10 +127,8 @@ end
 -- trigger the mapping before your Buffer's internal states are fully
 -- initialized and hit error. In such case, use @{set_mappings} to set the
 -- mappings after initialization is done.
--- @tparam[b={}] table opts.b buffer
--- variables to be
--- set. See `:help vim.b`.
--- @tparam[bo={}] table opts.bo buffer options to be set. See `:help vim.bo`.
+-- @tparam[opt={}] table opts.b buffer variables to be set. See `:help vim.b`.
+-- @tparam[opt={}] table opts.bo buffer options to be set. See `:help vim.bo`.
 function M:init(opts)
     opts = opts or {}
     vim.validate({

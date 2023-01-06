@@ -1,6 +1,6 @@
 --- Module: **libp.ui.AnsiColorBuffer**
 --
--- AnsiColorBuffer class. A specialized buffer that implements default highlighting function for ansi color in command outputs.
+-- AnsiColorBuffer class. A specialized @{Buffer} that implements default highlighting function for ansi color in command outputs.
 --
 -- Inherits: @{Buffer}
 -- @classmod AnsiColorBuffer

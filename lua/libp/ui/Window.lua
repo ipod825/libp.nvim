@@ -1,10 +1,27 @@
+--- Module: **libp.ui.Window**
+--
+-- Window class. Wrapping vim floating window to display @{Buffer}.
+--
+-- Inherits: @{Class}
+-- @classmod Window
 local M = require("libp.datatype.Class"):EXTEND()
+local args = require("libp.args")
 
+---
+-- @field id The id of the vim window. Note that this is only set after @{open}
+-- is called once.
+
+--- Constructor.
+-- @tparam Buffer buffer
+-- @tparam table opts
+-- @tparam[w={}] table opts.w window variables to be set. See `:help vim.w`.
+-- @tparam[wo={}] table opts.wo window options to be set. See `:help vim.wo`.
+-- @tparam[wo={}] boolean opts.focus_on_open Whether to focus the window when
+-- it's opened the first time.
 function M:init(buffer, opts)
     opts = opts or {}
     vim.validate({
-        buffer = { buffer, "t" },
-        buf_id = { buffer.id, "n" },
+        buffer = args.is_class(buffer, require("libp.ui.Buffer")),
         w = { opts.w, "t", true },
         wo = { opts.wo, "t", true },
         focus_on_open = { opts.focus_on_open, "b", true },
@@ -16,6 +33,8 @@ function M:init(buffer, opts)
     self.wo = vim.tbl_extend("keep", opts.wo or {}, { number = false, relativenumber = false })
 end
 
+--- Opens the Window with floating window configurations.
+-- @tparam table fwin_cfg Passed to the third argument of `vim.api.nvim_open_win()`.
 function M:open(fwin_cfg)
     vim.validate({ fwin_cfg = { fwin_cfg, "t" } })
     self.id = vim.api.nvim_open_win(self.buffer.id, self.focus_on_open, fwin_cfg)
@@ -39,6 +58,7 @@ function M:open(fwin_cfg)
     return self.id
 end
 
+--- Closes the Window.
 function M:close()
     if vim.api.nvim_win_is_valid(self.id) then
         vim.api.nvim_win_close(self.id, false)

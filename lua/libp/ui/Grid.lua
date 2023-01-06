@@ -1,3 +1,20 @@
+--- Module: **libp.ui.Grid**
+--
+-- Grid class. Container class for laying out @{Window}s. The following example defines a @{TitleWindow} and two @{DiffWindow} windows below it.
+--
+--     local ui = require("libp.ui")
+--     local grid = ui.Grid()
+--     grid:add_row({ height = 1 }):fill_window(ui.TitleWindow(ui.Buffer({
+--         content = { "Left Align", "Center", "Right Align" },
+--     })))
+--     grid:add_row({ focusable = true }):vfill_windows({
+--         ui.DiffWindow(ui.FilePreviewBuffer('file1')),
+--         ui.DiffWindow(ui.FilePreviewBuffer('file2'), { focus_on_open = true }),
+--     }, true)
+--     grid:show()
+--
+-- Inherits: @{Class}
+-- @classmod Grid
 local M = require("libp.datatype.Class"):EXTEND()
 local values = require("libp.itertools").values
 

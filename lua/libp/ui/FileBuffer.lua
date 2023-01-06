@@ -1,6 +1,29 @@
+--- Module: **libp.ui.FileBuffer**
+--
+-- FileBuffer class. Loading file content to vim buffer asynchronously. There's
+-- also @{FilePreviewBuffer} that does not allow modification to buffer content.
+-- Both @{FilePreviewBuffer} and @{FileBuffer} exists for loading file content into
+-- a floating @{Window} asynchronously:
+--
+--     local ui = require("libp.ui")
+--     require("plenary.async").void(function()
+--         local buf = ui.FileBuffer("file_to_load")
+--         local win = ui.Window(buf)
+--         win:open()
+--     end)()
+--
+-- Inherits: @{FilePreviewBuffer}
+-- @classmod FileBuffer
 local M = require("libp.ui.FilePreviewBuffer"):EXTEND()
 local uv = require("libp.fs.uv")
+local args = require("libp.args")
 
+--- Constructor.
+-- @tparam string filename The file name to load content from.
+-- @tparam table opts see @{FilePreviewBuffer:init} for inherited options. The
+-- following arguments have default values.
+-- @tparam[opt=true] boolean opts.listed
+-- @tparam[opt=false] boolean opts.scratch
 function M:init(filename, opts)
     if vim.fn.bufexists(filename) > 0 then
         self.id = vim.fn.bufadd(filename)
@@ -21,8 +44,8 @@ function M:init(filename, opts)
     opts = opts or {}
     opts.bo =
         vim.tbl_extend("force", opts.bo or {}, { bufhidden = vim.o.hidden and "hide" or "unload", modifiable = true })
-    opts.listed = true
-    opts.scratch = false
+    opts.listed = args.get_default(opts.listed, true)
+    opts.scratch = args.get_default(opts.scratch, false)
 
     self:SUPER():init(filename, opts)
 
