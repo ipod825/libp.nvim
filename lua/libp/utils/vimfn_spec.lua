@@ -324,7 +324,7 @@ describe("buf_get_line", function()
     end)
 
     it("Accepts buffer", function()
-        assert.are.same( "a" , vimfn.buf_get_line({ buffer = 0, row = 0 }))
+        assert.are.same("a", vimfn.buf_get_line({ buffer = 0, row = 0 }))
     end)
 end)
 

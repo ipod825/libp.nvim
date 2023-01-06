@@ -25,7 +25,8 @@ function M:show()
     local grid = Grid({ height = vim.o.lines })
     grid:add_row({ height = vim.o.lines - 1 })
     local row = grid:add_row({ height = 1 })
-    row:add_column({ width = vim.fn.strwidth(self.hint) })
+    row
+        :add_column({ width = vim.fn.strwidth(self.hint) })
         :fill_window(Window(Buffer({ content = { self.hint } }), { wo = self.wo }))
 
     self.cmd_buffer = Buffer({
@@ -58,7 +59,7 @@ function M:get_content()
     if not vim.api.nvim_buf_is_valid(self.cmd_buffer.id) then
         return
     end
-    return vimfn.buf_get_line({buffer=self.cmd_buffer.id, row=0})
+    return vimfn.buf_get_line({ buffer = self.cmd_buffer.id, row = 0 })
 end
 
 M.confirm = a.wrap(function(self, callback)
