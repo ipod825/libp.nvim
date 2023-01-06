@@ -340,6 +340,9 @@ function M:mark(data, max_num_data)
     end
 end
 
+--- Returns whether the Buffer is in edit mode.
+-- @treturn boolean
+-- @see edit
 function M:is_editing()
     return self._is_editing
 end
@@ -355,6 +358,20 @@ function M:_save_edit()
     self:reload()
 end
 
+--- Enters "edit mode" for the Buffer. "Edit mode" is a unified way of doing
+--buffer content "renaming". For e.g., a file explorer plugin can use edit
+--mode to implement file rename functionality. A git plugin can use edit mode to
+--implement branch renaming, etc.
+-- @tparam table opts
+-- @tparam function opts.get_items A function that returns arbitrary result. This
+-- function is called two times: when users enters edit mode and after users
+-- save the buffer (`:w`), leaving edit mode. The two results are then passed to
+-- the `update` function for the plugin author to implement their own logic.
+-- @tparam function(ori_items,new_items) opts.update A function that is called with the two
+-- outputs of `get_items` after the users leave edit mode with `:w`.
+-- @tparam function opts.fill_lines function A function that is called when users just
+-- enter edit mode. Plugin authors could use this function to modify the buffer
+-- content to giver users a better editing experience.
 function M:edit(opts)
     vim.validate({
         get_items = { opts.get_items, "f" },
@@ -519,7 +536,8 @@ end
 
 --- Sets the content to `content` and invokes @{reload}.
 -- @tparam {string}|function content @see @{init}
--- @tparam function content_highlight_fn @see @{init}
+-- @tparam table opts
+-- @tparam function opts.content_highlight_fn Resets the `content_highlight_fn`. @see @{init}
 function M:set_content_and_reload(content, opts)
     opts = opts or {}
     vim.validate({
