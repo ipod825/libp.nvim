@@ -65,6 +65,20 @@ function M.buf_get_option_and_set(buf, name, new_value)
     return ori
 end
 
+function M.buf_get_lines(opts)
+    opts = opts or {}
+    vim.validate({
+        buffer = { opts.buffer, "n" },
+        start = { opts.start, "n", true },
+        ends = { opts.ends, "n", true },
+        strict_indexing = { opts.strict_indexing, "b", true },
+    })
+    opts.start = opts.start or 0
+    opts.ends = opts.ends or -1
+    opts.strict_indexing = args.get_default(opts.strict_indexing, true)
+    return vim.api.nvim_buf_get_lines(opts.buffer, opts.start, opts.ends, opts.strict_indexing)
+end
+
 function M.win_get_option_and_set(win, name, new_value)
     if not vim.api.nvim_buf_is_valid(win) then
         return

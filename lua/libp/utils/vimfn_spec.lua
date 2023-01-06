@@ -275,6 +275,37 @@ describe("buf_get_var", function()
     end)
 end)
 
+describe("buf_get_lines", function()
+    before_each(function()
+        vim.api.nvim_buf_set_lines(0, 0, -1, true, { "a", "b", "c" })
+    end)
+    after_each(function()
+        vim.cmd("bwipeout!")
+    end)
+
+    it("Returns all lines by default", function()
+        assert.are.same({ "a", "b", "c" }, vimfn.buf_get_lines({ buffer = 0 }))
+    end)
+
+    it("Accepts start", function()
+        assert.are.same({ "b", "c" }, vimfn.buf_get_lines({ buffer = 0, start = 1 }))
+    end)
+
+    it("Accepts ends", function()
+        assert.are.same({ "a", "b" }, vimfn.buf_get_lines({ buffer = 0, ends = 2 }))
+    end)
+
+    it("Defaults strict_indexing to false", function()
+        assert.has.errors(function()
+vimfn.buf_get_lines({ buffer = 0, ends = 20 })
+        end)
+    end)
+
+    it("Accepts strict indexing", function()
+        assert.are.same({ "a", "b", "c" }, vimfn.buf_get_lines({ buffer = 0, ends = 20, strict_indexing = false }))
+    end)
+end)
+
 describe("str_to_char", function()
     it("Returns characters of a string", function()
         assert.are.same({ "中", "文" }, vimfn.str_to_char("中文"))
