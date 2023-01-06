@@ -552,9 +552,15 @@ end
 
 --- Sets the content to `content` and invokes @{reload}.
 -- @tparam {string}|function content @see @{init}
-function M:set_content_and_reload(content)
-    vim.validate({ content = { content, { "f", "t", "b" } } })
+-- @tparam function content_highlight_fn @see @{init}
+function M:set_content_and_reload(content, opts)
+    opts = opts or {}
+    vim.validate({
+        content = { content, { "f", "t", "b" } },
+        content_highlight_fn = { opts.content_highlight_fn, "f", true },
+    })
     self._content = content
+    self._content_highlight_fn = opts.content_highlight_fn or self._content_highlight_fn
     self:reload()
 end
 
