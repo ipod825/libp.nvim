@@ -14,7 +14,6 @@ local VIter = require("libp.datatype.VIter")
 local KVIter = require("libp.datatype.KVIter")
 local args = require("libp.args")
 local values = require("libp.itertools").values
-local vimfn = require("libp.utils.vimfn")
 
 global.buffers = global.buffers or {}
 
@@ -88,7 +87,7 @@ end
 -- @field ctx A table for storing arbitrary variables per buffer.
 
 ---
--- @field content_hl_namespace The highlight name space used by @{reload}
+-- @field content_ns_id The highlight name space used by @{reload}
 -- @{set_hl} and @{clear_hl}
 
 ---
@@ -169,8 +168,8 @@ function M:init(opts)
     local ctx = {}
     self.ctx = setmetatable({}, { __index = ctx, __newindex = ctx })
 
-    self._mark_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_mark")
-    self.content_hl_namespace = vim.api.nvim_create_namespace("libp_buffer_content")
+    self._mark_ns_id = vim.api.nvim_create_namespace("libp_buffer_mark")
+    self.content_ns_id = vim.api.nvim_create_namespace("libp_buffer_content")
 
     for k, v in pairs(opts.b or {}) do
         vim.api.nvim_buf_set_var(self.id, k, v)
@@ -321,22 +320,22 @@ function M:mark(data, max_num_data)
         self.ctx.mark = {}
         -- Clears all previous mark highlight
         for line in values(self._mark_linenrs) do
-            self:clear_hl({ row_start = line, namespace = self._mark_hl_namespace })
+            self:clear_hl({ line_start = line, ns_id = self._mark_ns_id })
         end
         self._mark_linenrs = {}
     end
 
     local index = (#self.ctx.mark % max_num_data) + 1
     self.ctx.mark[index] = data
-    self._mark_linenrs[index] = vim.fn.line(".")
+    self._mark_linenrs[index] = vim.fn.line(".") - 1
 
     if max_num_data_not_specified then
         for linenr in values(self._mark_linenrs) do
-            self:set_hl({ hl_group = "LibpBufferMark1", row = linenr, namespace = self._mark_hl_namespace })
+            self:set_hl({ hl_group = "LibpBufferMark1", line = linenr, ns_id = self._mark_ns_id })
         end
     else
         for i, linenr in ipairs(self._mark_linenrs) do
-            self:set_hl({ hl_group = "LibpBufferMark" .. i, row = linenr, namespace = self._mark_hl_namespace })
+            self:set_hl({ hl_group = "LibpBufferMark" .. i, line = linenr, ns_id = self._mark_ns_id })
         end
     end
 end
@@ -407,58 +406,47 @@ end
 -- @{init} if highlighting happens only during @{reload}.
 -- @tparam table opts
 -- @tparam string opts.hl_group The highlight group name.
--- @tparam number opts.row The (starting) row to be highlighted (1-based,
--- inclusive)
+-- @tparam number opts.line The (starting) line to be highlighted (nvim
+-- api-indexing).
 -- @tparam[opt=1] number opts.col_start The starting column be highlighted
--- (1-based, inclusive, byte index) @tparam[opt=-1] number
--- opts.col_end The starting column be highlighted (0-based, exclusive, byte
--- index, -1 denotes last)
--- @tparam[opt] number opts.namespace. The highlighting namespace. Default to
+-- (nvim api-indexing)
+-- @tparam[opt=-1] number opts.col_end The starting column be highlighted (nvim
+-- api-indexing)
+-- @tparam[opt] number opts.ns_id. The highlighting ns_id. Default to
 -- `Buffer.content_highlight_fn`.
 function M:set_hl(opts)
     vim.validate({
         hl_group = { opts.hl_group, "s" },
-        row = { opts.row, "n" },
+        line = { opts.line, "n" },
         col_start = { opts.col_start, "n", true },
         col_end = { opts.col_end, "n", true },
-        namespace = { opts.namespace, "n", true },
+        ns_id = { opts.ns_id, "n", true },
     })
-    opts.col_start = opts.col_start or 1
+    opts.col_start = opts.col_start or 0
     opts.col_end = opts.col_end or -1
-    opts.namespace = opts.namespace or self.content_hl_namespace
-    vim.api.nvim_buf_add_highlight(
-        self.id,
-        opts.namespace,
-        opts.hl_group,
-        opts.row - 1,
-        opts.col_start - 1,
-        opts.col_end
-    )
+    opts.ns_id = opts.ns_id or self.content_ns_id
+    vim.api.nvim_buf_add_highlight(self.id, opts.ns_id, opts.hl_group, opts.line, opts.col_start, opts.col_end)
 end
 
 --- Clears the highlight of the buffer. Prefer passing `content_highlight_fn` to
 -- @{init} if highlighting happens only during @{reload}.
 -- @tparam table opts
--- @tparam number opts.row_start The starting row to clear the highlight (1-based,
--- inclusive)
--- @tparam number opts.row_end The starting row to clear the highlight (1-based,
--- exclusive, -1 denotes last)
--- @tparam[opt] number opts.namespace. The highlighting namespace. Default to
+-- @tparam number opts.line_start The starting line to clear the highlight (nvim
+-- api-indexing).
+-- @tparam number opts.line_end The starting line to clear the highlight (nvim
+-- api-indexing).
+-- @tparam[opt] number opts.ns_id. The highlighting namespace. Default to
 -- `Buffer.content_highlight_fn`.
 function M:clear_hl(opts)
     vim.validate({
-        row_start = { opts.row_start, "n" },
-        row_end = { opts.row_end, "n", true },
-        namespace = { opts.namespace, "n", true },
+        line_start = { opts.line_start, "n" },
+        line_end = { opts.line_end, "n", true },
+        ns_id = { opts.ns_id, "n", true },
     })
-    opts.row_end = opts.row_end or opts.row_start + 1
-    opts.namespace = opts.namespace or self.content_hl_namespace
-    vim.api.nvim_buf_clear_namespace(
-        self.id,
-        opts.namespace,
-        opts.row_start - 1,
-        opts.row_end < 0 and opts.row_end or opts.row_end - 1
-    )
+    opts.line_start = opts.line_start or 0
+    opts.line_end = opts.line_end or -1
+    opts.ns_id = opts.ns_id or self.content_ns_id
+    vim.api.nvim_buf_clear_namespace(self.id, opts.ns_id, opts.line_start, opts.line_end)
 end
 
 --- Returns an array of windows where the Buffer is visible.
@@ -508,7 +496,7 @@ function M:_set_lines(beg, ends, lines)
         end
         vim.api.nvim_buf_add_highlight(
             self.id,
-            self.content_hl_namespace,
+            self.content_ns_id,
             mark.hl_group,
             mark.line,
             mark.col_start or 0,
@@ -603,7 +591,7 @@ function M:reload()
         end
     end
 
-    vim.api.nvim_buf_clear_namespace(self.id, self.content_hl_namespace, 0, -1)
+    vim.api.nvim_buf_clear_namespace(self.id, self.content_ns_id, 0, -1)
 
     if type(self._content) == "table" then
         vim.api.nvim_buf_set_option(self.id, "modifiable", true)
