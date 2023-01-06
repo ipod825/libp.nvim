@@ -1,4 +1,5 @@
 local M = require("libp.ui.Window"):EXTEND()
+local vimfn = require("libp.utils.vimfn")
 
 function M:init(buffer, opts)
     opts = opts or {}
@@ -6,8 +7,9 @@ function M:init(buffer, opts)
         winhighlight = "Normal:LibpTitleWindow",
     })
 
-    assert(type(buffer.content) == "table")
-    buffer:set_content_and_reload({ require("libp.ui").center_align_text(buffer.content, vim.o.columns) })
+    buffer:set_content_and_reload({
+        require("libp.ui").center_align_text(vimfn.buf_get_lines({ buffer = buffer.id }), vim.o.columns),
+    })
     self:SUPER():init(buffer, opts)
 end
 

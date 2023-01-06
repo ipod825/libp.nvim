@@ -1,4 +1,5 @@
 local BorderWindow = require("libp.ui.BorderWindow")
+local vimfn = require("libp.utils.vimfn")
 
 function open_box(b, width, height)
     b:open({
@@ -19,7 +20,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = b.buffer:get_lines()
+        local contents = vimfn.buf_get_lines({ buffer = b.buffer.id })
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -41,7 +42,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = b.buffer:get_lines()
+        local contents = vimfn.buf_get_lines({ buffer = b.buffer.id })
 
         local middle_line = ("│%s│"):format((" "):rep(width - 2))
         for i = 1, height - 1 do
@@ -59,7 +60,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = b.buffer:get_lines()
+        local contents = vimfn.buf_get_lines({ buffer = b.buffer.id })
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -77,7 +78,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = b.buffer:get_lines()
+        local contents = vimfn.buf_get_lines({ buffer = b.buffer.id })
 
         assert.is_true(vim.startswith(contents[1], "─"))
         assert.is_true(vim.endswith(contents[1], "─┐"))
@@ -99,7 +100,7 @@ describe("open", function()
         local height = 5
         open_box(b, width, height)
 
-        local contents = b.buffer:get_lines()
+        local contents = vimfn.buf_get_lines({ buffer = b.buffer.id })
 
         assert.is_true(vim.startswith(contents[1], "┌─"))
         assert.is_true(vim.endswith(contents[1], "──"))

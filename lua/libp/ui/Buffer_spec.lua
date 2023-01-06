@@ -303,9 +303,9 @@ describe("Buffer", function()
                 open_cmd = "edit",
             })
             local content = { "a", "b", "c" }
-            assert.are_not.same(content, b:get_lines())
+            assert.are_not.same(content, vimfn.buf_get_lines({ buffer = b.id }))
             b:set_content_and_reload(content)
-            assert.are.same(content, b:get_lines())
+            assert.are.same(content, vimfn.buf_get_lines({ buffer = b.id }))
         end)
         a.it("Sets function content", function()
             b = Buffer:open_or_new({
@@ -315,7 +315,7 @@ describe("Buffer", function()
             b:set_content_and_reload(function()
                 return "echo hello"
             end)
-            assert.are.same({ "hello" }, b:get_lines())
+            assert.are.same({ "hello" }, vimfn.buf_get_lines({ buffer = b.id }))
         end)
     end)
 
@@ -407,7 +407,7 @@ describe("Buffer", function()
                     vim.api.nvim_buf_set_lines(b.id, 0, -1, true, { "a", "b" })
                 end,
             })
-            assert.are.same({ "a", "b" }, b:get_lines())
+            assert.are.same({ "a", "b" }, vimfn.buf_get_lines({ buffer = b.id }))
         end)
 
         it("Saves edit on write", function()
@@ -478,43 +478,6 @@ describe("Buffer", function()
             vim.cmd("vnew")
             assert.is_false(b:is_focused())
         end)
-    end)
-
-    describe("get_lines", function()
-        local get_lines = spy.on(vim.api, "nvim_buf_get_lines")
-        local _ = match._
-        it("Defaults to get all lines", function()
-            b = Buffer:open_or_new({
-                filename = "test_abc",
-                open_cmd = "edit",
-            })
-
-            b:get_lines()
-            assert.spy(get_lines).was_called_with(b.id, 0, -1, true)
-            get_lines:clear()
-        end)
-
-        it("Accepts beg, end, strict_indexing", function()
-            b = Buffer:open_or_new({
-                filename = "test_abc",
-                open_cmd = "edit",
-            })
-
-            b:get_lines(2, 3, false)
-            assert.spy(get_lines).was_called_with(b.id, 1, 2, false)
-            get_lines:clear()
-        end)
-    end)
-
-    describe("get_line", function()
-        b = Buffer:open_or_new({
-            filename = "test_abc",
-            content = { "a", "b", "c" },
-            open_cmd = "edit",
-        })
-        assert.are.same("a", b:get_line(1))
-        assert.are.same("b", b:get_line(2))
-        assert.are.same("c", b:get_line(3))
     end)
 
     describe("set_hl", function()

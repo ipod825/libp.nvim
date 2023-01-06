@@ -14,6 +14,7 @@ local VIter = require("libp.datatype.VIter")
 local KVIter = require("libp.datatype.KVIter")
 local args = require("libp.args")
 local values = require("libp.itertools").values
+local vimfn = require("libp.utils.vimfn")
 
 global.buffers = global.buffers or {}
 
@@ -400,28 +401,6 @@ function M:_unmapfn(mappings)
             end
         end
     end
-end
-
---- Get the lines of the buffer.
--- @tparam[opt=1] number beg The starting row  (1-based, inclusive)
--- @tparam[opt=-1] number ends The starting row  (1-based, exclusive, -1 denotes last)
-function M:get_lines(beg, ends, strict_indexing)
-    vim.validate({
-        beg = { beg, "n", true },
-        ends = { ends, "n", true },
-        strict_indexing = { strict_indexing, "b", true },
-    })
-    beg = beg and beg - 1 or 0
-    ends = ends and ends - 1 or -1
-    strict_indexing = args.get_default(strict_indexing, true)
-    return vim.api.nvim_buf_get_lines(self.id, beg, ends, strict_indexing)
-end
-
---- Get a single line of the buffer.
--- @tparam[opt=1] number ind The starting row  (1-based, inclusive)
-function M:get_line(ind)
-    vim.validate({ ind = { ind, "n" } })
-    return self:get_lines(ind, ind + 1)[1]
 end
 
 --- Sets the highlight of the buffer. Prefer passing `content_highlight_fn` to

@@ -4,7 +4,7 @@ local functional = require("libp.functional")
 local Window = require("libp.ui.Window")
 local a = require("plenary.async")
 local Grid = require("libp.ui.Grid")
-local values = require("libp.itertools").values
+local vimfn = require("libp.utils.vimfn")
 
 function M:init(opts)
     vim.validate({
@@ -58,7 +58,7 @@ function M:get_content()
     if not vim.api.nvim_buf_is_valid(self.cmd_buffer.id) then
         return
     end
-    return self.cmd_buffer:get_line(1)
+    return vimfn.buf_get_line({buffer=self.cmd_buffer.id, row=0})
 end
 
 M.confirm = a.wrap(function(self, callback)

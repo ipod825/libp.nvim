@@ -1,4 +1,5 @@
 local M = require("libp.ui.Window"):EXTEND()
+local vimfn = require("libp.utils.vimfn")
 
 function M:init(opts)
     opts = opts or {}
@@ -66,7 +67,7 @@ function M:_fill_buffer_content(width, height)
     end
     self.buffer:set_content_and_reload(contents)
     if self.top_offset ~= 0 and #self.title > 0 then
-        local title_beg, title_end = self.buffer:get_line(1):find(self.title)
+        local title_beg, title_end = vimfn.buf_get_line({ buffer = self.buffer.id, row = 0 }):find(self.title)
         self.buffer:set_hl({ hl_group = self.title_highlight, row = 1, col_start = title_beg, col_end = title_end })
     end
 end
