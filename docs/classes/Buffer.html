@@ -1,0 +1,835 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/AnsiColorBuffer.html">AnsiColorBuffer</a></li>
+  <li><strong>Buffer</strong></li>
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/DiffWindow.html">DiffWindow</a></li>
+  <li><a href="../classes/FileBuffer.html">FileBuffer</a></li>
+  <li><a href="../classes/FilePreviewBuffer.html">FilePreviewBuffer</a></li>
+  <li><a href="../classes/Grid.html">Grid</a></li>
+  <li><a href="../classes/Iter.html">Iter</a></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/KVIter.html">KVIter</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+  <li><a href="../classes/TitleWindow.html">TitleWindow</a></li>
+  <li><a href="../classes/VIter.html">VIter</a></li>
+  <li><a href="../classes/Window.html">Window</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+  <li><a href="../modules/libp.itertools.html">libp.itertools</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Buffer</code></h1>
+<p>Module: <strong>libp.ui.Buffer</strong></p>
+
+<p> Buffer class.</p>
+<p> Wrapping vim buffer to display lines and output from jobs.</p>
+
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Buffer.content_ns_id">Buffer.content_ns_id</a></td>
+	<td class="summary">
+
+</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer.ctx">Buffer.ctx</a></td>
+	<td class="summary">
+
+</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer.id">Buffer.id</a></td>
+	<td class="summary">
+
+</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer.is_reloading">Buffer.is_reloading</a></td>
+	<td class="summary">
+
+</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:clear_hl">Buffer:clear_hl (opts)</a></td>
+	<td class="summary">Clears the highlight of the buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:edit">Buffer:edit (opts)</a></td>
+	<td class="summary">Enters "edit mode" for the Buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:get_attached_wins">Buffer:get_attached_wins ()</a></td>
+	<td class="summary">Returns an array of windows where the Buffer is visible.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:get_current_buffer">Buffer:get_current_buffer ()</a></td>
+	<td class="summary">Returns the Buffer corresponding to the current vim buffer, might be nil if no
+wrapping buffer exists.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:get_focused_win">Buffer:get_focused_win ()</a></td>
+	<td class="summary">Returns the focus window id of the Buffer or nil if no such window exists
+(or focused).</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:get_or_new">Buffer:get_or_new (opts)</a></td>
+	<td class="summary">Returns a new Buffer or an existing one.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:init">Buffer:init (opts)</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:is_editing">Buffer:is_editing ()</a></td>
+	<td class="summary">Returns whether the Buffer is in edit mode.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:is_focused">Buffer:is_focused ()</a></td>
+	<td class="summary">Returns whether the Buffer is focused now.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:on_wipeout">Buffer:on_wipeout ()</a></td>
+	<td class="summary">Removes the Buffer from the global buffer list.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:open_or_new">Buffer:open_or_new (opts)</a></td>
+	<td class="summary">Returns a new Buffer or an existing one and opens the buffer using <code>opts.open_cmd</code>
+ Note that although this is defined as a member function, the caller should be
+ the Buffer class or classes inheriting buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:reload">Buffer:reload ()</a></td>
+	<td class="summary">Reloads the buffer by filling the contents (invoking content generating Job)
+ and apply the highlight function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:set_content_and_reload">Buffer:set_content_and_reload (content, opts)</a></td>
+	<td class="summary">Sets the content to <code>content</code> and invokes <a href="../classes/Buffer.html#Buffer:reload">reload</a>.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:set_hl">Buffer:set_hl (opts)</a></td>
+	<td class="summary">Sets the highlight of the buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:set_mappings">Buffer:set_mappings (mappings)</a></td>
+	<td class="summary">Sets the mappings of the buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Buffer:wait_reload">Buffer:wait_reload ()</a></td>
+	<td class="summary">Waits existing <a href="../classes/Buffer.html#Buffer:reload">reload</a> calls to finish.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Buffer.content_ns_id"></a>
+    <strong>Buffer.content_ns_id</strong>
+    </dt>
+    <dd>
+
+
+
+
+
+    <ul>
+        <li><span class="parameter">content_ns_id</span>
+         The highlight name space used by <a href="../classes/Buffer.html#Buffer:reload">reload</a>
+ <a href="../classes/Buffer.html#Buffer:set_hl">set_hl</a> and <a href="../classes/Buffer.html#Buffer:clear_hl">clear_hl</a>
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer.ctx"></a>
+    <strong>Buffer.ctx</strong>
+    </dt>
+    <dd>
+
+
+
+
+
+    <ul>
+        <li><span class="parameter">ctx</span>
+         A table for storing arbitrary variables per buffer.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer.id"></a>
+    <strong>Buffer.id</strong>
+    </dt>
+    <dd>
+
+
+
+
+
+    <ul>
+        <li><span class="parameter">id</span>
+         The id of the vim buffer.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer.is_reloading"></a>
+    <strong>Buffer.is_reloading</strong>
+    </dt>
+    <dd>
+
+
+
+
+
+    <ul>
+        <li><span class="parameter">is_reloading</span>
+         Whether <a href="../classes/Buffer.html#Buffer:reload">reload</a> is running
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Buffer:clear_hl"></a>
+    <strong>Buffer:clear_hl (opts)</strong>
+    </dt>
+    <dd>
+    Clears the highlight of the buffer.  Prefer passing <code>content_highlight_fn</code> to
+ <a href="../classes/Buffer.html#Buffer:init">init</a> if highlighting happens only during <a href="../classes/Buffer.html#Buffer:reload">reload</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">line_start</span>
+            <span class="types"><span class="type">number</span></span>
+         The starting line to clear the highlight (nvim
+ api-indexing).
+        </li>
+        <li><span class="parameter">line_end</span>
+            <span class="types"><span class="type">number</span></span>
+         The starting line to clear the highlight (nvim
+ api-indexing).
+        </li>
+        <li><span class="parameter">ns_id.</span>
+            <span class="types"><span class="type">number</span></span>
+         The highlighting namespace. Default to
+ <code>Buffer.content_highlight_fn</code>.
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:edit"></a>
+    <strong>Buffer:edit (opts)</strong>
+    </dt>
+    <dd>
+    Enters "edit mode" for the Buffer.  "Edit mode" is a unified way of doing
+buffer content "renaming". For e.g., a file explorer plugin can use edit
+mode to implement file rename functionality. A git plugin can use edit mode to
+implement branch renaming, etc.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">get_items</span>
+            <span class="types"><span class="type">function</span></span>
+         A function that returns arbitrary result. This
+ function is called two times: when users enters edit mode and after users
+ save the buffer (<code>:w</code>), leaving edit mode. The two results are then passed to
+ the <code>update</code> function for the plugin author to implement their own logic.
+        </li>
+        <li><span class="parameter">update</span>
+            <span class="types"><span class="type">function(ori_items,new_items)</span></span>
+         A function that is called with the two
+ outputs of <code>get_items</code> after the users leave edit mode with <code>:w</code>.
+        </li>
+        <li><span class="parameter">fill_lines</span>
+            <span class="types"><span class="type">function</span></span>
+         function A function that is called when users just
+ enter edit mode. Plugin authors could use this function to modify the buffer
+ content to giver users a better editing experience.
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:get_attached_wins"></a>
+    <strong>Buffer:get_attached_wins ()</strong>
+    </dt>
+    <dd>
+    Returns an array of windows where the Buffer is visible.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">{number}</span></span>
+        The window ids.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:get_current_buffer"></a>
+    <strong>Buffer:get_current_buffer ()</strong>
+    </dt>
+    <dd>
+    Returns the Buffer corresponding to the current vim buffer, might be nil if no
+wrapping buffer exists.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Buffer.html#">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(Buffer.get_current_buffer().id, vim.api.nvim_get_current_buf())</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Buffer:get_focused_win"></a>
+    <strong>Buffer:get_focused_win ()</strong>
+    </dt>
+    <dd>
+    Returns the focus window id of the Buffer or nil if no such window exists
+(or focused).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span> or <span class="type">number</span></span>
+        The window id.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:get_or_new"></a>
+    <strong>Buffer:get_or_new (opts)</strong>
+    </dt>
+    <dd>
+    Returns a new Buffer or an existing one.
+ Note that although this is defined as a member function, the caller should be
+ the Buffer class or classes inheriting buffer. The return type is the caller
+ class. The main difference between this function and <a href="../classes/Buffer.html#Buffer:open_or_new">open_or_new</a> is
+ that it does not open the Buffer in any window. The caller can then decide
+ how to open the Buffer later (even in a floating window).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">filename</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The file name of the corresponding vim buffer.
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Buffer.html#">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Buffer.html#Buffer:open_or_new">Buffer:open_or_new</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> InheritedBuffer = <span class="global">require</span>(<span class="string">"libp.ui.Buffer"</span>):EXTEND()
+<span class="keyword">local</span> existing_or_new = InheritedBuffer:get_or_new({ filename = <span class="string">"filename"</span> })
+<span class="global">assert</span>(existing_or_new:IS(InheritedBuffer))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Buffer:init"></a>
+    <strong>Buffer:init (opts)</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">filename</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The file name of the corresponding vim buffer.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">{string}</a> or <span class="type">function</span></span>
+         The content to be filled in
+ the corresponding vim buffer. Could be direct content of type array of string
+ or a function that returns a string, which is passed as <code>cmd</code> to <a href="../classes/Job.html#Job:init">Job:init</a>.
+         (<em>default</em> {})
+        </li>
+        <li><span class="parameter">content_map_fn</span>
+            <span class="types"><span class="type">function({string})->string</span></span>
+         The function that maps
+ each line of the content before it's filled in the vim buffer. Should only be
+ useful when <code>content</code> is from <a href="../classes/Job.html#">Job</a>.
+         (<em>default</em> identity)
+        </li>
+        <li><span class="parameter">content_highlight_fn</span>
+            <span class="types"><span class="type">function(buffer,beg,ends,lines,context)->table</span></span>
+
+
+<p> The function that returns highlight info for the content. The signature of
+ <code>content_highlight_fn</code> is:</p>
+
+<ul>
+    <li>buffer: The buffer under operation.</li>
+    <li>beg: The start line number, see <code>:help api-indexing</code>.</li>
+    <li>ends: The ending line number, see <code>:help api-indexing</code>.</li>
+    <li>context: Arbitrary table for the callee to store internal states (per Buffer).</li>
+    <li>return: a table with keys of names as <code>vim.api.nvim_buf_add_highlight</code>'s arguments'.</li>
+</ul>
+
+         (<em>default</em> nop)
+        </li>
+        <li><span class="parameter">job_on_stdout_buffer_size</span>
+            <span class="types"><span class="type">number</span></span>
+         Passed to <a href="../classes/Job.html#Job:init">Job:init</a>'s
+ on<em>stdout</em>buffer_size for optimizing buffer loading speed.
+         (<em>default</em> 5000)
+        </li>
+        <li><span class="parameter">buffe_enter_reload</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to invoke <a href="../classes/Buffer.html#Buffer:reload">reload</a> on BufEnter.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">mappings</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The table defining mappings in all modes. For e.g.</p>
+
+<pre><code>  mappings = {
+      n = { j = function() end },
+      v = { k = function() end },
+  }
+</code></pre>
+
+<p> Note that the functions are invoked inside in <code>plenary.async.void</code> such that
+ you could define async action for key mappings. Also note that if a Buffer is
+ also constructed inside a <code>plenary.async.void</code> context. The user might
+ trigger the mapping before your Buffer's internal states are fully
+ initialized and hit error. In such case, use <a href="../classes/Buffer.html#Buffer:set_mappings">set_mappings</a> to set the
+ mappings after initialization is done.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         buffer variables to be set. See <code>:help vim.b</code>.
+         (<em>default</em> {})
+        </li>
+        <li><span class="parameter">bo</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         buffer options to be set. See <code>:help vim.bo</code>.
+         (<em>default</em> {})
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:is_editing"></a>
+    <strong>Buffer:is_editing ()</strong>
+    </dt>
+    <dd>
+    Returns whether the Buffer is in edit mode.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+
+
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Buffer.html#Buffer:edit">edit</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:is_focused"></a>
+    <strong>Buffer:is_focused ()</strong>
+    </dt>
+    <dd>
+    Returns whether the Buffer is focused now.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:on_wipeout"></a>
+    <strong>Buffer:on_wipeout ()</strong>
+    </dt>
+    <dd>
+    Removes the Buffer from the global buffer list.  Usually should be called on
+ BufWipeout autocmd. But in case that doesn't happen. One could invoke this
+ function to do it manually.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:open_or_new"></a>
+    <strong>Buffer:open_or_new (opts)</strong>
+    </dt>
+    <dd>
+    Returns a new Buffer or an existing one and opens the buffer using <code>opts.open_cmd</code>
+ Note that although this is defined as a member function, the caller should be
+ the Buffer class or classes inheriting buffer.  The return type is the caller
+ class.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">filename</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The file name of the corresponding vim buffer.
+        </li>
+        <li><span class="parameter">open_cmd</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         A valid vim command that opens a file.
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Buffer.html#">Buffer</a></span>
+        The Buffer object.
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../classes/Buffer.html#Buffer:get_or_new">Buffer:get_or_new</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> InheritedBuffer = <span class="global">require</span>(<span class="string">"libp.ui.Buffer"</span>):EXTEND()
+<span class="keyword">local</span> existing_or_new = InheritedBuffer:open_or_new({ open_cmd = <span class="string">"tabedit"</span>, filename = <span class="string">"filename"</span> })
+<span class="global">assert</span>(existing_or_new:IS(InheritedBuffer))</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Buffer:reload"></a>
+    <strong>Buffer:reload ()</strong>
+    </dt>
+    <dd>
+    Reloads the buffer by filling the contents (invoking content generating Job)
+ and apply the highlight function.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:set_content_and_reload"></a>
+    <strong>Buffer:set_content_and_reload (content, opts)</strong>
+    </dt>
+    <dd>
+    Sets the content to <code>content</code> and invokes <a href="../classes/Buffer.html#Buffer:reload">reload</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">content</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">{string}</a> or <span class="type">function</span></span>
+         @see <a href="../classes/Buffer.html#Buffer:init">init</a>
+        </li>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">content_highlight_fn</span>
+            <span class="types"><span class="type">function</span></span>
+         Resets the <code>content_highlight_fn</code>. @see <a href="../classes/Buffer.html#Buffer:init">init</a>
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:set_hl"></a>
+    <strong>Buffer:set_hl (opts)</strong>
+    </dt>
+    <dd>
+    Sets the highlight of the buffer.  Prefer passing <code>content_highlight_fn</code> to
+ <a href="../classes/Buffer.html#Buffer:init">init</a> if highlighting happens only during <a href="../classes/Buffer.html#Buffer:reload">reload</a>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">hl_group</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The highlight group name.
+        </li>
+        <li><span class="parameter">line</span>
+            <span class="types"><span class="type">number</span></span>
+         The (starting) line to be highlighted (nvim
+ api-indexing).
+        </li>
+        <li><span class="parameter">col_start</span>
+            <span class="types"><span class="type">number</span></span>
+         The starting column be highlighted
+ (nvim api-indexing)
+         (<em>default</em> 1)
+        </li>
+        <li><span class="parameter">col_end</span>
+            <span class="types"><span class="type">number</span></span>
+         The starting column be highlighted (nvim
+ api-indexing)
+         (<em>default</em> -1)
+        </li>
+        <li><span class="parameter">ns_id.</span>
+            <span class="types"><span class="type">number</span></span>
+         The highlighting ns_id. Default to
+ <code>Buffer.content_highlight_fn</code>.
+         (<em>optional</em>)
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:set_mappings"></a>
+    <strong>Buffer:set_mappings (mappings)</strong>
+    </dt>
+    <dd>
+    Sets the mappings of the buffer.  Prefer passing <code>mappings</code> to <a href="../classes/Buffer.html#Buffer:init">init</a> if possible.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">mappings</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         The mappings.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Buffer:wait_reload"></a>
+    <strong>Buffer:wait_reload ()</strong>
+    </dt>
+    <dd>
+    Waits existing <a href="../classes/Buffer.html#Buffer:reload">reload</a> calls to finish.  Note that if there's no existing
+ <a href="../classes/Buffer.html#Buffer:reload">reload</a> call, it waits forever. Better check <a href="../classes/Buffer.html#Buffer.is_reloading">Buffer.is_reloading</a> before
+ calling this function.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">boolean</span></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-01-06 00:42:30 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

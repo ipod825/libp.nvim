@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>libp</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>libp</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/AnsiColorBuffer.html">AnsiColorBuffer</a></li>
+  <li><a href="../classes/Buffer.html">Buffer</a></li>
+  <li><a href="../classes/Class.html">Class</a></li>
+  <li><a href="../classes/DiffWindow.html">DiffWindow</a></li>
+  <li><a href="../classes/FileBuffer.html">FileBuffer</a></li>
+  <li><a href="../classes/FilePreviewBuffer.html">FilePreviewBuffer</a></li>
+  <li><a href="../classes/Grid.html">Grid</a></li>
+  <li><a href="../classes/Iter.html">Iter</a></li>
+  <li><a href="../classes/Job.html">Job</a></li>
+  <li><a href="../classes/KVIter.html">KVIter</a></li>
+  <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
+  <li><a href="../classes/Set.html">Set</a></li>
+  <li><a href="../classes/Stack.html">Stack</a></li>
+  <li><a href="../classes/TitleWindow.html">TitleWindow</a></li>
+  <li><a href="../classes/VIter.html">VIter</a></li>
+  <li><strong>Window</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+  <li><a href="../modules/libp.itertools.html">libp.itertools</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>Window</code></h1>
+<p>Module: <strong>libp.ui.Window</strong></p>
+
+<p> Window class.</p>
+<p> Wrapping vim floating window to display <a href="../classes/Buffer.html#">Buffer</a>.</p>
+
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Window.id">Window.id</a></td>
+	<td class="summary">
+
+</td>
+	</tr>
+</table>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Window:close">Window:close ()</a></td>
+	<td class="summary">Closes the Window.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Window:init">Window:init (buffer, opts)</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Window:open">Window:open (fwin_cfg)</a></td>
+	<td class="summary">Opens the Window with floating window configurations.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Window.id"></a>
+    <strong>Window.id</strong>
+    </dt>
+    <dd>
+
+
+
+
+
+    <ul>
+        <li><span class="parameter">id</span>
+         The id of the vim window. Note that this is only set after <a href="../classes/Window.html#Window:open">open</a>
+ is called once.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Window:close"></a>
+    <strong>Window:close ()</strong>
+    </dt>
+    <dd>
+    Closes the Window.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Window:init"></a>
+    <strong>Window:init (buffer, opts)</strong>
+    </dt>
+    <dd>
+    Constructor.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buffer</span>
+            <span class="types"><a class="type" href="../classes/Buffer.html#">Buffer</a></span>
+
+
+
+        </li>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">w</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         window variables to be set. See <code>:help vim.w</code>.
+        </li>
+        <li><span class="parameter">wo</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         window options to be set. See <code>:help vim.wo</code>.
+        </li>
+        <li><span class="parameter">focus_on_open</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether to focus the window when
+ it's opened the first time.
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Window:open"></a>
+    <strong>Window:open (fwin_cfg)</strong>
+    </dt>
+    <dd>
+    Opens the Window with floating window configurations.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">fwin_cfg</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+         Passed to the third argument of <code>vim.api.nvim_open_win()</code>.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2023-01-06 00:42:30 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
