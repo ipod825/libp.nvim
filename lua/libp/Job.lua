@@ -428,17 +428,19 @@ function M._start_all_non_async(cmds, opts, callback)
     vim.validate({ cmds = { cmds, "t" }, opts = { opts, "t", true }, callback = { callback, "f", true } })
     local num_jobs = #cmds
     local exit_codes = {}
-    return iter.KV(List(cmds)):mapkv(function(i, cmd)
-        return M(vim.tbl_extend("keep", { cmd = cmd }, opts or {})):start(function(exit_code)
-            if callback then
-                exit_codes[i] = { exit_code }
-                num_jobs = num_jobs - 1
-                if num_jobs == 0 then
-                    callback(exit_codes)
+    return iter.KV(List(cmds))
+        :mapkv(function(i, cmd)
+            return M(vim.tbl_extend("keep", { cmd = cmd }, opts or {})):start(function(exit_code)
+                if callback then
+                    exit_codes[i] = { exit_code }
+                    num_jobs = num_jobs - 1
+                    if num_jobs == 0 then
+                        callback(exit_codes)
+                    end
                 end
-            end
+            end)
         end)
-    end):collect()
+        :collect()
 end
 
 M._start_all_async = a.wrap(function(cmds, opts, callback)

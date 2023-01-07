@@ -2,8 +2,8 @@
 -- @module libp.iter
 local M = {
     Iter = require("libp.iter.Iter"),
-V = require("libp.iter.V"),
-KV = require("libp.iter.KV"),
+    V = require("libp.iter.V"),
+    KV = require("libp.iter.KV"),
 }
 local V = require("libp.iter.V")
 
