@@ -16,7 +16,7 @@
 -- Inherits: @{Class}
 -- @classmod Grid
 local M = require("libp.datatype.Class"):EXTEND()
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 
 function M:init(opts, root)
     opts = opts or {}

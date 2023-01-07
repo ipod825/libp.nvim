@@ -1,4 +1,4 @@
---- Module: **libp.datatype.KVIter**
+--- Module: **libp.iter.KV**
 --
 -- Value type iterator.
 --
@@ -6,19 +6,19 @@
 -- pair(s) of the underlying container or generator function.
 --
 -- Inherits: @{Iter}
--- @classmod KVIter
-local M = require("libp.datatype.Iter"):EXTEND()
+-- @classmod KV
+local M = require("libp.iter.Iter"):EXTEND()
 
 --- Returns the key/value pair of the **kv iterable** (see @{Iter}) and moves
 -- the iterator to the next position. This function is triggered by the `__call`
 -- operator and is thus for-loop compatible. However, users can also calls it
 -- explicitly to get just the next result.
 -- @usage
--- for i, v in KVIter({ 1, 2, 3 }) do
+-- for i, v in KV({ 1, 2, 3 }) do
 --     assert(i == v)
 -- end
 -- @usage
--- local iter = KVIter({ a = 1, b = 2 })
+-- local iter = KV({ a = 1, b = 2 })
 -- assert.are.same({ "a", 1 }, { iter:next() })
 -- assert.are.same({ "b", 2 }, { iter:next() })
 -- assert(iter:next() == nil)
@@ -31,7 +31,7 @@ end
 --- Returns a table hosting the results of @{next} calls (until it returns nil).
 -- @treturn table
 -- @usage
--- assert.are.same({ a = 1, b = 2 }, KVIter({ a = 1, b = 2 }):collect())
+-- assert.are.same({ a = 1, b = 2 }, KV({ a = 1, b = 2 }):collect())
 function M:collect()
     local res = {}
     for k, v in self:pairs() do

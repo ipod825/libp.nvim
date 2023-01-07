@@ -1,6 +1,6 @@
 -- Modified from https://github.com/kyazdani42/nvim-web-devicons
 local M = {}
-local KVIter = require("libp.datatype.KVIter")
+local iter = require("libp.iter")
 local pathfn = require("libp.utils.pathfn")
 
 M.icons = {
@@ -1554,7 +1554,7 @@ M.icons = {
 }
 
 function M.define_highlights()
-    for ft, icon_data in KVIter(M.icons) do
+    for ft, icon_data in iter.KV(M.icons) do
         if icon_data.hl then
             vim.api.nvim_set_hl(0, M.get_hl_group(ft), icon_data.hl)
         end

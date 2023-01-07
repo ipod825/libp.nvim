@@ -10,8 +10,8 @@
 -- functions.
 -- @classmod Set
 local M = {}
-local VIter = require("libp.datatype.VIter")
-local values = require("libp.itertools").values
+local iter = require("libp.iter")
+local values = require("libp.iter").values
 
 local size_key = {}
 
@@ -130,10 +130,10 @@ function M._dec(set, s)
     set[size_key] = set[size_key] - s
 end
 
---- Returns @{VIter} over the elements.
+--- Returns @{V} over the elements.
 -- @static
 -- @tparam Set set the set
--- @treturn VIter
+-- @treturn V
 -- @usage
 -- local sum = 0
 -- for v in Set.values(Set({ 1, 2 })) do
@@ -147,7 +147,7 @@ function M.values(set)
             is_set,
         },
     })
-    return VIter(set):filterkv(function(k)
+    return iter.V(set):filterkv(function(k)
         return k ~= size_key
     end):mapkv(function(k, v)
         return v, k

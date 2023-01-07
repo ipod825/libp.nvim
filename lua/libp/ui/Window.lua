@@ -20,8 +20,8 @@ local args = require("libp.args")
 -- it's opened the first time.
 function M:init(buffer, opts)
     opts = opts or {}
+
     vim.validate({
-        buffer = args.is_class(buffer, require("libp.ui.Buffer")),
         w = { opts.w, "t", true },
         wo = { opts.wo, "t", true },
         focus_on_open = { opts.focus_on_open, "b", true },

@@ -10,10 +10,10 @@ local a = require("plenary.async")
 local Job = require("libp.Job")
 local functional = require("libp.functional")
 local ProgressWindow = require("libp.ui.ProgressWindow")
-local VIter = require("libp.datatype.VIter")
-local KVIter = require("libp.datatype.KVIter")
+local iter = require("libp.iter")
+local iter = require("libp.iter")
 local args = require("libp.args")
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 
 global.buffers = global.buffers or {}
 
@@ -467,7 +467,7 @@ end
 --- Returns an array of windows where the Buffer is visible.
 -- @treturn {number} The window ids.
 function M:get_attached_wins()
-    return VIter(vim.api.nvim_list_wins()):filter(function(w)
+    return iter.V(vim.api.nvim_list_wins()):filter(function(w)
         return vim.api.nvim_win_get_buf(w) == self.id
     end):collect()
 end
@@ -583,7 +583,7 @@ function M:reload()
     end
 
     local focused_win = self_buffer_focused and vim.api.nvim_get_current_win()
-    local affected_win_cursors = KVIter(self:get_attached_wins()):mapkv(function(_, w)
+    local affected_win_cursors = iter.KV(self:get_attached_wins()):mapkv(function(_, w)
         return w, vim.api.nvim_win_get_cursor(w)
     end):collect()
 

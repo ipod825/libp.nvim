@@ -1,8 +1,8 @@
-local KVIter = require("libp.datatype.KVIter")
+local KV = require("libp.iter.KV")
 
 describe("next", function()
     it("Returns key value.", function()
-        local iter = KVIter({ 4, 5, 6 })
+        local iter = KV({ 4, 5, 6 })
         assert.are.same({ 1, 4 }, { iter:next() })
         assert.are.same({ 2, 5 }, { iter:next() })
         assert.are.same({ 3, 6 }, { iter:next() })
@@ -10,7 +10,7 @@ describe("next", function()
     end)
     it("Works with generic for.", function()
         local i = 1
-        for k, v in KVIter({ 4, 5, 6 }) do
+        for k, v in KV({ 4, 5, 6 }) do
             assert.are.same(i, k)
             assert.are.same(i + 3, v)
             i = i + 1
@@ -21,13 +21,13 @@ end)
 
 describe("collect", function()
     it("Returns a dict", function()
-        assert.are.same({ a = 1, b = 2, c = 3 }, KVIter({ a = 1, b = 2, c = 3 }):collect())
+        assert.are.same({ a = 1, b = 2, c = 3 }, KV({ a = 1, b = 2, c = 3 }):collect())
     end)
 
     it("Works after mapped filtered", function()
         assert.are.same(
             { c = 6, d = 8 },
-            KVIter({ a = 1, b = 2, c = 3, d = 4 })
+            KV({ a = 1, b = 2, c = 3, d = 4 })
                 :map(function(v)
                     return v * 2
                 end)
@@ -41,7 +41,7 @@ describe("collect", function()
     it("Works after filtered mapped", function()
         assert.are.same(
             { a = 2, b = 4 },
-            KVIter({ a = 1, b = 2, c = 3, d = 4 })
+            KV({ a = 1, b = 2, c = 3, d = 4 })
                 :filter(function(v)
                     return v < 3
                 end)

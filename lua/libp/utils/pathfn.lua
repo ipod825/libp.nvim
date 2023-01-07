@@ -1,6 +1,6 @@
 require("libp.utils.string_extension")
 local M = {}
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 
 local path_sep = vim.loop.os_uname().version:match("Windows") and "\\" or "/"
 M.path_sep = path_sep

@@ -1,5 +1,5 @@
 local String = getmetatable("").__index
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 
 function String:split_trim(sep)
     local res = {}

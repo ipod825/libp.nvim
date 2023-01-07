@@ -1,7 +1,7 @@
 local uv = require("libp.fs.uv")
 local pathfn = require("libp.utils.pathfn")
 local mathfn = require("libp.utils.mathfn")
-local VIter = require("libp.datatype.VIter")
+local iter = require("libp.iter")
 local M = {
     Watcher = require("libp.fs.Watcher"),
 }
@@ -127,7 +127,7 @@ function M.list_dir(dir_name)
         return nil, err
     end
 
-    return VIter(nil, function(_, last_index)
+    return iter.V(nil, function(_, last_index)
         last_index = last_index or 0
         local name, type = uv.fs_scandir_next(handle)
         if name then

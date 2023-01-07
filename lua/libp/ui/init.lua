@@ -12,7 +12,7 @@ local M = {
     BorderWindow = require("libp.ui.BorderWindow"),
     BorderedWindow = require("libp.ui.BorderedWindow"),
 }
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 
 function M.center_align_text(content, total_width)
     vim.validate({ content = { content, "t" }, total_width = { total_width, "n" } })

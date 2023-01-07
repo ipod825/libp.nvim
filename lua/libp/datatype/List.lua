@@ -23,7 +23,7 @@ M = require("libp.datatype.Class"):EXTEND({
         return type(key) == "table" and M(vim.list_slice(this, key[1], key[2])) or rawget(this, key) or M[key]
     end,
 })
-local VIter = require("libp.datatype.VIter")
+local iter = require("libp.iter")
 
 --- Constructor.
 -- @tparam[opt={}] array lst Initialization list.
@@ -88,7 +88,7 @@ end
 --     end)
 -- )
 function M:filter(fn)
-    return VIter(self):filter(fn):collect()
+    return iter.V(self):filter(fn):collect()
 end
 
 --- Creates a new list by transforming the elements with a function.
@@ -102,7 +102,7 @@ end
 --     end)
 -- )
 function M:map(fn)
-    return VIter(self):map(fn):collect()
+    return iter.V(self):map(fn):collect()
 end
 
 --- Returns the single element if the list contains only one element.

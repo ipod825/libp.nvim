@@ -3,9 +3,9 @@ local Buffer = require("libp.ui.Buffer")
 local BorderedWindow = require("libp.ui.BorderedWindow")
 local functional = require("libp.functional")
 local a = require("plenary.async")
-local values = require("libp.itertools").values
+local values = require("libp.iter").values
 local vimfn = require("libp.utils.vimfn")
-local KVIter = require("libp.datatype.KVIter")
+local iter = require("libp.iter")
 local bind = require("libp.functional").bind
 
 function M:init(opts)
@@ -49,7 +49,7 @@ function M:init(opts)
     }
     if opts.short_key_map then
         assert(#content == #opts.short_key_map)
-        for i, key in KVIter(opts.short_key_map) do
+        for i, key in iter.KV(opts.short_key_map) do
             content[i] = ("%s. %s"):format(opts.short_key_map[i], opts.content[i])
             mappings[key] = self:BIND(self.confirm, i)
         end

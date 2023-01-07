@@ -1,4 +1,4 @@
---- Module: **libp.datatype.Iter**
+--- Module: **libp.iter.Iter**
 --
 -- Iterator interface for **kv iterable**: key/value containers (array and
 -- table) or generator functions that returns key/value pairs.
@@ -6,7 +6,7 @@
 -- The iterator class enables user to create operation chains on **kv iterable**:
 --    assert.are.same(
 --        { 4, 8 },
---        VIter({ 1, 2, 3, 4 }):filter(function(v)
+--        V({ 1, 2, 3, 4 }):filter(function(v)
 --            return v % 2 == 0
 --        end):map(function(v)
 --            return 2 * v
@@ -17,18 +17,18 @@
 --    for _, v in ipairs({ 1, 2, 3 }) do
 --    end
 -- One could write:
---    -- itertools.values is equivalent to VIter
---    for v in itertools.values({ 1, 2, 3 }) do
+--    -- iter.values is equivalent to V
+--    for v in iter.values({ 1, 2, 3 }) do
 --    end
 --
--- In practice, use the two derived class @{VIter} and @{KVIter} as @{Iter} itself
--- is not for-loop compatible. Both @{VIter} and @{KVIter} works with **kv
+-- In practice, use the two derived class @{V} and @{KV} as @{Iter} itself
+-- is not for-loop compatible. Both @{V} and @{KV} works with **kv
 -- iterable**. The difference is their return types for @{Iter:next} and
--- @{Iter.collect}. @{VIter} returns
--- the value types of the iterable and @{KVIter} returns the key/value pairs.
+-- @{Iter.collect}. @{V} returns
+-- the value types of the iterable and @{KV} returns the key/value pairs.
 --
 -- @{Iter} can also be constructed from a generator function whose return values
--- should be key/value pairs. @{libp.itertools.range} is a good example for this.
+-- should be key/value pairs. @{libp.iter.range} is a good example for this.
 --
 -- Inherits: @{Class}
 -- @classmod Iter
@@ -74,17 +74,17 @@ end
 
 --- Returns the current result and moves the iterator to the next position. It
 -- is not implemented in @{Iter}, the derived classes must implement this
--- function and decide the return types. For e.g., @{VIter:next} returns a
--- single value and @{KVIter:next} returns two values. This function is
+-- function and decide the return types. For e.g., @{V:next} returns a
+-- single value and @{KV:next} returns two values. This function is
 -- triggered by the `__call` operator and is thus for-loop compatible. However,
 -- users can also calls it explicitly to get just the next result.
 -- @treturn any
 -- @usage
--- for i, v in KIter({ 1, 2, 3 }) do
+-- for i, v in KV({ 1, 2, 3 }) do
 --     assert(i == v)
 -- end
 -- @usage
--- local iter = VIter({ 1, 2 })
+-- local iter = V({ 1, 2 })
 -- assert(iter:next() == 1)
 -- assert(iter:next() == 2)
 -- assert(iter:next() == nil)
@@ -94,10 +94,10 @@ end
 
 --- Returns a container hosting the results of @{next} calls (until it returns
 -- nil). The return type is decided by the derived iterator class. For e.g.,
--- @{VIter} returns an array and @{KVIter} returns a table.
+-- @{V} returns an array and @{KV} returns a table.
 -- @treturn array|table
 -- @usage
--- assert.are.same({ 1, 2, 3 }, VIter({ 1, 2, 3 }):collect())
+-- assert.are.same({ 1, 2, 3 }, V({ 1, 2, 3 }):collect())
 function M:collect()
     assert(false, "Must be implemented by child")
 end
@@ -112,7 +112,7 @@ end
 -- Returns the number of elements from the iterator.
 -- @treturn number
 -- @usage
--- assert.are.same(3, VIter({ 1, 2, 3 }):count())
+-- assert.are.same(3, V({ 1, 2, 3 }):count())
 function M:count()
     local res = 0
     for _ in self:pairs() do
@@ -124,7 +124,7 @@ end
 --- Returns a new iterator that repeats indefinitely.
 -- @treturn Iter
 -- @usage
--- local iter = VIter({ 1 }):cycle()
+-- local iter = V({ 1 }):cycle()
 -- assert.are.same(1, iter:next())
 -- assert.are.same(1, iter:next())
 function M:cycle()
@@ -141,7 +141,7 @@ end
 --- Returns a new iterator that takes only the first n elements.
 -- @treturn Iter
 -- @usage
--- assert.are.same({ 1, 2 }, VIter({ 1, 2, 3 }):take(2):collect())
+-- assert.are.same({ 1, 2 }, V({ 1, 2, 3 }):take(2):collect())
 function M:take(n)
     vim.validate({
         n = args.positive(n),
@@ -167,7 +167,7 @@ end
 -- -- { "a", "b" } is equivalent to { [1] = "a", [2] = "b" },
 -- assert.are.same(
 --     { a = 1, b = 2 },
---     KVIter({ "a", "b" }):mapkv(function(k, v)
+--     KV({ "a", "b" }):mapkv(function(k, v)
 --         return v, k
 --     end):collect()
 -- )
@@ -201,7 +201,7 @@ end
 -- @usage
 -- assert.are.same(
 --     { 2, 4 },
---     VIter({ 1, 2 }):map(function(v)
+--     V({ 1, 2 }):map(function(v)
 --         return 2 * v
 --     end):collect()
 -- )
@@ -226,7 +226,7 @@ end
 -- @usage
 -- assert.are.same(
 --     { a = 1, c = 3 },
---     KVIter({ a = 1, b = 2, c = 3 }):filterkv(function(k, v)
+--     KV({ a = 1, b = 2, c = 3 }):filterkv(function(k, v)
 --         return k == "a" or v == 3
 --     end):collect()
 -- )
@@ -253,7 +253,7 @@ end
 -- @usage
 -- assert.are.same(
 --     { 1, 3 },
---     VIter({ 1, 2, 3 }):filter(function(v)
+--     V({ 1, 2, 3 }):filter(function(v)
 --         return v % 2 ~= 0
 --     end):collect()
 -- )

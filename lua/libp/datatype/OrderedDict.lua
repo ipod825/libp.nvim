@@ -5,9 +5,9 @@
 -- Inherits: @{Class}
 -- @classmod OrderedDict
 local M = require("libp.datatype.Class"):EXTEND()
-local KVIter = require("libp.datatype.KVIter")
-local VIter = require("libp.datatype.VIter")
-local values = require("libp.itertools").values
+local iter = require("libp.iter")
+local iter = require("libp.iter")
+local values = require("libp.iter").values
 
 --- Constructor.
 -- @treturn OrderedDict A new OrderedDict
@@ -38,9 +38,9 @@ function M:NEW()
     return obj
 end
 
---- Returns @{KVIter} over the key/value pairs.
+--- Returns @{KV} over the key/value pairs.
 -- @tparam OrderedDict d The OrderedDict instance
--- @treturn KVIter
+-- @treturn KV
 -- @usage
 -- local d = OrderedDict()
 -- d.b = 1
@@ -52,14 +52,14 @@ function M.pairs(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return KVIter(mt.key_arr):mapkv(function(_, v)
+    return iter.KV(mt.key_arr):mapkv(function(_, v)
         return v, mt.data[v]
     end)
 end
 
---- Returns @{VIter} over the keys.
+--- Returns @{V} over the keys.
 -- @tparam OrderedDict d The OrderedDict instance
--- @treturn VIter
+-- @treturn V
 -- @usage
 -- local d = OrderedDict()
 -- d.b = 1
@@ -71,12 +71,12 @@ function M.keys(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return VIter(mt.key_arr)
+    return iter.V(mt.key_arr)
 end
 
---- Returns @{VIter} over the keys.
+--- Returns @{V} over the keys.
 -- @tparam OrderedDict d The OrderedDict instance
--- @treturn VIter
+-- @treturn V
 -- @usage
 -- local d = OrderedDict()
 -- d.b = 1
@@ -88,7 +88,7 @@ function M.values(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return VIter(mt.key_arr):map(function(v)
+    return iter.V(mt.key_arr):map(function(v)
         return mt.data[v]
     end)
 end

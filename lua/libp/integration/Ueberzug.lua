@@ -5,11 +5,11 @@ local args = require("libp.args")
 local pathfn = require("libp.utils.pathfn")
 local Job = require("libp.Job")
 local fs = require("libp.fs")
-local VIter = require("libp.datatype.VIter")
+local iter = require("libp.iter")
 local functional = require("libp.functional")
 local LruDict = require("libp.datatype.LruDict")
 local mime = require("libp.mime")
-local itt = require("libp.itertools")
+local itt = require("libp.iter")
 
 local cache = LruDict(100)
 
@@ -151,7 +151,7 @@ function M:add(opts)
                 stderr_dump_level = Job.StderrDumpLevel.SILENT,
             }):start()
         end)
-        images = VIter(images):cycle()
+        images = iter.V(images):cycle()
 
         functional.debounce({
             body = function()
@@ -179,7 +179,7 @@ function M:add(opts)
                 }):start()
             end
         end)
-        images = VIter(images):cycle()
+        images = iter.V(images):cycle()
 
         functional.debounce({
             body = function()

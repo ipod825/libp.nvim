@@ -1,4 +1,4 @@
-local Iter = require("libp.datatype.Iter")
+local Iter = require("libp.iter.Iter")
 local spy = require("luassert.spy")
 
 local MyIter = Iter:EXTEND()
