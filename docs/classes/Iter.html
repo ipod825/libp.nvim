@@ -48,19 +48,19 @@
   <li><a href="../classes/Grid.html">Grid</a></li>
   <li><strong>Iter</strong></li>
   <li><a href="../classes/Job.html">Job</a></li>
-  <li><a href="../classes/KVIter.html">KVIter</a></li>
+  <li><a href="../classes/KV.html">KV</a></li>
   <li><a href="../classes/List.html">List</a></li>
   <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
   <li><a href="../classes/TitleWindow.html">TitleWindow</a></li>
-  <li><a href="../classes/VIter.html">VIter</a></li>
+  <li><a href="../classes/V.html">V</a></li>
   <li><a href="../classes/Window.html">Window</a></li>
 </ul>
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
-  <li><a href="../modules/libp.itertools.html">libp.itertools</a></li>
+  <li><a href="../modules/libp.iter.html">libp.iter</a></li>
 </ul>
 <h2>Topics</h2>
 <ul class="">
@@ -72,7 +72,7 @@
 <div id="content">
 
 <h1>Class <code>Iter</code></h1>
-<p>Module: <strong>libp.datatype.Iter</strong></p>
+<p>Module: <strong>libp.iter.Iter</strong></p>
 
 <p> Iterator interface for <strong>kv iterable</strong>: key/value containers (array and
  table) or generator functions that returns key/value pairs.</p>
@@ -81,11 +81,22 @@
 <pre>
 <span class="global">assert</span>.are.same(
     { <span class="number">4</span>, <span class="number">8</span> },
-    VIter({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):filter(<span class="keyword">function</span>(v)
+    V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):filter(<span class="keyword">function</span>(v)
         <span class="keyword">return</span> v % <span class="number">2</span> == <span class="number">0</span>
     <span class="keyword">end</span>):map(<span class="keyword">function</span>(v)
         <span class="keyword">return</span> <span class="number">2</span> * v
     <span class="keyword">end</span>):collect()
+)
+<span class="global">assert</span>.are.same(
+    { [<span class="number">1</span>] = <span class="number">2</span>, [<span class="number">3</span>] = <span class="number">6</span> },
+    KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> })
+        :map(<span class="keyword">function</span>(k, v)
+            <span class="keyword">return</span> k, v * <span class="number">2</span>
+        <span class="keyword">end</span>)
+        :filter(<span class="keyword">function</span>(k, v)
+            <span class="keyword">return</span> v % <span class="number">4</span> ~= <span class="number">0</span>
+        <span class="keyword">end</span>)
+        :collect()
 )
 </pre>
 
@@ -100,19 +111,30 @@
 <p> One could write:</p>
 
 <pre>
-<span class="comment">-- itertools.values is equivalent to VIter
-</span><span class="keyword">for</span> v <span class="keyword">in</span> itertools.values({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }) <span class="keyword">do</span>
+<span class="comment">-- iter.values is equivalent to iter.V
+</span><span class="keyword">for</span> v <span class="keyword">in</span> iter.values({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }) <span class="keyword">do</span>
 <span class="keyword">end</span>
 </pre>
 
-<p> In practice, use the two derived class <a href="../classes/VIter.html#">VIter</a> and <a href="../classes/KVIter.html#">KVIter</a> as <a href="../classes/Iter.html#">Iter</a> itself
- is not for-loop compatible. Both <a href="../classes/VIter.html#">VIter</a> and <a href="../classes/KVIter.html#">KVIter</a> works with <strong>kv
- iterable</strong>. The difference is their return types for <a href="../classes/Iter.html#Iter:next">Iter:next</a> and
- <a href="../classes/Iter.html#Iter:collect">Iter.collect</a>. <a href="../classes/VIter.html#">VIter</a> returns
- the value types of the iterable and <a href="../classes/KVIter.html#">KVIter</a> returns the key/value pairs.</p>
+<p> In practice, use the two derived class <a href="../classes/V.html#">V</a> and <a href="../classes/KV.html#">KV</a>. <a href="../classes/Iter.html#">Iter</a> itself
+ is not complete and relies on child classes to implement certain functions. Both <a href="../classes/V.html#">V</a> and <a href="../classes/KV.html#">KV</a> works with <strong>kv
+ iterable</strong>. The difference is their signatures on <a href="../classes/Iter.html#">Iter</a> APIs. Roughly speaking, <a href="../classes/V.html#">V</a> returns
+ the value types of the iterable and <a href="../classes/KV.html#">KV</a> returns the key/value pairs. See usages below for signatures of each function.</p>
 
-<p> <a href="../classes/Iter.html#">Iter</a> can also be constructed from a generator function whose return values
- should be key/value pairs. <a href="../modules/libp.itertools.html#range">libp.itertools.range</a> is a good example for this.</p>
+<p> <a href="../classes/Iter.html#">Iter</a> can also be constructed from a generator function. For e.g., the
+ following is <a href="../modules/libp.iter.html#keys">libp.iter.keys</a>' implementation</p>
+
+
+<pre>
+<span class="keyword">function</span> M.keys(invariant)
+    vim.validate({ invariant = { invariant, <span class="string">"t"</span> } })
+    <span class="keyword">local</span> control = <span class="keyword">nil</span>
+    <span class="keyword">return</span> V(<span class="keyword">nil</span>, <span class="keyword">function</span>()
+        control = <span class="global">next</span>(invariant, control)
+        <span class="keyword">return</span> control, control
+    <span class="keyword">end</span>)
+<span class="keyword">end</span>
+</pre>
 
 <p> Inherits: <a href="../classes/Class.html#">Class</a></p>
 
@@ -130,27 +152,28 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Iter:filter">Iter:filter (filter_fn)</a></td>
-	<td class="summary">Returns a new iterator that filters the value type with a filter function.</td>
+	<td class="summary">Returns a new iterator that filters the enteires with a filter function.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Iter:filterkv">Iter:filterkv (filter_fn)</a></td>
-	<td class="summary">Returns a new iterator that filters the key/value with a filter function.</td>
+	<td class="name" nowrap><a href="#Iter:fold">Iter:fold (init, op)</a></td>
+	<td class="summary">Folds every element into an accumulator by applying an operation, returning
+ the final result.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Iter:init">Iter:init (invariant[, next_fn=nil[, control=nil]])</a></td>
 	<td class="summary">Constructor.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Iter:map">Iter:map (map_fn)</a></td>
-	<td class="summary">Returns a new iterator that transforms the value type with a map function.</td>
+	<td class="name" nowrap><a href="#Iter:last">Iter:last ()</a></td>
+	<td class="summary">Consumes the iterator, returning the last element.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Iter:mapkv">Iter:mapkv (map_fn)</a></td>
-	<td class="summary">Returns a new iterator that transforms the key/value with a map function.</td>
+	<td class="name" nowrap><a href="#Iter:map">Iter:map (map_fn)</a></td>
+	<td class="summary">Returns a new iterator that transforms the entries with a map function.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Iter:next">Iter:next ()</a></td>
-	<td class="summary">Returns the current result and moves the iterator to the next position.</td>
+	<td class="summary">Returns the current entry and moves the iterator to the next position.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Iter:pairs">Iter:pairs ()</a></td>
@@ -183,7 +206,7 @@
     <dd>
     Returns a container hosting the results of <a href="../classes/Iter.html#Iter:next">next</a> calls (until it returns
  nil).  The return type is decided by the derived iterator class. For e.g.,
- <a href="../classes/VIter.html#">VIter</a> returns an array and <a href="../classes/KVIter.html#">KVIter</a> returns a table.
+ <a href="../classes/V.html#">V</a> returns an array and <a href="../classes/KV.html#">KV</a> returns a table.
 
 
 
@@ -200,7 +223,8 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, VIter({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):collect())</pre>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):collect())
+<span class="global">assert</span>.are.same({ a = <span class="number">1</span>, b = <span class="number">2</span>, c = <span class="number">3</span> }, KV({ a = <span class="number">1</span>, b = <span class="number">2</span>, c = <span class="number">3</span> }):collect())</pre>
     </ul>
 
 </dd>
@@ -226,9 +250,13 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="keyword">local</span> iter = VIter({ <span class="number">1</span> }):cycle()
-<span class="global">assert</span>.are.same(<span class="number">1</span>, iter:<span class="global">next</span>())
-<span class="global">assert</span>.are.same(<span class="number">1</span>, iter:<span class="global">next</span>())</pre>
+        <pre class="example"><span class="keyword">local</span> viter = V({ <span class="number">1</span> }):cycle()
+<span class="global">assert</span>.are.same(<span class="number">1</span>, viter:<span class="global">next</span>())
+<span class="global">assert</span>.are.same(<span class="number">1</span>, viter:<span class="global">next</span>())
+
+<span class="keyword">local</span> kviter = KV({ a=<span class="number">1</span> }):cycle()
+<span class="global">assert</span>.are.same({a, <span class="number">1</span>}, {kviter:<span class="global">next</span>()})
+<span class="global">assert</span>.are.same({a, <span class="number">1</span>}, {kviter:<span class="global">next</span>()})</pre>
     </ul>
 
 </dd>
@@ -237,10 +265,7 @@
     <strong>Iter:filter (filter_fn)</strong>
     </dt>
     <dd>
-    Returns a new iterator that filters the value type with a filter function.
- For example, if the original iterator returns <code>(k1, v1), (k2, v2)</code> ...
- The mapped iterator will return <code>(k2, v2)</code> ..., assuming that
- <code>filter_fn(v1)=false</code> and <code>filter_fn(v1)=true</code>.
+    Returns a new iterator that filters the enteires with a filter function.
 
 
     <h3>Parameters:</h3>
@@ -266,7 +291,14 @@
     <ul>
         <pre class="example"><span class="global">assert</span>.are.same(
     { <span class="number">1</span>, <span class="number">3</span> },
-    VIter({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):filter(<span class="keyword">function</span>(v)
+    V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):filter(<span class="keyword">function</span>(v)
+        <span class="keyword">return</span> v % <span class="number">2</span> ~= <span class="number">0</span>
+    <span class="keyword">end</span>):collect()
+)
+
+<span class="global">assert</span>.are.same(
+    { <span class="number">1</span>, [<span class="number">3</span>] = <span class="number">3</span> },
+    KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):filter(<span class="keyword">function</span>(v)
         <span class="keyword">return</span> v % <span class="number">2</span> ~= <span class="number">0</span>
     <span class="keyword">end</span>):collect()
 )</pre>
@@ -274,28 +306,32 @@
 
 </dd>
     <dt>
-    <a name = "Iter:filterkv"></a>
-    <strong>Iter:filterkv (filter_fn)</strong>
+    <a name = "Iter:fold"></a>
+    <strong>Iter:fold (init, op)</strong>
     </dt>
     <dd>
-    Returns a new iterator that filters the key/value with a filter function.
- For example, if the original iterator returns <code>(k1, v1), (k2, v2)</code> ...
- The mapped iterator will return <code>(k2, v2)</code> ..., assuming that
- <code>filter_fn(k1, v1)=false</code> and <code>filter_fn(k1, v1)=true</code>.
+    Folds every element into an accumulator by applying an operation, returning
+ the final result.
 
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">filter_fn</span>
-            <span class="types"><span class="type">function(any,any)->boolean</span></span>
-         The filter function.
+        <li><span class="parameter">init</span>
+            <span class="types"><span class="type">any</span></span>
+         The initial value of the accumulator
+        </li>
+        <li><span class="parameter">op</span>
+            <span class="types"><span class="type">function(acc,curr)->acc</span></span>
+         The accumulating function that takes the
+ accumulator and the current entry. It must modify the accumulator in-place
+ and return it.
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-           <span class="types"><a class="type" href="../classes/Iter.html#">Iter</a></span>
+           <span class="types"><span class="type">any</span></span>
 
 
 
@@ -305,11 +341,14 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same(
-    { a = <span class="number">1</span>, c = <span class="number">3</span> },
-    KVIter({ a = <span class="number">1</span>, b = <span class="number">2</span>, c = <span class="number">3</span> }):filterkv(<span class="keyword">function</span>(k, v)
-        <span class="keyword">return</span> k == <span class="string">"a"</span> <span class="keyword">or</span> v == <span class="number">3</span>
-    <span class="keyword">end</span>):collect()
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="number">10</span>, V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):fold(<span class="number">0</span>, <span class="global">require</span>(<span class="string">"libp.functional"</span>).binary_op.add))
+<span class="global">assert</span>.are.same(
+    { <span class="number">10</span>, <span class="number">10</span> },
+    KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):fold({ <span class="number">0</span>, <span class="number">0</span> }, <span class="keyword">function</span>(acc, curr)
+        acc[<span class="number">1</span>] = acc[<span class="number">1</span>] + curr[<span class="number">1</span>]
+        acc[<span class="number">2</span>] = acc[<span class="number">2</span>] + curr[<span class="number">2</span>]
+        <span class="keyword">return</span> acc
+    <span class="keyword">end</span>)
 )</pre>
     </ul>
 
@@ -353,16 +392,34 @@
         </li>
     </ul>
 
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Iter:last"></a>
+    <strong>Iter:last ()</strong>
+    </dt>
+    <dd>
+    Consumes the iterator, returning the last element.
+
+
+
     <h3>Returns:</h3>
     <ol>
 
-
-
-
+           <span class="types"><span class="type">any</span></span>
+        The last entry
     </ol>
 
 
 
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same(<span class="number">4</span>, V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):last())
+<span class="global">assert</span>.are.same({ <span class="number">4</span>, <span class="number">4</span> }, KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span> }):last())</pre>
+    </ul>
 
 </dd>
     <dt>
@@ -370,15 +427,13 @@
     <strong>Iter:map (map_fn)</strong>
     </dt>
     <dd>
-    Returns a new iterator that transforms the value type with a map function.
- For example, if the original iterator returns <code>(k1, v1), (k2, v2)</code> ...
- The mapped iterator will return <code>(k1, map_fn(v1)), (k2, map_fn(v2))</code> ...
+    Returns a new iterator that transforms the entries with a map function.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">map_fn</span>
-            <span class="types"><span class="type">function(any)->any</span></span>
+            <span class="types"><span class="type">function(...)->...</span></span>
          The map function.
         </li>
     </ul>
@@ -387,9 +442,7 @@
     <ol>
 
            <span class="types"><a class="type" href="../classes/Iter.html#">Iter</a></span>
-
-
-
+        The new iterator.
     </ol>
 
 
@@ -398,49 +451,14 @@
     <ul>
         <pre class="example"><span class="global">assert</span>.are.same(
     { <span class="number">2</span>, <span class="number">4</span> },
-    VIter({ <span class="number">1</span>, <span class="number">2</span> }):map(<span class="keyword">function</span>(v)
+    V({ <span class="number">1</span>, <span class="number">2</span> }):map(<span class="keyword">function</span>(v)
         <span class="keyword">return</span> <span class="number">2</span> * v
     <span class="keyword">end</span>):collect()
-)</pre>
-    </ul>
-
-</dd>
-    <dt>
-    <a name = "Iter:mapkv"></a>
-    <strong>Iter:mapkv (map_fn)</strong>
-    </dt>
-    <dd>
-    Returns a new iterator that transforms the key/value with a map function.
- For example, if the original iterator returns <code>(k1, v1), (k2, v2)</code> ...
- The mapped iterator will return <code>map_fn(k1, v1), map_fn(k2, v2)</code> ...
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">map_fn</span>
-            <span class="types"><span class="type">function(any,any)->any,any</span></span>
-         The map function.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="../classes/Iter.html#">Iter</a></span>
-
-
-
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="comment">-- { "a", "b" } is equivalent to { [1] = "a", [2] = "b" },
-</span><span class="global">assert</span>.are.same(
-    { a = <span class="number">1</span>, b = <span class="number">2</span> },
-    KVIter({ <span class="string">"a"</span>, <span class="string">"b"</span> }):mapkv(<span class="keyword">function</span>(k, v)
-        <span class="keyword">return</span> v, k
+)
+<span class="global">assert</span>.are.same(
+    { [<span class="number">2</span>] = <span class="number">2</span>, [<span class="number">4</span>] = <span class="number">4</span>, [<span class="number">6</span>] = <span class="number">6</span> },
+    KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):map(<span class="keyword">function</span>(k, v)
+        <span class="keyword">return</span> k * <span class="number">2</span>, v * <span class="number">2</span>
     <span class="keyword">end</span>):collect()
 )</pre>
     </ul>
@@ -451,11 +469,8 @@
     <strong>Iter:next ()</strong>
     </dt>
     <dd>
-    Returns the current result and moves the iterator to the next position.  It
- is not implemented in <a href="../classes/Iter.html#">Iter</a>, the derived classes must implement this
- function and decide the return types. For e.g., <a href="../classes/VIter.html#VIter:next">VIter:next</a> returns a
- single value and <a href="../classes/KVIter.html#KVIter:next">KVIter:next</a> returns two values. This function is
- triggered by the <a href="../classes/Iter.html#Iter:__call">__call</a> operator and is thus for-loop compatible. However,
+    Returns the current entry and moves the iterator to the next position.  This function is
+ triggered by the <a href="../classes/Iter.html#Iter:__call">__call</a> operator to make <a href="../classes/Iter.html#">Iter</a> for-loop compatible. However,
  users can also calls it explicitly to get just the next result.
 
 
@@ -473,13 +488,24 @@
 
     <h3>Usage:</h3>
     <ul>
-        <li><pre class="example"><span class="keyword">for</span> i, v <span class="keyword">in</span> KIter({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }) <span class="keyword">do</span>
+        <li><pre class="example"><span class="keyword">local</span> sum = <span class="number">0</span>
+<span class="keyword">for</span> v <span class="keyword">in</span> V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }) <span class="keyword">do</span>
+    sum = sum + v
+<span class="keyword">end</span>
+
+<span class="global">assert</span>(sum == <span class="number">6</span>)
+<span class="keyword">for</span> i, v <span class="keyword">in</span> KV({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }) <span class="keyword">do</span>
     <span class="global">assert</span>(i == v)
 <span class="keyword">end</span></pre></li>
-        <li><pre class="example"><span class="keyword">local</span> iter = VIter({ <span class="number">1</span>, <span class="number">2</span> })
-<span class="global">assert</span>(iter:<span class="global">next</span>() == <span class="number">1</span>)
-<span class="global">assert</span>(iter:<span class="global">next</span>() == <span class="number">2</span>)
-<span class="global">assert</span>(iter:<span class="global">next</span>() == <span class="keyword">nil</span>)</pre></li>
+        <li><pre class="example"><span class="keyword">local</span> viter = V({ <span class="number">1</span>, <span class="number">2</span> })
+<span class="global">assert</span>(viter:<span class="global">next</span>() == <span class="number">1</span>)
+<span class="global">assert</span>(viter:<span class="global">next</span>() == <span class="number">2</span>)
+<span class="global">assert</span>(viter:<span class="global">next</span>() == <span class="keyword">nil</span>)
+
+<span class="keyword">local</span> kviter = KV({ <span class="string">"a"</span>, <span class="string">"b"</span> })
+<span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="string">"a"</span> }, { kviter:<span class="global">next</span>() })
+<span class="global">assert</span>.are.same({ <span class="number">2</span>, <span class="string">"b"</span> }, { kviter:<span class="global">next</span>() })
+<span class="global">assert</span>.is_nil(iter:<span class="global">next</span>())</pre></li>
     </ul>
 
 </dd>
@@ -536,7 +562,8 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, VIter({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):take(<span class="number">2</span>):collect())</pre>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, V({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }):take(<span class="number">2</span>):collect())
+<span class="global">assert</span>.are.same({ <span class="string">"a"</span>, <span class="string">"b"</span> }, KV({ <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>, <span class="string">"d"</span> }):collect())</pre>
     </ul>
 
 </dd>
@@ -575,7 +602,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2023-01-06 00:43:37 </i>
+<i style="float:right;">Last updated 2023-01-07 12:19:40 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

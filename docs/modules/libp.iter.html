@@ -39,19 +39,19 @@
 <h2>Modules</h2>
 <ul class="nowrap">
   <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
-  <li><strong>libp.itertools</strong></li>
+  <li><strong>libp.iter</strong></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/Job.html">Job</a></li>
   <li><a href="../classes/Class.html">Class</a></li>
-  <li><a href="../classes/Iter.html">Iter</a></li>
-  <li><a href="../classes/KVIter.html">KVIter</a></li>
   <li><a href="../classes/List.html">List</a></li>
   <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
-  <li><a href="../classes/VIter.html">VIter</a></li>
+  <li><a href="../classes/Iter.html">Iter</a></li>
+  <li><a href="../classes/KV.html">KV</a></li>
+  <li><a href="../classes/V.html">V</a></li>
   <li><a href="../classes/AnsiColorBuffer.html">AnsiColorBuffer</a></li>
   <li><a href="../classes/Buffer.html">Buffer</a></li>
   <li><a href="../classes/DiffWindow.html">DiffWindow</a></li>
@@ -70,8 +70,8 @@
 
 <div id="content">
 
-<h1>Module <code>libp.itertools</code></h1>
-<p>Useful functions related to <a href="../classes/Iter.html#">Iter</a></p>
+<h1>Module <code>libp.iter</code></h1>
+<p>Iterator classes and functions.</p>
 <p>
 
 </p>
@@ -81,15 +81,15 @@
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#keys">keys (invariant)</a></td>
-	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container keys.</td>
+	<td class="summary">Returns a <a href="../classes/V.html#">V</a> iterating over the container keys.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#range">range (beg[, ends=beg[, step=1]])</a></td>
-	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating through a range with some step.</td>
+	<td class="summary">Returns a <a href="../classes/V.html#">V</a> iterating through a range with some step.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#values">values (invariant)</a></td>
-	<td class="summary">Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container values.</td>
+	<td class="summary">Returns a <a href="../classes/V.html#">V</a> iterating over the container values.</td>
 	</tr>
 </table>
 
@@ -105,7 +105,7 @@
     <strong>keys (invariant)</strong>
     </dt>
     <dd>
-    Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container keys.
+    Returns a <a href="../classes/V.html#">V</a> iterating over the container keys.
 
 
     <h3>Parameters:</h3>
@@ -128,7 +128,7 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ <span class="string">'a'</span>, <span class="string">'b'</span> }, itertools.keys({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="string">'a'</span>, <span class="string">'b'</span> }, iter.keys({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
     </ul>
 
 </dd>
@@ -137,7 +137,7 @@
     <strong>range (beg[, ends=beg[, step=1]])</strong>
     </dt>
     <dd>
-    Returns a <a href="../classes/VIter.html#">VIter</a> iterating through a range with some step.
+    Returns a <a href="../classes/V.html#">V</a> iterating through a range with some step.
 
 
     <h3>Parameters:</h3>
@@ -171,8 +171,8 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, itertools.range(<span class="number">3</span>):collect())
-<span class="global">assert</span>.are.same({ <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span> }, itertools.range(<span class="number">3</span>, <span class="number">1</span>, -<span class="number">1</span>):collect())</pre>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> }, iter.range(<span class="number">3</span>):collect())
+<span class="global">assert</span>.are.same({ <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span> }, iter.range(<span class="number">3</span>, <span class="number">1</span>, -<span class="number">1</span>):collect())</pre>
     </ul>
 
 </dd>
@@ -181,7 +181,7 @@
     <strong>values (invariant)</strong>
     </dt>
     <dd>
-    Returns a <a href="../classes/VIter.html#">VIter</a> iterating over the container values.
+    Returns a <a href="../classes/V.html#">V</a> iterating over the container values.
 
 
     <h3>Parameters:</h3>
@@ -204,7 +204,7 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, itertools.values({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, iter.values({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
     </ul>
 
 </dd>
@@ -215,7 +215,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2023-01-06 00:43:37 </i>
+<i style="float:right;">Last updated 2023-01-07 12:19:40 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

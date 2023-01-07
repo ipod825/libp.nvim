@@ -32,21 +32,10 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Dependency">Dependency </a></li>
-<li><a href="#Installation">Installation </a></li>
-<li><a href="#Documentation">Documentation </a></li>
+<li><a href="#Methods">Methods</a></li>
 </ul>
 
 
-<h2>Topics</h2>
-<ul class="">
-  <li><strong>README</strong></li>
-</ul>
-<h2>Modules</h2>
-<ul class="nowrap">
-  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
-  <li><a href="../modules/libp.iter.html">libp.iter</a></li>
-</ul>
 <h2>Classes</h2>
 <ul class="nowrap">
   <li><a href="../classes/AnsiColorBuffer.html">AnsiColorBuffer</a></li>
@@ -64,45 +53,77 @@
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
   <li><a href="../classes/TitleWindow.html">TitleWindow</a></li>
-  <li><a href="../classes/V.html">V</a></li>
+  <li><strong>V</strong></li>
   <li><a href="../classes/Window.html">Window</a></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/libp.argparse.tokenizer.html">libp.argparse.tokenizer</a></li>
+  <li><a href="../modules/libp.iter.html">libp.iter</a></li>
+</ul>
+<h2>Topics</h2>
+<ul class="">
+  <li><a href="../topics/README.md.html">README</a></li>
 </ul>
 
 </div>
 
 <div id="content">
 
+<h1>Class <code>V</code></h1>
+<p>Module: <strong>libp.iter.V</strong></p>
 
-<h1>Libp</h1>
-<p><a href="https://github.com/ipod825/libp.nvim/actions"><img src="https://github.com/ipod825/libp.nvim/workflows/CI/badge.svg?branch=main" alt="CI Status"/></a></p>
+<p> Value type iterator.</p>
+<p> An implementation of <a href="../classes/Iter.html#">Iter</a> interface. The <a href="https://www.lua.org/manual/5.1/manual.html#pdf-next">next</a> and <a href="../classes/V.html#V:collect">collect</a> function
+ returns the value(s) type of the underlying container or generator function.</p>
 
-<p>A library for neovim plugins.</p>
-
-<p><a name="Dependency"></a></p>
-<h2>Dependency</h2>
-<p>1. <a href="https://github.com/nvim-lua/plenary.nvim">plenary.nvim</a></p>
-
-<p><a name="Installation"></a></p>
-<h2>Installation</h2>
-<hr/>
-
-<p>Use you preferred package manager. Below we use <a href="https://github.com/wbthomason/packer.nvim">packer.nvim</a> as an example.</p>
+<p> Inherits: <a href="../classes/Iter.html#">Iter</a></p>
 
 
-<pre>
-use {<span class="string">'nvim-lua/plenary.nvim'</span>}
-use {
-    <span class="string">"ipod825/libp.nvim"</span>,
-    config = <span class="keyword">function</span>()
-        <span class="global">require</span>(<span class="string">"libp"</span>).setup()
-    <span class="keyword">end</span>,
-}
-</pre>
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#V:collect">V:collect ()</a></td>
+	<td class="summary">Returns an array hosting the results of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-next">next</a> calls (until it returns
+ nil).</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
 
 
-<p><a name="Documentation"></a></p>
-<h2>Documentation</h2>
-<p>See the <a href="https://ipod825.github.io/libp.nvim/">online doc</a></p>
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "V:collect"></a>
+    <strong>V:collect ()</strong>
+    </dt>
+    <dd>
+    Returns an array hosting the results of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-next">next</a> calls (until it returns
+ nil).
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">array</span></span>
+
+
+
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="global">assert</span>.are.same({ <span class="number">1</span>, <span class="number">2</span> }, V({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
+    </ul>
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
