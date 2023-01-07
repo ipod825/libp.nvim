@@ -22,10 +22,16 @@ local M = require("libp.iter.Iter"):EXTEND()
 -- assert.are.same({ "a", 1 }, { iter:next() })
 -- assert.are.same({ "b", 2 }, { iter:next() })
 -- assert(iter:next() == nil)
-function M:next()
-    local val
-    self.control, val = self.next_fn(self.invariant, self.control)
-    return self.control, val
+function M:_select_entry(k, v)
+    return k, v
+end
+
+function M:_map_res_to_next_fn_output(k, v)
+    return k, v
+end
+
+function M:_pack_entry(k, v)
+    return { k, v }
 end
 
 --- Returns a table hosting the results of @{next} calls (until it returns nil).

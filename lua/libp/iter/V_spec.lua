@@ -1,67 +1,29 @@
 local V = require("libp.iter.V")
 local functional = require("libp.functional")
 
-describe("next", function()
-    it("Returns only value.", function()
-        local iter = V({ 1, 2, 3 })
-        assert.are.same(1, iter:next())
-        assert.are.same(2, iter:next())
-        assert.are.same(3, iter:next())
-        assert.is_nil(iter:next())
-    end)
-    it("Works with generic for.", function()
-        local i = 1
-        for v in V({ 1, 2, 3 }) do
-            assert.are.same(i, v)
-            i = i + 1
-        end
-        assert.are.same(4, i)
-    end)
-end)
-
-describe("collect", function()
-    it("Returns an array of values", function()
-        assert.are.same({ 1, 2, 3 }, V({ 1, 2, 3 }):collect())
-    end)
-
-    it("Indices are correct after filtered", function()
+describe("map filter", function()
+    it("Maps then filters values", function()
         assert.are.same(
-            { 2, 3 },
-            V({ 1, 2, 3 }):filter(function(v)
-                return v > 1
-            end):collect()
-        )
-    end)
-
-    it("Values correct after mapped", function()
-        assert.are.same(
-            { 2, 3 },
-            V({ 1, 2, 3 }):filter(function(v)
-                return v > 1
-            end):collect()
-        )
-    end)
-
-    it("Works after mapped filtered", function()
-        assert.are.same(
-            { 6, 8 },
-            V({ 1, 2, 3, 4 })
+            { 2, 6 },
+            V({ 1, 2, 3 })
                 :map(function(v)
                     return v * 2
                 end)
                 :filter(function(v)
-                    return v > 4
+                    return v % 4 ~= 0
                 end)
                 :collect()
         )
     end)
+end)
 
-    it("Works after filtered mapped", function()
+describe("filter map", function()
+    it("Filters then maps values", function()
         assert.are.same(
-            { 2, 4 },
-            V({ 1, 2, 3, 4 })
+            { 2, 6 },
+            V({ 1, 2, 3 })
                 :filter(function(v)
-                    return v < 3
+                    return v % 2 ~= 0
                 end)
                 :map(function(v)
                     return v * 2
@@ -73,12 +35,12 @@ end)
 
 describe("fold", function()
     local op = functional.binary_op
-    it("Return empty list if input is empty", function()
-        assert.are.same({}, V({}):fold(0, op.add):collect())
+    it("Return starting value if empty", function()
+        assert.are.same(0, V({}):fold(0, op.add))
     end)
     it("Accumulates the elements", function()
-        assert.are.same({ 1, 3, 6, 10 }, V({ 1, 2, 3, 4 }):fold(0, op.add):collect())
-        assert.are.same({ 2, 4, 12, 48 }, V({ 1, 2, 3, 4 }):fold(2, op.mult):collect())
+        assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, op.add))
+        assert.are.same(48, V({ 1, 2, 3, 4 }):fold(2, op.mult))
     end)
 end)
 
@@ -88,5 +50,12 @@ describe("last", function()
     end)
     it("Returns the last element", function()
         assert.are.same(4, V({ 1, 2, 3, 4 }):last())
+    end)
+end)
+
+describe("count", function()
+    it("Returns the number of elements", function()
+        assert.are.same(0, V({}):count())
+        assert.are.same(2, V({ 1, 2 }):count())
     end)
 end)

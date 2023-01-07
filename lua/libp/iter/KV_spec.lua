@@ -1,54 +1,135 @@
 local KV = require("libp.iter.KV")
 
-describe("next", function()
-    it("Returns key value.", function()
-        local iter = KV({ 4, 5, 6 })
-        assert.are.same({ 1, 4 }, { iter:next() })
-        assert.are.same({ 2, 5 }, { iter:next() })
-        assert.are.same({ 3, 6 }, { iter:next() })
-        assert.is_nil(iter:next())
-    end)
-    it("Works with generic for.", function()
-        local i = 1
-        for k, v in KV({ 4, 5, 6 }) do
-            assert.are.same(i, k)
-            assert.are.same(i + 3, v)
-            i = i + 1
-        end
-        assert.are.same(4, i)
+describe("map", function()
+    it("Maps values", function()
+        assert.are.same(
+            { 2, 4, 6 },
+            KV({ 1, 2, 3 }):map(function(k, v)
+                return k, v * 2
+            end):collect()
+        )
+        assert.are.same(
+            { [2] = 2, [4] = 4, [6] = 6 },
+            KV({ 1, 2, 3 }):map(function(k, v)
+                return k * 2, v * 2
+            end):collect()
+        )
     end)
 end)
 
-describe("collect", function()
-    it("Returns a dict", function()
-        assert.are.same({ a = 1, b = 2, c = 3 }, KV({ a = 1, b = 2, c = 3 }):collect())
-    end)
-
-    it("Works after mapped filtered", function()
+describe("filter", function()
+    it("Filter values", function()
         assert.are.same(
-            { c = 6, d = 8 },
-            KV({ a = 1, b = 2, c = 3, d = 4 })
-                :map(function(v)
-                    return v * 2
+            { 1, [3] = 3 },
+            KV({ 1, 2, 3 }):filter(function(v)
+                return v % 2 ~= 0
+            end):collect()
+        )
+
+        assert.are.same(
+            { [2] = 2 },
+            KV({ 1, 2, 3 }):filter(function(k, v)
+                return k > 1 and v < 3
+            end):collect()
+        )
+    end)
+end)
+
+describe("map filter", function()
+    it("Maps then filters values", function()
+        assert.are.same(
+            { [1] = 2, [3] = 6 },
+            KV({ 1, 2, 3 })
+                :map(function(k, v)
+                    return k, v * 2
                 end)
-                :filter(function(v)
-                    return v > 4
+                :filter(function(k, v)
+                    return v % 4 ~= 0
                 end)
                 :collect()
         )
     end)
 
-    it("Works after filtered mapped", function()
+    it("Maps then filters values", function()
         assert.are.same(
-            { a = 2, b = 4 },
-            KV({ a = 1, b = 2, c = 3, d = 4 })
-                :filter(function(v)
-                    return v < 3
+            { [3] = 6 },
+            KV({ 1, 2, 3 })
+                :map(function(k, v)
+                    return k, v * 2
                 end)
-                :map(function(v)
-                    return v * 2
+                :filter(function(k, v)
+                    return k > 2 and v % 4 ~= 0
                 end)
                 :collect()
         )
+    end)
+end)
+
+describe("filter map", function()
+    it("Filters then maps values", function()
+        assert.are.same(
+            { [1] = 2, [3] = 6 },
+            KV({ 1, 2, 3 })
+                :filter(function(k, v)
+                    return v % 2 ~= 0
+                end)
+                :map(function(k, v)
+                    return k, v * 2
+                end)
+                :collect()
+        )
+    end)
+
+    it("Filters then maps values", function()
+        assert.are.same(
+            { [3] = 6 },
+            KV({ 1, 2, 3 })
+                :filter(function(k, v)
+                    return k > 1 and v % 2 ~= 0
+                end)
+                :map(function(k, v)
+                    return k, v * 2
+                end)
+                :collect()
+        )
+    end)
+end)
+
+describe("fold", function()
+    local function add(acc, curr)
+        acc[1] = acc[1] + curr[1]
+        acc[2] = acc[2] + curr[2]
+        return acc
+    end
+
+    local function mult(acc, curr)
+        acc[1] = acc[1] * curr[1]
+        acc[2] = acc[2] * curr[2]
+        return acc
+    end
+
+    it("Return starting value if empty", function()
+        assert.are.same({ 0, 0 }, KV({}):fold({ 0, 0 }, add))
+    end)
+    it("Accumulates the elements", function()
+        assert.are.same({ 10, 10 }, KV({ 1, 2, 3, 4 }):fold({ 0, 0 }, add))
+        assert.are.same({ 24, 48 }, KV({ 1, 2, 3, 4 }):fold({ 1, 2 }, mult))
+    end)
+end)
+
+describe("last", function()
+    it("Returns nil if input is empty", function()
+        assert.is_nil(KV({}):last())
+    end)
+    it("Returns the last element", function()
+        assert.are.same({ 4, 4 }, KV({ 1, 2, 3, 4 }):last())
+        assert.are.same({ 4, "4" }, KV({ "1", "2", "3", "4" }):last())
+    end)
+end)
+
+describe("count", function()
+    it("Returns the number of elements", function()
+        assert.are.same(0, KV({}):count())
+        assert.are.same(2, KV({ 1, 2 }):count())
     end)
 end)

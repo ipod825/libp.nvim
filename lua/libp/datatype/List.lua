@@ -77,7 +77,9 @@ function M:sort(...)
     return self
 end
 
---- Creates a new list of all elements which match a function.
+--- Creates a new list of all elements which match a function. Note that
+--this is a short cut of `V(lst):filter(fn):collect()`. If chaining is
+--necessary, better do that explicitly for performance concern.
 -- @tparam function(any)->boolean fn The filtering function
 -- @treturn List A new filtered list
 -- @usage
@@ -91,7 +93,9 @@ function M:filter(fn)
     return iter.V(self):filter(fn):collect()
 end
 
---- Creates a new list by transforming the elements with a function.
+--- Creates a new list by transforming the elements with a function. Note that
+--this is a short cut of `V(lst):map(fn):collect()`. If chaining is necessary,
+--better do that explicitly for performance concern.
 -- @tparam function(any)->any fn The mapping function
 -- @treturn List A new transformed List
 -- @usage

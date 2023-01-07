@@ -429,7 +429,7 @@ function M._start_all_non_async(cmds, opts, callback)
     local num_jobs = #cmds
     local exit_codes = {}
     return iter.KV(List(cmds))
-        :mapkv(function(i, cmd)
+        :map(function(i, cmd)
             return M(vim.tbl_extend("keep", { cmd = cmd }, opts or {})):start(function(exit_code)
                 if callback then
                     exit_codes[i] = { exit_code }

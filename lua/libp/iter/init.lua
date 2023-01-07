@@ -6,6 +6,7 @@ local M = {
     KV = require("libp.iter.KV"),
 }
 local V = require("libp.iter.V")
+local KV = require("libp.iter.KV")
 
 --- Returns a @{V} iterating through a range with some step.
 -- @tparam number beg The begin of the range. If `ends` is omitted, begin becomes 1
@@ -58,8 +59,10 @@ end
 -- assert.are.same({ 'a', 'b' }, iter.keys({ a = 1, b = 2 }):collect())
 function M.keys(invariant)
     vim.validate({ invariant = { invariant, "t" } })
-    return V(invariant):mapkv(function(k, v)
-        return v, k
+    local control = nil
+    return V(nil, function()
+        control = next(invariant, control)
+        return control, control
     end)
 end
 

@@ -147,13 +147,9 @@ function M.values(set)
             is_set,
         },
     })
-    return iter.V(set)
-        :filterkv(function(k)
-            return k ~= size_key
-        end)
-        :mapkv(function(k, v)
-            return v, k
-        end)
+    return iter.KV(set):filter(function(k, _)
+        return k ~= size_key
+    end)
 end
 
 --- Returns if the set contains the element.

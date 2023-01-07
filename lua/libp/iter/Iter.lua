@@ -33,6 +33,7 @@
 -- Inherits: @{Class}
 -- @classmod Iter
 local args = require("libp.args")
+local functional = require("libp.functional")
 
 local M = require("libp.datatype.Class"):EXTEND({
     --- Calls @{Iter:next}.
@@ -89,6 +90,23 @@ end
 -- assert(iter:next() == 2)
 -- assert(iter:next() == nil)
 function M:next()
+    local val
+    self.control, val = self.next_fn(self.invariant, self.control)
+    return self:_select_entry(self.control, val)
+end
+
+-- Given key, value. Returns one or two values that map & filter takes.
+function M:_select_entry(_, _)
+    assert(false, "Must be implemented by child")
+end
+
+-- Given the map result (k, v). Returns the outputs of next_fn.
+function M:_map_res_to_next_fn_output(_, _)
+    assert(false, "Must be implemented by child")
+end
+
+-- Given key, value. Returns one single table or value representing the entry.
+function M:_pack_entry(_, _)
     assert(false, "Must be implemented by child")
 end
 
@@ -158,41 +176,6 @@ function M:take(n)
     end)
 end
 
---- Returns a new iterator that transforms the key/value with a map function.
--- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
--- The mapped iterator will return `map_fn(k1, v1), map_fn(k2, v2)` ...
--- @tparam function(any,any)->any,any map_fn The map function.
--- @treturn Iter
--- @usage
--- -- { "a", "b" } is equivalent to { [1] = "a", [2] = "b" },
--- assert.are.same(
---     { a = 1, b = 2 },
---     KV({ "a", "b" }):mapkv(function(k, v)
---         return v, k
---     end):collect()
--- )
-function M:mapkv(map_fn)
-    vim.validate({ map_fn = { map_fn, "f" } })
-    -- Note that the next_fn of the returned iterator actually doesn't use its
-    -- arguments (invariant and control). Therefore, if we have a long chain of
-    -- map/filter, only the control of the original iterator (first level) is
-    -- really keeping track of the progress even though we update each level's
-    -- control below. That is also why we don't pass the invariant and control
-    -- argument for the new iterator as they are generator function driven
-    -- instead of invariant position driven. Also note that self here refers to
-    -- the original iterator, i.e., the previous level of the returned iterator.
-    -- We use self:CLASS to have the returned iterator to be of the same class
-    -- as the previous iterator. This ensures that next/collect behaves the same
-    -- after iterator transformation.
-    return self:CLASS()(nil, function()
-        local v
-        self.control, v = self.next_fn(self.invariant, self.control)
-        if self.control then
-            return map_fn(self.control, v)
-        end
-    end)
-end
-
 --- Returns a new iterator that transforms the value type with a map function.
 -- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
 -- The mapped iterator will return `(k1, map_fn(v1)), (k2, map_fn(v2))` ...
@@ -207,40 +190,23 @@ end
 -- )
 function M:map(map_fn)
     vim.validate({ map_fn = { map_fn, "f" } })
-    -- See comments in mapkv.
+    -- Note that the next_fn of the returned iterator actually doesn't use its
+    -- arguments (invariant and control). Therefore, if we have a long chain of
+    -- map/filter, only the control of the original iterator (first level) is
+    -- really keeping track of the progress even though we update each level's
+    -- control below. That is also why we don't pass the invariant and control
+    -- argument for the new iterator as they are generator function driven
+    -- instead of invariant position driven. Also note that self here refers to
+    -- the original iterator, i.e., the previous level of the returned iterator.
+    -- We use self:CLASS to have the returned iterator to be of the same class
+    -- as the previous iterator.
     return self:CLASS()(nil, function()
-        local v
+        local k, v
         self.control, v = self.next_fn(self.invariant, self.control)
         if self.control then
-            return self.control, map_fn(v)
+            k, v = map_fn(self:_select_entry(self.control, v))
+            return self:_map_res_to_next_fn_output(k, v)
         end
-    end)
-end
-
---- Returns a new iterator that filters the key/value with a filter function.
--- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
--- The mapped iterator will return `(k2, v2)` ..., assuming that
--- `filter_fn(k1, v1)=false` and `filter_fn(k1, v1)=true`.
--- @tparam function(any,any)->boolean filter_fn The filter function.
--- @treturn Iter
--- @usage
--- assert.are.same(
---     { a = 1, c = 3 },
---     KV({ a = 1, b = 2, c = 3 }):filterkv(function(k, v)
---         return k == "a" or v == 3
---     end):collect()
--- )
-function M:filterkv(filter_fn)
-    vim.validate({ filter_fn = { filter_fn, "f" } })
-    -- See comments in mapkv.
-    return self:CLASS()(nil, function()
-        repeat
-            local v
-            self.control, v = self.next_fn(self.invariant, self.control)
-            if self.control and filter_fn(self.control, v) then
-                return self.control, v
-            end
-        until not self.control
     end)
 end
 
@@ -259,16 +225,47 @@ end
 -- )
 function M:filter(filter_fn)
     vim.validate({ filter_fn = { filter_fn, "f" } })
-    -- See comments in mapkv.
+    -- See map for logic explanation.
     return self:CLASS()(nil, function()
         repeat
             local v
             self.control, v = self.next_fn(self.invariant, self.control)
-            if self.control and filter_fn(v) then
+            if self.control and filter_fn(self:_select_entry(self.control, v)) then
                 return self.control, v
             end
         until not self.control
     end)
+end
+
+--- Consumes the iterator, returning the last element.
+-- @treturn any The last element
+-- @usage
+-- assert.are.same(4, V({ 1, 2, 3, 4 }):last())
+-- assert.are.same({ 4, 4 }, KV({ 1, 2, 3, 4 }):last())
+function M:last()
+    return self:fold(nil, functional.binary_op.second)
+end
+
+--- Folds every element into an accumulator by applying an operation, returning
+-- the final result.
+-- @treturn any
+-- @usage
+-- assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, functional.binary_op.add))
+-- assert.are.same(
+--     { 10, 10 },
+--     KV({ 1, 2, 3, 4 }):fold({ 0, 0 }, function(acc, curr)
+--         acc[1] = acc[1] + curr[1]
+--         acc[2] = acc[2] + curr[2]
+--         return acc
+--     end)
+-- )
+function M:fold(init, op)
+    local acc = init
+    for k, v in self:pairs() do
+        local entry = self:_pack_entry(k, v)
+        acc = op(acc, entry)
+    end
+    return acc
 end
 
 return M

@@ -52,7 +52,7 @@ function M.pairs(d)
     local mt = getmetatable(d)
     assert(mt.key_arr)
 
-    return iter.KV(mt.key_arr):mapkv(function(_, v)
+    return iter.KV(mt.key_arr):map(function(_, v)
         return v, mt.data[v]
     end)
 end

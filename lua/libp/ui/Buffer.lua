@@ -586,7 +586,7 @@ function M:reload()
 
     local focused_win = self_buffer_focused and vim.api.nvim_get_current_win()
     local affected_win_cursors = iter.KV(self:get_attached_wins())
-        :mapkv(function(_, w)
+        :map(function(_, w)
             return w, vim.api.nvim_win_get_cursor(w)
         end)
         :collect()
