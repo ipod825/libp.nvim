@@ -3,8 +3,7 @@ local uv = require("libp.fs.uv")
 local auv = require("libp.fs.uv_async")
 
 describe("__index", function()
-    -- TODO(smwang): Failed on github. Checkout why.
-    pending("Gets vim.loop function in main thread", function()
+    it("Gets vim.loop function in main thread", function()
         assert.are.equal(vim.loop.fs_open, uv.fs_open)
     end)
 
