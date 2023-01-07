@@ -9,19 +9,6 @@
 -- @classmod KV
 local M = require("libp.iter.Iter"):EXTEND()
 
---- Returns the key/value pair of the **kv iterable** (see @{Iter}) and moves
--- the iterator to the next position. This function is triggered by the `__call`
--- operator and is thus for-loop compatible. However, users can also calls it
--- explicitly to get just the next result.
--- @usage
--- for i, v in KV({ 1, 2, 3 }) do
---     assert(i == v)
--- end
--- @usage
--- local iter = KV({ a = 1, b = 2 })
--- assert.are.same({ "a", 1 }, { iter:next() })
--- assert.are.same({ "b", 2 }, { iter:next() })
--- assert(iter:next() == nil)
 function M:_select_entry(k, v)
     return k, v
 end

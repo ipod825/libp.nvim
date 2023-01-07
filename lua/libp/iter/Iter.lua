@@ -12,23 +12,42 @@
 --            return 2 * v
 --        end):collect()
 --    )
+--    assert.are.same(
+--        { [1] = 2, [3] = 6 },
+--        KV({ 1, 2, 3 })
+--            :map(function(k, v)
+--                return k, v * 2
+--            end)
+--            :filter(function(k, v)
+--                return v % 4 ~= 0
+--            end)
+--            :collect()
+--    )
 -- It also makes iterating values over container cleaner:
 -- Instead of writing
 --    for _, v in ipairs({ 1, 2, 3 }) do
 --    end
 -- One could write:
---    -- iter.values is equivalent to V
+--    -- iter.values is equivalent to iter.V
 --    for v in iter.values({ 1, 2, 3 }) do
 --    end
 --
--- In practice, use the two derived class @{V} and @{KV} as @{Iter} itself
--- is not for-loop compatible. Both @{V} and @{KV} works with **kv
--- iterable**. The difference is their return types for @{Iter:next} and
--- @{Iter.collect}. @{V} returns
--- the value types of the iterable and @{KV} returns the key/value pairs.
+-- In practice, use the two derived class @{V} and @{KV}. @{Iter} itself
+-- is not complete and relies on child classes to implement certain functions. Both @{V} and @{KV} works with **kv
+-- iterable**. The difference is their signatures on @{Iter} APIs. Roughly speaking, @{V} returns
+-- the value types of the iterable and @{KV} returns the key/value pairs. See usages below for signatures of each function.
 --
--- @{Iter} can also be constructed from a generator function whose return values
--- should be key/value pairs. @{libp.iter.range} is a good example for this.
+-- @{Iter} can also be constructed from a generator function. For e.g., the
+-- following is @{libp.iter.keys}' implementation
+--
+--     function M.keys(invariant)
+--         vim.validate({ invariant = { invariant, "t" } })
+--         local control = nil
+--         return V(nil, function()
+--             control = next(invariant, control)
+--             return control, control
+--         end)
+--     end
 --
 -- Inherits: @{Class}
 -- @classmod Iter
@@ -59,7 +78,6 @@ local M = require("libp.datatype.Class"):EXTEND({
 -- * value: The value at the current position (control).
 --
 -- @tparam[opt=nil] any control The beginning iterator position.
--- @treturn @{Iter}
 function M:init(invariant, next_fn, control)
     vim.validate({
         next_fn = { next_fn, "f", true },
@@ -68,31 +86,39 @@ function M:init(invariant, next_fn, control)
 
     assert(next_fn or invariant, "next_fn and invariant can not both be nil")
 
-    self.invariant = invariant
-    self.next_fn = next_fn or next
-    self.control = control
+    self._invariant = invariant
+    self._next_fn = next_fn or next
+    self._control = control
 end
 
---- Returns the current result and moves the iterator to the next position. It
--- is not implemented in @{Iter}, the derived classes must implement this
--- function and decide the return types. For e.g., @{V:next} returns a
--- single value and @{KV:next} returns two values. This function is
--- triggered by the `__call` operator and is thus for-loop compatible. However,
+--- Returns the current entry and moves the iterator to the next position. This function is
+-- triggered by the `__call` operator to make @{Iter} for-loop compatible. However,
 -- users can also calls it explicitly to get just the next result.
 -- @treturn any
 -- @usage
+-- local sum = 0
+-- for v in V({ 1, 2, 3 }) do
+--     sum = sum + v
+-- end
+--
+-- assert(sum == 6)
 -- for i, v in KV({ 1, 2, 3 }) do
 --     assert(i == v)
 -- end
 -- @usage
--- local iter = V({ 1, 2 })
--- assert(iter:next() == 1)
--- assert(iter:next() == 2)
--- assert(iter:next() == nil)
+-- local viter = V({ 1, 2 })
+-- assert(viter:next() == 1)
+-- assert(viter:next() == 2)
+-- assert(viter:next() == nil)
+--
+-- local kviter = KV({ "a", "b" })
+-- assert.are.same({ 1, "a" }, { kviter:next() })
+-- assert.are.same({ 2, "b" }, { kviter:next() })
+-- assert.is_nil(iter:next())
 function M:next()
     local val
-    self.control, val = self.next_fn(self.invariant, self.control)
-    return self:_select_entry(self.control, val)
+    self._control, val = self._next_fn(self._invariant, self._control)
+    return self:_select_entry(self._control, val)
 end
 
 -- Given key, value. Returns one or two values that map & filter takes.
@@ -116,6 +142,7 @@ end
 -- @treturn array|table
 -- @usage
 -- assert.are.same({ 1, 2, 3 }, V({ 1, 2, 3 }):collect())
+-- assert.are.same({ a = 1, b = 2, c = 3 }, KV({ a = 1, b = 2, c = 3 }):collect())
 function M:collect()
     assert(false, "Must be implemented by child")
 end
@@ -124,7 +151,7 @@ end
 -- This function is probably only of interest to derived class of @{Iter}.
 -- @treturn function,table|nil,any
 function M:pairs()
-    return self.next_fn, self.invariant, self.control
+    return self._next_fn, self._invariant, self._control
 end
 
 -- Returns the number of elements from the iterator.
@@ -142,17 +169,21 @@ end
 --- Returns a new iterator that repeats indefinitely.
 -- @treturn Iter
 -- @usage
--- local iter = V({ 1 }):cycle()
--- assert.are.same(1, iter:next())
--- assert.are.same(1, iter:next())
+-- local viter = V({ 1 }):cycle()
+-- assert.are.same(1, viter:next())
+-- assert.are.same(1, viter:next())
+--
+-- local kviter = KV({ a=1 }):cycle()
+-- assert.are.same({a, 1}, {kviter:next()})
+-- assert.are.same({a, 1}, {kviter:next()})
 function M:cycle()
     return self:CLASS()(nil, function()
         local v
-        self.control, v = self.next_fn(self.invariant, self.control)
-        if not self.control then
-            self.control, v = self.next_fn(self.invariant, self.control)
+        self._control, v = self._next_fn(self._invariant, self._control)
+        if not self._control then
+            self._control, v = self._next_fn(self._invariant, self._control)
         end
-        return self.control, v
+        return self._control, v
     end)
 end
 
@@ -160,6 +191,7 @@ end
 -- @treturn Iter
 -- @usage
 -- assert.are.same({ 1, 2 }, V({ 1, 2, 3 }):take(2):collect())
+-- assert.are.same({ "a", "b" }, KV({ "a", "b", "c", "d" }):collect())
 function M:take(n)
     vim.validate({
         n = args.positive(n),
@@ -171,21 +203,25 @@ function M:take(n)
         end
         local v
         count = count + 1
-        self.control, v = self.next_fn(self.invariant, self.control)
-        return self.control, v
+        self._control, v = self._next_fn(self._invariant, self._control)
+        return self._control, v
     end)
 end
 
---- Returns a new iterator that transforms the value type with a map function.
--- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
--- The mapped iterator will return `(k1, map_fn(v1)), (k2, map_fn(v2))` ...
--- @tparam function(any)->any map_fn The map function.
--- @treturn Iter
+--- Returns a new iterator that transforms the entries with a map function.
+-- @tparam function(...)->... map_fn The map function.
+-- @treturn Iter The new iterator.
 -- @usage
 -- assert.are.same(
 --     { 2, 4 },
 --     V({ 1, 2 }):map(function(v)
 --         return 2 * v
+--     end):collect()
+-- )
+-- assert.are.same(
+--     { [2] = 2, [4] = 4, [6] = 6 },
+--     KV({ 1, 2, 3 }):map(function(k, v)
+--         return k * 2, v * 2
 --     end):collect()
 -- )
 function M:map(map_fn)
@@ -202,18 +238,15 @@ function M:map(map_fn)
     -- as the previous iterator.
     return self:CLASS()(nil, function()
         local k, v
-        self.control, v = self.next_fn(self.invariant, self.control)
-        if self.control then
-            k, v = map_fn(self:_select_entry(self.control, v))
+        self._control, v = self._next_fn(self._invariant, self._control)
+        if self._control then
+            k, v = map_fn(self:_select_entry(self._control, v))
             return self:_map_res_to_next_fn_output(k, v)
         end
     end)
 end
 
---- Returns a new iterator that filters the value type with a filter function.
--- For example, if the original iterator returns `(k1, v1), (k2, v2)` ...
--- The mapped iterator will return `(k2, v2)` ..., assuming that
--- `filter_fn(v1)=false` and `filter_fn(v1)=true`.
+--- Returns a new iterator that filters the enteires with a filter function.
 -- @tparam function(any)->boolean filter_fn The filter function.
 -- @treturn Iter
 -- @usage
@@ -223,22 +256,29 @@ end
 --         return v % 2 ~= 0
 --     end):collect()
 -- )
+--
+-- assert.are.same(
+--     { 1, [3] = 3 },
+--     KV({ 1, 2, 3 }):filter(function(v)
+--         return v % 2 ~= 0
+--     end):collect()
+-- )
 function M:filter(filter_fn)
     vim.validate({ filter_fn = { filter_fn, "f" } })
     -- See map for logic explanation.
     return self:CLASS()(nil, function()
         repeat
             local v
-            self.control, v = self.next_fn(self.invariant, self.control)
-            if self.control and filter_fn(self:_select_entry(self.control, v)) then
-                return self.control, v
+            self._control, v = self._next_fn(self._invariant, self._control)
+            if self._control and filter_fn(self:_select_entry(self._control, v)) then
+                return self._control, v
             end
-        until not self.control
+        until not self._control
     end)
 end
 
 --- Consumes the iterator, returning the last element.
--- @treturn any The last element
+-- @treturn any The last entry
 -- @usage
 -- assert.are.same(4, V({ 1, 2, 3, 4 }):last())
 -- assert.are.same({ 4, 4 }, KV({ 1, 2, 3, 4 }):last())
@@ -248,9 +288,13 @@ end
 
 --- Folds every element into an accumulator by applying an operation, returning
 -- the final result.
+-- @tparam any init The initial value of the accumulator
+-- @tparam function(acc,curr)->acc op The accumulating function that takes the
+-- accumulator and the current entry. It must modify the accumulator in-place
+-- and return it.
 -- @treturn any
 -- @usage
--- assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, functional.binary_op.add))
+-- assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, require("libp.functional").binary_op.add))
 -- assert.are.same(
 --     { 10, 10 },
 --     KV({ 1, 2, 3, 4 }):fold({ 0, 0 }, function(acc, curr)
