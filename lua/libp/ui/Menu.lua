@@ -1,9 +1,30 @@
 --- Module: **libp.ui.Menu**
 --
--- Menu class. A ui for user to pick entry and execute corresponding actions. Note that Menu has dedicated API supporting plenary async context. The following is callback style non-async usage
+-- Menu class. A ui for user to pick entry and execute corresponding actions.
+-- One can use Menu in non-async context using callback style `on_select`:
+--     local selected = nil
+--     local m = Menu({
+--         content = { "a", "b", "c" },
+--         on_select = function(item)
+--             selected = item
+--         end,
+--     })
+--     m:show()
+--     -- In real use case, it's user who select the second row.
+--     m:confirm(2)
+--     assert.are.same("b", selected)
+-- Menu also provides APIs for use in plenary async context.
 --
--- local m = Menu({ content = { "a", "b", "c" } })
--- m:show()
+--     require("plenary.async").void(function()
+--         local item = ui.Menu({
+--             content = {
+--                 "a",
+--                 "b",
+--                 "c",
+--             },
+--         }):select()
+--         -- The coroutine blocks here until the user selects or close the window.
+--     end)
 --
 -- Inherits: @{Class}
 -- @classmod Menu
@@ -16,9 +37,27 @@ local vimfn = require("libp.utils.vimfn")
 local iter = require("libp.iter")
 local bind = require("libp.functional").bind
 
+--- Constructor
+-- @tparam table opts
+-- @tparam {string} opts.content The entries of the menu.
+-- @tparam[opt=""] string opts.title The title to be shown on top of the surrounding @{BorderWindow}.
+-- @tparam[opt=nop] function(string) opts.on_select The callback function for the
+-- Menu. See @{Menu} introduction.
+-- @tparam[opt={}] array opts.select_map For mapping selected row number to the return
+-- result. This is useful because we might put more lengthy text in `content`
+-- while in code we want to use short string for comparison.
+-- @tparam[opt={0,0}] {number} opts.cursor_offset A pair of (row_offset, col_offset),
+-- which moves the Menu window position. If not set, by default the window shows
+-- near the cursor position.
+-- @tparam[opt={}] table opts.fwin_cfg Controls the position of the Menu window. In
+-- most cases, prefer using `cursor_offset` over this low level parameters for
+-- @{Window:init}.
+-- @tparam[opt={}] table opts.wo Passed to @{Window:init}. Sets the Menu window options.
+-- @tparam[opt={}] table opts.border_opts Passed to @{BorderWindow:init} to
+-- configure the border window.
 function M:init(opts)
     vim.validate({
-        title = { opts.title, { "s" }, true },
+        title = { opts.title, "s", true },
         content = { opts.content, "t" },
         select_map = { opts.select_map, "t", true },
         short_key_map = { opts.short_key_map, "t", true },
@@ -31,7 +70,7 @@ function M:init(opts)
 
     local cursor_offset = opts.cursor_offset or { 0, 0 }
     local cursor_pos = vim.api.nvim_win_get_cursor(0)
-    self.fwin_cfg = vim.tbl_extend("keep", opts.fwin_cfg or {}, {
+    self._fwin_cfg = vim.tbl_extend("keep", opts.fwin_cfg or {}, {
         relative = "win",
         row = cursor_pos[1] + cursor_offset[1],
         col = cursor_pos[2] + cursor_offset[2],
@@ -42,12 +81,12 @@ function M:init(opts)
         border = "none",
     })
 
-    self.select_map = opts.select_map
-    self.short_key_map = opts.short_key_map
-    self.border_opts = opts.border_opts or {}
-    self.border_opts.title = opts.title or self.border_opts.title
-    self.on_select = opts.on_select or functional.nop
-    self.wo = opts.wo or {}
+    self._select_map = opts.select_map
+    self._short_key_map = opts.short_key_map
+    self._border_opts = opts.border_opts or {}
+    self._border_opts.title = opts.title or self._border_opts.title
+    self._on_select = opts.on_select or functional.nop
+    self._wo = opts.wo or {}
 
     local content = opts.content or {}
     local mappings = {
@@ -63,24 +102,24 @@ function M:init(opts)
         end
     end
 
-    self.fwin_cfg.height = #content
+    self._fwin_cfg.height = #content
     for c in iter.values(content) do
-        if #c > self.fwin_cfg.width then
-            self.fwin_cfg.width = #c
+        if #c > self._fwin_cfg.width then
+            self._fwin_cfg.width = #c
         end
     end
 
     -- +2 for two padding white space around the title. +2 for at least one
     -- border character on both side of the title.
-    if self.border_opts.title and #self.border_opts.title + 4 > self.fwin_cfg.width then
-        self.fwin_cfg.width = #self.border_opts.title + 4
+    if self._border_opts.title and #self._border_opts.title + 4 > self._fwin_cfg.width then
+        self._fwin_cfg.width = #self._border_opts.title + 4
     end
 
     -- +2 for the border character.
-    self.fwin_cfg.height = self.fwin_cfg.height + 2
-    self.fwin_cfg.width = self.fwin_cfg.width + 2
+    self._fwin_cfg.height = self._fwin_cfg.height + 2
+    self._fwin_cfg.width = self._fwin_cfg.width + 2
 
-    self.buffer = Buffer({
+    self._buffer = Buffer({
         content = content,
         mappings = {
             n = mappings,
@@ -88,6 +127,10 @@ function M:init(opts)
     })
 end
 
+--- Calls `on_select`. Only calls this function in a test as the Menu defines
+--key mapping to trigger this function automatically.
+-- @tparam[opt=nil] number row If non-nil, selects the row. Otherwise, the
+-- current row would be used.
 function M:confirm(row)
     vim.validate({ row = { row, "n", true } })
     if row then
@@ -95,57 +138,63 @@ function M:confirm(row)
     end
 
     local res
-    if self.select_map then
-        res = self.select_map[vimfn.getrow()]
+    if self._select_map then
+        res = self._select_map[vimfn.getrow()]
     else
         res = vim.fn.getline(".")
-        if self.short_key_map then
+        if self._short_key_map then
             res = res:gsub("^.-%. ", "")
         end
     end
 
     vim.api.nvim_win_close(0, true)
-    self.on_select(res)
+    self._on_select(res)
 end
 
+-- Gets the border window.
 function M:get_border_window()
-    return self.window:get_border_window()
+    return self._window:get_border_window()
 end
 
+-- Gets the inner window.
 function M:get_inner_window()
-    return self.window:get_inner_window()
+    return self._window:get_inner_window()
 end
 
+--- Shows the Menu window.
 function M:show()
-    self.window = BorderedWindow(self.buffer, { focus_on_open = true, wo = self.wo }, self.border_opts)
-    self.window:open(self.fwin_cfg)
-    vim.api.nvim_win_set_var(self.window:get_inner_window().id, "_is_libp_menu", true)
+    self._window = BorderedWindow(self._buffer, { focus_on_open = true, wo = self._wo }, self._border_opts)
+    self._window:open(self._fwin_cfg)
+    vim.api.nvim_win_set_var(self._window:get_inner_window().id, "_is_libp_menu", true)
 end
 
+--- Closes the menus window. Only calls this function in a test as the Menu defines
+-- key mapping to trigger this function automatically.
 function M:close()
-    vim.api.nvim_win_close(self.window.id, true)
-    self.on_select()
+    vim.api.nvim_win_close(self._window.id, true)
+    self._on_select()
 end
 
+--- Selects item from the menu in plenary async context. See @{Menu} introduction.
+-- @function M:select
 M.select = a.wrap(function(self, callback)
-    self.on_select = callback
+    self._on_select = callback
     self:show()
 end, 2)
 
+--- Testing purpose function. When testing an async
+-- function that invokes `Menu():select()`, do the following:
+-- @usage
+-- a.it("Demo will_select_from_menu", function()
+--     Menu.will_select_from_menu(function()
+--         -- The window is open now. You can do test inside this function.
+--         -- You must return the row number (1-based) to be selected.
+--         -- Otherwise, no row would be selected. -- test and it will be
+--         -- selected.
+--     end)
+--     function_that_open_a_menu()
+-- end)
 function M.will_select_from_menu(get_selected_row)
-    -- This functoin is mainly for testing purpose. When testing an async
-    -- function that invokes Menu():select(), do the following:
-    -- ```lua
-    -- a.it("Demo will_select_from_menu", function()
-    --     Menu.will_select_from_menu(function()
-    --         -- The window is open now. You can do test inside this function.
-    --         -- You must return the row number (1-based) to be selected.
-    --         -- Otherwise, no row would be selected. -- test and it will be
-    --         -- selected.
-    --     end)
-    --     function_that_open_a_menu()
-    -- end)
-    -- ```
     local timer = vim.loop.new_timer()
     local select_from_menu
     get_selected_row = get_selected_row or functional.nop

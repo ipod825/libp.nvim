@@ -1,6 +1,13 @@
+--- Module: **libp.ui.BorderWindow**
+--
+-- BorderWindow class. A ui bounding other @{Window}s for decoration purpose.
+--
+-- Inherits: @{Window}
+-- @classmod BorderWindow
 local M = require("libp.ui.Window"):EXTEND()
 local vimfn = require("libp.utils.vimfn")
 
+--- Constructor
 function M:init(opts)
     opts = opts or {}
     vim.validate({
