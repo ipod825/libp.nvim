@@ -67,7 +67,7 @@ function M:_fill_buffer_content(width, height)
     end
     self.buffer:set_content_and_reload(contents)
     if self.top_offset ~= 0 and #self.title > 0 then
-        local title_beg, title_end = vimfn.buf_get_line(0,self.buffer.id):find(self.title)
+        local title_beg, title_end = vimfn.buf_get_line(0, self.buffer.id):find(self.title)
         self.buffer:set_hl({
             hl_group = self.title_highlight,
             line = 0,
