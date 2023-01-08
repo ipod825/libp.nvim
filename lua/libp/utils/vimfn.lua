@@ -65,14 +65,13 @@ function M.buf_get_option_and_set(buf, name, new_value)
     return ori
 end
 
-function M.buf_get_line(opts)
-    opts = opts or {}
+function M.buf_get_line(line, buffer)
     vim.validate({
-        buffer = { opts.buffer, "n", true },
-        row = { opts.row, "n" },
+        line = { line, "n" },
+        buffer = { buffer, "n", true },
     })
-    opts.buffer = opts.buffer or 0
-    return vim.api.nvim_buf_get_lines(opts.buffer, opts.row, opts.row + 1, true)[1]
+    buffer = buffer or 0
+    return vim.api.nvim_buf_get_lines(buffer, line, line + 1, true)[1]
 end
 
 function M.buf_get_lines(opts)

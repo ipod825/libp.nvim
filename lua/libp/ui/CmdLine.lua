@@ -58,7 +58,7 @@ function M:get_content()
     if not vim.api.nvim_buf_is_valid(self.cmd_buffer.id) then
         return
     end
-    return vimfn.buf_get_line({ buffer = self.cmd_buffer.id, row = 0 })
+    return vimfn.buf_get_line(0, self.cmd_buffer.id)
 end
 
 M.confirm = a.wrap(function(self, callback)
