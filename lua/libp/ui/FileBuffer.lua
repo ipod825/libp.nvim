@@ -57,7 +57,7 @@ function M:init(filename, opts)
     -- takes a buf id.
     local associate_file = function()
         vim.api.nvim_command("silent! w!")
-        vim.api.nvim_buf_set_option(self.id, "undofile", vim.o.undofile)
+        vim.bo[self.id].undofile = vim.go.undofile
     end
     if vim.api.nvim_get_current_buf() == self.id then
         associate_file()

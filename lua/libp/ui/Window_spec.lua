@@ -25,14 +25,14 @@ describe("open", function()
     it("Sets the filetype to libpwindow by default", function()
         w = ui.Window(b, { focus_on_open = true })
         w:open(win_config)
-        assert.are.same(vim.api.nvim_buf_get_option(b.id, "filetype"), "libpwindow")
+        assert.are.same("libpwindow", vim.bo[b.id].filetype)
     end)
 
     it("Respects the filetype of the original buffer", function()
-        vim.api.nvim_buf_set_option(b.id, "filetype", "whatever")
+        vim.bo[b.id].filetype = "whatever"
         w = ui.Window(b, { focus_on_open = true })
         w:open(win_config)
-        assert.are.same(vim.api.nvim_buf_get_option(b.id, "filetype"), "whatever")
+assert.are.same("whatever", vim.bo[b.id].filetype)
     end)
 
     it("Defaults focus_on_open to false", function()

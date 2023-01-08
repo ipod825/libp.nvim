@@ -170,7 +170,7 @@ function M:init(opts)
     self.content_ns_id = vim.api.nvim_create_namespace("libp_buffer_content")
 
     for k, v in pairs(opts.b or {}) do
-        vim.api.nvim_buf_set_var(self.id, k, v)
+        vim.b[self.id][k] = v
     end
 
     local bo = vim.tbl_extend("force", {
@@ -181,7 +181,7 @@ function M:init(opts)
         swapfile = false,
     }, opts.bo or {})
     for k, v in pairs(bo) do
-        vim.api.nvim_buf_set_option(self.id, k, v)
+        vim.bo[self.id][k] = v
     end
     self._bo = bo
 
@@ -490,11 +490,11 @@ end
 
 -- Clear the buffer.
 function M:_clear()
-    vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
-    vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+    vim.bo[self.id].undolevels = -1
+    vim.bo[self.id].modifiable = true
     vim.api.nvim_buf_set_lines(self.id, 0, -1, false, {})
-    vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", self._bo.undolevels)
+    vim.bo[self.id].modifiable = self._bo.modifiable
+    vim.bo[self.id].undolevels = self._bo.undolevels
 end
 
 -- Sets the lines and applies highlight.
@@ -524,13 +524,13 @@ end
 
 -- Append lines to the buffer from row beg (0-based, inclusive)
 function M:_append(lines, beg)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
-    vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+    vim.bo[self.id].undolevels = -1
+    vim.bo[self.id].modifiable = true
 
     self:_set_lines(beg, -1, lines)
 
-    vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", self._bo.undolevels)
+    vim.bo[self.id].modifiable = self._bo.modifiable
+    vim.bo[self.id].undolevels = self._bo.undolevels
     return beg + #lines
 end
 
@@ -569,7 +569,7 @@ function M:reload()
     self.cancel_reload = false
 
     if self._bo.filetype then
-        vim.api.nvim_buf_set_option(self.id, "filetype", self._bo.filetype)
+        vim.bo[self.id].filetype = self._bo.filetype
     end
 
     local self_buffer_focused = vim.api.nvim_get_current_buf() == self.id
@@ -614,9 +614,9 @@ function M:reload()
     vim.api.nvim_buf_clear_namespace(self.id, self.content_ns_id, 0, -1)
 
     if type(self._content) == "table" then
-        vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+        vim.bo[self.id].modifiable = true
         self:_set_lines(0, -1, self._content)
-        vim.api.nvim_buf_set_option(self.id, "modifiable", self._bo.modifiable)
+        vim.bo[self.id].modifiable = self._bo.modifiable
         restore_cursor()
     else
         self:_clear()

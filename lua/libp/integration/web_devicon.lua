@@ -1594,7 +1594,7 @@ function M.get(file_path)
 
             local buf = vim.api.nvim_create_buf(false, true)
             vim.filetype.match(file_path, buf)
-            ft = vim.api.nvim_buf_get_option(buf, "filetype")
+            ft = vim.bo[buf].filetype
             vim.cmd("silent! bwipe " .. buf)
 
             vim.o.eventignore = ori_eventignore
@@ -1610,7 +1610,7 @@ function M.get(file_path)
 
         -- It might be a special buffer created by some plugin. And the plugin might already sets its filetype.
         if not ft and vim.fn.bufexists(file_path) > 0 then
-            ft = vim.api.nvim_buf_get_option(vim.fn.bufadd(file_path), "filetype")
+            ft = vim.bo[vim.fn.bufadd(file_path)].filetype
             ft = ft ~= "on" and ft or nil
         end
 

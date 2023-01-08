@@ -60,8 +60,8 @@ function M.buf_get_option_and_set(buf, name, new_value)
         return
     end
     vim.validate({ buf = { buf, "n" }, name = { name, "s" }, new_value = args.non_nil(new_value) })
-    local ori = vim.api.nvim_buf_get_option(buf, name)
-    vim.api.nvim_buf_set_option(buf, name, new_value)
+    local ori = vim.bo[buf][name]
+    vim.bo[buf][name] = new_value
     return ori
 end
 

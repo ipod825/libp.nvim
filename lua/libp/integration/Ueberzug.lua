@@ -93,10 +93,11 @@ function M:get_or_gen_preview(file_path, msg, gen_preview)
         if err then
             vimfn.error(err)
         else
-            local ori_modifiable = vimfn.buf_get_option_and_set(self.buf_id, "modifiable", true)
+            local ori_modifiable = vim.bo[self.buf_id].modifiable
+            vim.bo[self.buf_id].modifiable = true
             vim.api.nvim_buf_set_lines(self.buf_id, 0, -1, true, { ("Loading %s preview..."):format(msg) })
             gen_preview(self.identifier)
-            vimfn.buf_get_option_and_set(self.buf_id, "modifiable", ori_modifiable)
+            vim.bo[self.buf_id].modifiable = ori_modifiable
 
             cache[file_path] = fs.list_dir(self.identifier)
                 :map(function(e)

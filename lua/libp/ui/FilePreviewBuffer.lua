@@ -59,13 +59,13 @@ function M:init(filename, opts)
         bufhidden = "wipe",
     }, opts.bo or {})
     for k, v in pairs(bo) do
-        vim.api.nvim_buf_set_option(self.id, k, v)
+        vim.bo[self.id][k] = v
     end
     self.bo = bo
 
-    vim.api.nvim_buf_set_option(self.id, "modifiable", false)
-    vim.api.nvim_buf_set_option(self.id, "undolevels", -1)
-    vim.api.nvim_buf_set_option(self.id, "undofile", false)
+    vim.bo[self.id].modifiable = false
+    vim.bo[self.id].undolevels = -1
+    vim.bo[self.id].undofile = false
 
     -- Remove last newline by reading one less byte.
     local remain_size = stat.size - 1
@@ -90,17 +90,17 @@ function M:init(filename, opts)
         local lines = vim.split(content, "\n")
         lines[1] = last_line .. lines[1]
 
-        vim.api.nvim_buf_set_option(self.id, "modifiable", true)
+        vim.bo[self.id].modifiable = true
         vim.api.nvim_buf_set_lines(self.id, num_lines, -1, false, lines)
-        vim.api.nvim_buf_set_option(self.id, "modifiable", false)
+        vim.bo[self.id].modifiable = false
 
         num_lines = num_lines + #lines - 1
         last_line = lines[#lines]
     end
 
-    vim.api.nvim_buf_set_option(self.id, "undolevels", self.bo.undolevels or vim.go.undolevels)
-    vim.api.nvim_buf_set_option(self.id, "modified", false)
-    vim.api.nvim_buf_set_option(self.id, "modifiable", self.bo.modifiable)
+    vim.bo[self.id].undolevels = self.bo.undolevels or vim.go.undolevels
+    vim.bo[self.id].modified = false
+    vim.bo[self.id].modifiable = self.bo.modifiable
 end
 
 function M:on_wipeout() end
