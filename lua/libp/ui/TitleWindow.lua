@@ -10,7 +10,7 @@
 --     grid:add_row({ focusable = true }):vfill_windows({
 --         ui.DiffWindow(ui.FilePreviewBuffer('file1')),
 --         ui.DiffWindow(ui.FilePreviewBuffer('file2'), { focus_on_open = true }),
---     }, true)
+--     })
 --     grid:show()
 --
 -- Inherits: @{Window}

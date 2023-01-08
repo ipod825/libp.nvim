@@ -1,9 +1,17 @@
+--- Module: **libp.ui.Menu**
+--
+-- Menu class. A ui for user to pick entry and execute corresponding actions. Note that Menu has dedicated API supporting plenary async context. The following is callback style non-async usage
+--
+-- local m = Menu({ content = { "a", "b", "c" } })
+-- m:show()
+--
+-- Inherits: @{Class}
+-- @classmod Menu
 local M = require("libp.datatype.Class"):EXTEND()
 local Buffer = require("libp.ui.Buffer")
 local BorderedWindow = require("libp.ui.BorderedWindow")
 local functional = require("libp.functional")
 local a = require("plenary.async")
-local values = require("libp.iter").values
 local vimfn = require("libp.utils.vimfn")
 local iter = require("libp.iter")
 local bind = require("libp.functional").bind
@@ -37,15 +45,15 @@ function M:init(opts)
     self.select_map = opts.select_map
     self.short_key_map = opts.short_key_map
     self.border_opts = opts.border_opts or {}
-    self.border_opts.title = self.border_opts.title or opts.title
+    self.border_opts.title = opts.title or self.border_opts.title
     self.on_select = opts.on_select or functional.nop
     self.wo = opts.wo or {}
 
     local content = opts.content or {}
     local mappings = {
         ["<cr>"] = self:BIND(self.confirm),
-        ["<esc>"] = bind(vim.api.nvim_win_close, 0, true),
-        ["q"] = bind(vim.api.nvim_win_close, 0, true),
+        ["<esc>"] = self:BIND(self.close),
+        ["q"] = self:BIND(self.close),
     }
     if opts.short_key_map then
         assert(#content == #opts.short_key_map)
@@ -56,7 +64,7 @@ function M:init(opts)
     end
 
     self.fwin_cfg.height = #content
-    for c in values(content) do
+    for c in iter.values(content) do
         if #c > self.fwin_cfg.width then
             self.fwin_cfg.width = #c
         end
@@ -81,6 +89,7 @@ function M:init(opts)
 end
 
 function M:confirm(row)
+    vim.validate({ row = { row, "n", true } })
     if row then
         vimfn.setrow(row)
     end
@@ -113,24 +122,33 @@ function M:show()
     vim.api.nvim_win_set_var(self.window:get_inner_window().id, "_is_libp_menu", true)
 end
 
+function M:close()
+    vim.api.nvim_win_close(self.window.id, true)
+    self.on_select()
+end
+
 M.select = a.wrap(function(self, callback)
     self.on_select = callback
     self:show()
 end, 2)
 
-function M.will_select_from_menu(run_before_selection)
+function M.will_select_from_menu(get_selected_row)
     -- This functoin is mainly for testing purpose. When testing an async
     -- function that invokes Menu():select(), do the following:
     -- ```lua
-    --   Menu.will_select_from_menu(function()
-    --       -- The window is open now. Move the cursor to the item you want to
-    --       -- test and it will be selected.
-    --   end)
-    --   function_that_open_a_menu()
+    -- a.it("Demo will_select_from_menu", function()
+    --     Menu.will_select_from_menu(function()
+    --         -- The window is open now. You can do test inside this function.
+    --         -- You must return the row number (1-based) to be selected.
+    --         -- Otherwise, no row would be selected. -- test and it will be
+    --         -- selected.
+    --     end)
+    --     function_that_open_a_menu()
+    -- end)
     -- ```
     local timer = vim.loop.new_timer()
     local select_from_menu
-    run_before_selection = run_before_selection or functional.nop
+    get_selected_row = get_selected_row or functional.nop
 
     select_from_menu = function()
         if not vim.w._is_libp_menu then
@@ -144,9 +162,15 @@ function M.will_select_from_menu(run_before_selection)
         else
             timer:stop()
             timer:close()
-            run_before_selection()
-            -- Not sure why nvim_input('<cr>') doesn't work here.
-            for m in values(vim.api.nvim_buf_get_keymap(0, "n")) do
+            local row = get_selected_row()
+            if not row then
+                vim.fn.feedkeys("q", "x")
+                return
+            end
+            vimfn.setrow(row)
+
+            -- Not sure why vim.fn.feedkeys("\\<cr>", "x") doesn't work here.
+            for m in iter.values(vim.api.nvim_buf_get_keymap(0, "n")) do
                 if m.lhs == "<CR>" then
                     m.callback()
                     break
