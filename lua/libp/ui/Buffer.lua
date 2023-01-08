@@ -269,20 +269,29 @@ M.MultiReloadStrategy = {
     IGNORE = 3,
 }
 
-function M:_add_key_map(mode, key, fn)
+function M:_add_key_map(mode, key, map_config)
     vim.validate({
         mode = { mode, "s" },
         key = { key, "s" },
-        fn = { fn, { "f", "t" } },
+        map_config = { map_config, { "f", "t" } },
     })
 
+    local is_map_config_callable = vim.is_callable(map_config)
+    local callback = is_map_config_callable and map_config or map_config[1]
+    assert(vim.is_callable(callback), "Libp buffer rhs must be a callable or array with callable as first element.")
+
     local multi_reload = M.MultiReloadStrategy.WAIT
-    -- `fn` might be a functor (table with meta __call implemented). Check if
-    -- `callback` is present to distinguish such case.
-    if type(fn) == "table" and fn.callback then
-        multi_reload = fn.multi_reload_strategy
-        fn = fn.callback
+    if not is_map_config_callable and map_config.multi_reload_strategy then
+        multi_reload = map_config.multi_reload_strategy
     end
+
+    local api_map_config = is_map_config_callable and {}
+        or {
+            nowait = map_config.nowait,
+            silent = map_config.silent,
+            unique = map_config.unique,
+            desc = map_config.desc,
+        }
 
     vim.keymap.set(
         mode,
@@ -295,9 +304,9 @@ function M:_add_key_map(mode, key, fn)
                     self.cancel_reload = true
                 end
             end
-            fn()
+            callback()
         end),
-        { buffer = self.id }
+        vim.tbl_extend("keep", { buffer = self.id }, api_map_config)
     )
 end
 

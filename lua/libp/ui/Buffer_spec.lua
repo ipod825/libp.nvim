@@ -145,7 +145,7 @@ describe("Buffer", function()
                 assert.are.same(1, var)
             end)
 
-            it("Takes table with callback key", function()
+            it("Takes array with first element callable", function()
                 local var
                 b = Buffer:open_or_new({
                     filename = "test_abc",
@@ -153,7 +153,7 @@ describe("Buffer", function()
                     mappings = {
                         n = {
                             a = {
-                                callback = function()
+                                function()
                                     var = 1
                                 end,
                             },
@@ -173,7 +173,7 @@ describe("Buffer", function()
                         mappings = {
                             n = {
                                 a = {
-                                    callback = function() end,
+                                    function() end,
                                     multi_reload_strategy = Buffer.MultiReloadStrategy.WAIT,
                                 },
                             },
@@ -195,7 +195,7 @@ describe("Buffer", function()
                         mappings = {
                             n = {
                                 a = {
-                                    callback = function() end,
+                                    function() end,
                                     multi_reload_strategy = Buffer.MultiReloadStrategy.CANCEL,
                                 },
                             },
@@ -220,7 +220,7 @@ describe("Buffer", function()
                         mappings = {
                             n = {
                                 a = {
-                                    callback = function() end,
+                                     function() end,
                                     multi_reload_strategy = Buffer.MultiReloadStrategy.IGNORE,
                                 },
                             },
