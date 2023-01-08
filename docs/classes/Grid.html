@@ -30,6 +30,10 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
 
 
 <h2>Classes</h2>
@@ -45,6 +49,7 @@
   <li><a href="../classes/Job.html">Job</a></li>
   <li><a href="../classes/KV.html">KV</a></li>
   <li><a href="../classes/List.html">List</a></li>
+  <li><a href="../classes/Menu.html">Menu</a></li>
   <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
@@ -70,7 +75,12 @@
 <p>Module: <strong>libp.ui.Grid</strong></p>
 
 <p> Grid class.</p>
-<p> Container class for laying out <a href="../classes/Window.html#">Window</a>s. The following example defines a <a href="../classes/TitleWindow.html#">TitleWindow</a> and two <a href="../classes/DiffWindow.html#">DiffWindow</a> windows below it.</p>
+<p> Container class for laying out <a href="../classes/Window.html#">Window</a>s. It provides APIs for
+ users to add windows in a virtual grid from top-left to bottom-right. The
+ good thing is that users only need to specify the desired with/height (can
+ even be skipped if full width/height or equal split are good enough) and Grid
+ would calculate the row/column automatically. The following example defines a
+ <a href="../classes/TitleWindow.html#">TitleWindow</a> and two <a href="../classes/DiffWindow.html#">DiffWindow</a> windows below it.</p>
 
 
 <pre>
@@ -82,25 +92,283 @@ grid:add_row({ height = <span class="number">1</span> }):fill_window(ui.TitleWin
 grid:add_row({ focusable = <span class="keyword">true</span> }):vfill_windows({
     ui.DiffWindow(ui.FilePreviewBuffer(<span class="string">'file1'</span>)),
     ui.DiffWindow(ui.FilePreviewBuffer(<span class="string">'file2'</span>), { focus_on_open = <span class="keyword">true</span> }),
-}, <span class="keyword">true</span>)
+})
 grid:show()
 </pre>
+
+<p> Note that we didn't need to specify the widht/height for the two diff windows
+ as we want them to take full height in the rest of the Grid and split equally
+ horizontally.</p>
 
 <p> Inherits: <a href="../classes/Class.html#">Class</a></p>
 
 
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Grid:add_column">Grid:add_column (opts)</a></td>
+	<td class="summary">Adds a single column, which is another <a href="../classes/Grid.html#">Grid</a>, to the current grid.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:add_row">Grid:add_row (opts)</a></td>
+	<td class="summary">Adds a single row, which is another <a href="../classes/Grid.html#">Grid</a>, to the current grid.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:close">Grid:close ()</a></td>
+	<td class="summary">Closes the grid "virtual" window and all windows in it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:fill_window">Grid:fill_window (window)</a></td>
+	<td class="summary">Fills the entire grid with the window.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:init">Grid:init (opts[, root=nil])</a></td>
+	<td class="summary">Constructor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:show">Grid:show ()</a></td>
+	<td class="summary">Shows the grid "virtual" window and all windows in it.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Grid:vfill_windows">Grid:vfill_windows (windows)</a></td>
+	<td class="summary">Fills the entire grid with the windows vertically.</td>
+	</tr>
+</table>
 
 <br/>
 <br/>
 
 
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Grid:add_column"></a>
+    <strong>Grid:add_column (opts)</strong>
+    </dt>
+    <dd>
+    Adds a single column, which is another <a href="../classes/Grid.html#">Grid</a>, to the current grid.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The width of the new column
+        </li>
+        <li><span class="parameter">focusable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the windows inside the new row are
+ focusable. See <code>nvim_open_win</code>.
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Grid.html#">Grid</a></span>
+        The added column.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:add_row"></a>
+    <strong>Grid:add_row (opts)</strong>
+    </dt>
+    <dd>
+    Adds a single row, which is another <a href="../classes/Grid.html#">Grid</a>, to the current grid.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         The height of the new row
+        </li>
+        <li><span class="parameter">focusable</span>
+            <span class="types"><span class="type">boolean</span></span>
+         Whether the windows inside the new row are
+ focusable. See <code>nvim_open_win</code>.
+        </li>
+        </li></ul>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Grid.html#">Grid</a></span>
+        The added row.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:close"></a>
+    <strong>Grid:close ()</strong>
+    </dt>
+    <dd>
+    Closes the grid "virtual" window and all windows in it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:fill_window"></a>
+    <strong>Grid:fill_window (window)</strong>
+    </dt>
+    <dd>
+    Fills the entire grid with the window.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">window</span>
+            <span class="types"><a class="type" href="../classes/Window.html#">Window</a></span>
+         the window to be filled.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../classes/Window.html#">Window</a></span>
+        The window filled.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:init"></a>
+    <strong>Grid:init (opts[, root=nil])</strong>
+    </dt>
+    <dd>
+    Constructor.  All the options in <code>opts</code> that also appears in <code>nvim_open_win</code>
+sets the default value of the Grid "virtual" window and all the windows inside
+it. Position arguments: width/height/row/col are recalculated for inner
+windows automatically. So these parameters only decides the position of the
+virtual "Grid" window.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+
+
+        <ul>
+        <li><span class="parameter">relative</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">row</span>
+            <span class="types"><span class="type">number</span></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">col</span>
+            <span class="types"><span class="type">number</span></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">zindex</span>
+            <span class="types"><span class="type">number</span></span>
+         See <code>nvim_open_win</code>.
+         (<em>default</em> nil)
+        </li>
+        <li><span class="parameter">focusable</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+
+
+         (<em>default</em> nil)
+        </li>
+        </li></ul>
+        <li><span class="parameter">root</span>
+            <span class="types"><span class="type">nil</span> or <a class="type" href="../classes/Grid.html#">Grid</a></span>
+         Implementation detail. Normal user should pass nil.
+         (<em>default</em> nil)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:show"></a>
+    <strong>Grid:show ()</strong>
+    </dt>
+    <dd>
+    Shows the grid "virtual" window and all windows in it.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Grid:vfill_windows"></a>
+    <strong>Grid:vfill_windows (windows)</strong>
+    </dt>
+    <dd>
+    Fills the entire grid with the windows vertically.  Each window will have
+(roughly) the same width.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">windows</span>
+            <span class="types"><a class="type" href="../classes/Window.html#">{Window}</a></span>
+         The windows to be filled.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2023-01-07 12:19:40 </i>
+<i style="float:right;">Last updated 2023-01-07 17:50:10 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

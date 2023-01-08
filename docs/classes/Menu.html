@@ -30,10 +30,6 @@
   <li><a href="../index.html">Index</a></li>
 </ul>
 
-<h2>Contents</h2>
-<ul>
-<li><a href="#Methods">Methods</a></li>
-</ul>
 
 
 <h2>Classes</h2>
@@ -47,9 +43,9 @@
   <li><a href="../classes/Grid.html">Grid</a></li>
   <li><a href="../classes/Iter.html">Iter</a></li>
   <li><a href="../classes/Job.html">Job</a></li>
-  <li><strong>KV</strong></li>
+  <li><a href="../classes/KV.html">KV</a></li>
   <li><a href="../classes/List.html">List</a></li>
-  <li><a href="../classes/Menu.html">Menu</a></li>
+  <li><strong>Menu</strong></li>
   <li><a href="../classes/OrderedDict.html">OrderedDict</a></li>
   <li><a href="../classes/Set.html">Set</a></li>
   <li><a href="../classes/Stack.html">Stack</a></li>
@@ -71,58 +67,23 @@
 
 <div id="content">
 
-<h1>Class <code>KV</code></h1>
-<p>Module: <strong>libp.iter.KV</strong></p>
+<h1>Class <code>Menu</code></h1>
+<p>Module: <strong>libp.ui.Menu</strong></p>
 
-<p> Value type iterator.</p>
-<p> An implementation of the <a href="../classes/Iter.html#">Iter</a> interface iterating over the key/value
- pair(s) of the underlying container or generator function.</p>
+<p> Menu class.</p>
+<p> A ui for user to pick entry and execute corresponding actions. Note that Menu has dedicated API supporting plenary async context. The following is callback style non-async usage</p>
 
-<p> Inherits: <a href="../classes/Iter.html#">Iter</a></p>
+<p> local m = Menu({ content = { "a", "b", "c" } })
+ m:show()</p>
+
+<p> Inherits: <a href="../classes/Class.html#">Class</a></p>
 
 
-<h2><a href="#Methods">Methods</a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#KV:collect">KV:collect ()</a></td>
-	<td class="summary">Returns a table hosting the results of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-next">next</a> calls (until it returns nil).</td>
-	</tr>
-</table>
 
 <br/>
 <br/>
 
 
-    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
-
-    <dl class="function">
-    <dt>
-    <a name = "KV:collect"></a>
-    <strong>KV:collect ()</strong>
-    </dt>
-    <dd>
-    Returns a table hosting the results of <a href="https://www.lua.org/manual/5.1/manual.html#pdf-next">next</a> calls (until it returns nil).
-
-
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
-
-
-
-    </ol>
-
-
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="global">assert</span>.are.same({ a = <span class="number">1</span>, b = <span class="number">2</span> }, KV({ a = <span class="number">1</span>, b = <span class="number">2</span> }):collect())</pre>
-    </ul>
-
-</dd>
-</dl>
 
 
 </div> <!-- id="content" -->
