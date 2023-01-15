@@ -53,16 +53,6 @@ local vimfn = require("libp.utils.vimfn")
 local List = require("libp.datatype.List")
 local tokenizer = require("libp.argparse.tokenizer")
 
-local function close_pipe(pipe)
-    if not pipe then
-        return
-    end
-
-    if not pipe:is_closing() then
-        pipe:close()
-    end
-end
-
 local State = { NOT_STARTED = 1, RUNNING = 2, FINISHED = 3 }
 
 --- StderrDumpLevel
@@ -169,14 +159,9 @@ function M:start(callback)
 
     local opts = self.opts
 
-    self.stdin = vim.loop.new_pipe(false)
-    self.stdout = vim.loop.new_pipe(false)
-    local stderr = vim.loop.new_pipe(false)
-
     local stdout_lines = { "" }
     local stderr_lines = { "" }
     local on_stdout = function(_, data)
-        require("libp.log").warn(data)
         if data == nil then
             return
         end
@@ -202,13 +187,6 @@ function M:start(callback)
     end
 
     local on_exit = function(_, exit_code)
-        self.stdout:read_stop()
-        stderr:read_stop()
-
-        close_pipe(self.stdin)
-        close_pipe(self.stdout)
-        close_pipe(stderr)
-
         if exit_code ~= 0 then
             if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
                 local cmd = type(opts.cmd) == "string" and opts.cmd or table.concat(opts.cmd, " ")
@@ -220,10 +198,10 @@ function M:start(callback)
         -- case when the user wants to read stdout result while expecting the
         -- command to fail.
         if opts.on_stdout then
+            -- Remove EOF 
             if stdout_lines[#stdout_lines] == "" then
                 stdout_lines = vim.list_slice(stdout_lines, 1, #stdout_lines - 1)
             end
-            -- stdout_lines = eof_has_new_line and vim.list_slice(stdout_lines, 1, #stdout_lines - 1) or stdout_lines
             if #stdout_lines > 0 then
                 opts.on_stdout(stdout_lines)
             end
@@ -244,7 +222,6 @@ function M:start(callback)
     if type(opts.cmd) == "table" then
         opts.cmd = table.concat(opts.cmd, " ")
     end
-    require("libp.log").warn(opts.cmd)
     self._chan_id = vim.fn.jobstart(opts.cmd, {
         clear_env = opts.clear_env,
         cwd = opts.cwd,
@@ -256,23 +233,6 @@ function M:start(callback)
         stderr_buffered = false,
         stdout_bufferer = false,
     })
-
-    -- self.process, self.pid = vim.loop.spawn(cmd, {
-    --     stdio = { self.stdin, self.stdout, stderr },
-    --     args = args,
-    --     cwd = opts.cwd,
-    --     detach = opts.detach,
-    --     env = transform_env(opts.env),
-    -- }, vim.schedule_wrap(on_exit))
-    --
-    -- if type(self.pid) == "string" then
-    --     stderr_lines = stderr_lines .. ("Command not found: %s"):format(cmd)
-    --     vimfn.error(stderr_lines)
-    --     return -1
-    -- else
-    --     self.stdout:read_start(vim.schedule_wrap(on_stdout))
-    --     stderr:read_start(vim.schedule_wrap(on_stderr))
-    -- end
     return self
 end
 
