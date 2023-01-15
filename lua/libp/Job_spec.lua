@@ -64,17 +64,14 @@ describe("start", function()
                 env = env,
             })
             job:start()
-            assert.are.same(Set(expect), Set(job:stdoutput()))
+            assert.are.same(Set(expect), Set.intersection(Set(expect), Set(job:stdoutput())))
         end)
     end
 
-    test_env({ "A=100" }, { "A=100" })
-    test_env({ "A=100", "B=test" }, { "A=100", "B=test" })
     test_env({ A = 100 }, { "A=100" })
-    test_env({ "A=This is a long env var" }, { "A=This is a long env var" })
+    test_env({ A = 100, B = "test" }, { "A=100", "B=test" })
     test_env({ A = "This is a long env var" }, { "A=This is a long env var" })
     test_env({ ["A"] = 100, ["B"] = "test" }, { "A=100", "B=test" })
-    test_env({ ["A"] = 100, "B=test" }, { "A=100", "B=test" })
 
     a.it("Respects cwd", function()
         local job
@@ -134,7 +131,7 @@ describe("start", function()
         local job
         results = {}
         job = Job({
-            cmd = "echo a\nb",
+            cmd = 'echo "a\nb"',
             on_stdout = function(lines)
                 vim.list_extend(results, lines)
             end,
@@ -145,10 +142,10 @@ describe("start", function()
     end)
 
     a.describe("Works with Quote", function()
-        a.it("Takes off outter quotes", function()
+        a.it("Work with double quotes", function()
             assert.are.same({ "a", "b" }, Job({ cmd = 'echo "a\nb"' }):stdoutput())
         end)
-        a.it("Takes off outter quotes", function()
+        a.it("Work with single quotes", function()
             assert.are.same({ "a", "b" }, Job({ cmd = "echo 'a\nb'" }):stdoutput())
         end)
         a.it("Honors escaped quotes", function()
@@ -157,21 +154,21 @@ describe("start", function()
     end)
 
     a.describe("Takes array as cmd", function()
-        a.it("Takes off outter quotes", function()
+        a.it("Work with double quotes", function()
             assert.are.same({ "a", "b" }, Job({ cmd = { "echo", '"a\nb"' } }):stdoutput())
         end)
-        a.it("Takes off outter quotes", function()
+        a.it("Work with single quotes", function()
             assert.are.same({ "a", "b" }, Job({ cmd = { "echo", "'a\nb'" } }):stdoutput())
         end)
-        a.it("Honors escaped quotes", function()
-            assert.are.same({ [["a]], [[b"]] }, Job({ cmd = { "echo", '\\"a\nb\\"' } }):stdoutput())
+        a.it("Honors escape mark", function()
+            assert.are.same({ [["a]], [[b"]] }, Job({ cmd = { "echo", [["\"a\nb\""]] } }):stdoutput())
         end)
     end)
 end)
 
 a.describe("stdoutputstr", function()
     a.it("Returns stdout as a single string", function()
-        assert.are.same("a\nb", Job({ cmd = "echo a\nb" }):stdoutputstr())
+        assert.are.same("a\nb", Job({ cmd = 'echo "a\nb"' }):stdoutputstr())
     end)
 end)
 

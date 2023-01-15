@@ -63,23 +63,6 @@ local function close_pipe(pipe)
     end
 end
 
-local function transform_env(env)
-    vim.validate({ env = { env, "t", true } })
-    if not env then
-        return
-    end
-
-    local res = {}
-    for k, v in pairs(env) do
-        if type(k) == "number" then
-            table.insert(res, v)
-        elseif type(k) == "string" then
-            table.insert(res, k .. "=" .. tostring(v))
-        end
-    end
-    return res
-end
-
 local State = { NOT_STARTED = 1, RUNNING = 2, FINISHED = 3 }
 
 --- StderrDumpLevel
@@ -144,6 +127,7 @@ function M:init(opts)
         cwd = { opts.cwd, "s", true },
         env = { opts.env, "table", true },
         detach = { opts.detach, "boolean", true },
+        clear_env = { opts.clear_env, "boolean", true },
     })
 
     self.state = State.NOT_STARTED
@@ -189,39 +173,20 @@ function M:start(callback)
     self.stdout = vim.loop.new_pipe(false)
     local stderr = vim.loop.new_pipe(false)
 
-    local cmd_tokens
-    if type(opts.cmd) == "string" then
-        cmd_tokens = tokenizer.tokenize(opts.cmd)
-    else
-        cmd_tokens = vim.deepcopy(opts.cmd)
-    end
-    local cmd, args = cmd_tokens[1], vim.list_slice(cmd_tokens, 2, #cmd_tokens)
-    -- Remove quotes as spawn will quote each args. Also need to replace '\"'
-    -- with '"' as spawn adds the escape back.
-    for i, arg in ipairs(args) do
-        args[i] = arg:gsub('^"(.*)"$', "%1"):gsub('="(.*)"$', "=%1"):gsub('\\"', '"')
-        if #args[i] == #arg then
-            args[i] = arg:gsub("^'(.*)'$", "%1"):gsub("='(.*)'$", "=%1"):gsub("\\'", "'")
-        end
-    end
-
     local stdout_lines = { "" }
-    local stderr_lines = ""
-    local eof_has_new_line = false
+    local stderr_lines = { "" }
     local on_stdout = function(_, data)
+        require("libp.log").warn(data)
         if data == nil then
             return
         end
 
-        eof_has_new_line = data:find("\n$")
-
         -- The last line in stdout_lines is always a "partial line":
         -- 1. At initialization, we initialized it to "".
-        -- 2. For a real partial line (data not ending with "\n"), lines[-1] would be non-empty.
-        -- 3. For a complete line (data ending with "\n"), lines[-1] would be "".
-        local lines = data:split("\n")
-        stdout_lines[#stdout_lines] = stdout_lines[#stdout_lines] .. lines[1]
-        vim.list_extend(stdout_lines, lines, 2)
+        -- 2. For a real partial line (data not ending with ""), stdout_lines[-1] is partial.
+        -- 3. For a complete line (data ending with ""), stdout_lines[-1] would be "".
+        stdout_lines[#stdout_lines] = stdout_lines[#stdout_lines] .. data[1]
+        vim.list_extend(stdout_lines, data, 2)
 
         if #stdout_lines >= opts.on_stdout_buffer_size then
             local partial_line = table.remove(stdout_lines)
@@ -232,11 +197,11 @@ function M:start(callback)
 
     local on_stderr = function(_, data)
         if data then
-            stderr_lines = stderr_lines .. data
+            vim.list_extend(stderr_lines, data)
         end
     end
 
-    local on_exit = function(exit_code, _)
+    local on_exit = function(_, exit_code)
         self.stdout:read_stop()
         stderr:read_stop()
 
@@ -247,7 +212,7 @@ function M:start(callback)
         if exit_code ~= 0 then
             if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
                 local cmd = type(opts.cmd) == "string" and opts.cmd or table.concat(opts.cmd, " ")
-                vimfn.error(("Error message from\n%s\n\n%s"):format(cmd, stderr_lines))
+                vimfn.error(("Error message from\n%s\n\n%s"):format(cmd, table.concat(stderr_lines, "\n")))
             end
         end
 
@@ -255,13 +220,17 @@ function M:start(callback)
         -- case when the user wants to read stdout result while expecting the
         -- command to fail.
         if opts.on_stdout then
-            stdout_lines = eof_has_new_line and vim.list_slice(stdout_lines, 1, #stdout_lines - 1) or stdout_lines
+            if stdout_lines[#stdout_lines] == "" then
+                stdout_lines = vim.list_slice(stdout_lines, 1, #stdout_lines - 1)
+            end
+            -- stdout_lines = eof_has_new_line and vim.list_slice(stdout_lines, 1, #stdout_lines - 1) or stdout_lines
             if #stdout_lines > 0 then
                 opts.on_stdout(stdout_lines)
             end
 
-            if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_lines > 0 then
-                vimfn.warn(stderr_lines)
+            local stderr_msg = table.concat(stderr_lines, "\n")
+            if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_msg > 0 then
+                vimfn.warn(stderr_msg)
             end
         end
 
@@ -271,22 +240,39 @@ function M:start(callback)
         self.state = State.FINISHED
         self.is_done:notify_all()
     end
-    self.process, self.pid = vim.loop.spawn(cmd, {
-        stdio = { self.stdin, self.stdout, stderr },
-        args = args,
+
+    if type(opts.cmd) == "table" then
+        opts.cmd = table.concat(opts.cmd, " ")
+    end
+    require("libp.log").warn(opts.cmd)
+    self._chan_id = vim.fn.jobstart(opts.cmd, {
+        clear_env = opts.clear_env,
         cwd = opts.cwd,
         detach = opts.detach,
-        env = transform_env(opts.env),
-    }, vim.schedule_wrap(on_exit))
+        env = opts.env,
+        on_exit = vim.schedule_wrap(on_exit),
+        on_stdout = on_stdout,
+        on_stderr = on_stderr,
+        stderr_buffered = false,
+        stdout_bufferer = false,
+    })
 
-    if type(self.pid) == "string" then
-        stderr_lines = stderr_lines .. ("Command not found: %s"):format(cmd)
-        vimfn.error(stderr_lines)
-        return -1
-    else
-        self.stdout:read_start(vim.schedule_wrap(on_stdout))
-        stderr:read_start(vim.schedule_wrap(on_stderr))
-    end
+    -- self.process, self.pid = vim.loop.spawn(cmd, {
+    --     stdio = { self.stdin, self.stdout, stderr },
+    --     args = args,
+    --     cwd = opts.cwd,
+    --     detach = opts.detach,
+    --     env = transform_env(opts.env),
+    -- }, vim.schedule_wrap(on_exit))
+    --
+    -- if type(self.pid) == "string" then
+    --     stderr_lines = stderr_lines .. ("Command not found: %s"):format(cmd)
+    --     vimfn.error(stderr_lines)
+    --     return -1
+    -- else
+    --     self.stdout:read_start(vim.schedule_wrap(on_stdout))
+    --     stderr:read_start(vim.schedule_wrap(on_stderr))
+    -- end
     return self
 end
 
@@ -331,7 +317,7 @@ end
 -- )
 function M:send(data)
     assert(self.state == State.RUNNING)
-    self.stdin:write(data)
+    vim.fn.chansend(self._chan_id, data)
     return self
 end
 
@@ -340,16 +326,15 @@ end
 -- the available output is desired, one should chain @{Job:wait} or use @{Job:shutdown}
 -- instead as it not guaranteed the @{Job:start} coroutine finished when `kill`
 -- returns.
--- @tparam[opt=15] number signal The kill signal to sent to the job.
 -- @treturn Job The job
 -- @see Job.shutdown
-function M:kill(signal)
+function M:kill()
     assert(self.state ~= State.NOT_STARTED)
     if self.state == State.FINISHED then
         return
     end
-    signal = signal or 15
-    self.process:kill(signal)
+    vim.fn.jobstop(self._chan_id)
+
     self.was_killed = true
     return self
 end
@@ -391,10 +376,8 @@ function M:shutdown(signal, grace_period)
 
     signal = signal or 15
     grace_period = grace_period or 10
-    vim.wait(grace_period, function()
-        return not vim.loop.is_active(self.stdout)
-    end)
-    self.process:kill(signal)
+    vim.wait(grace_period)
+    vim.fn.jobstop(self._chan_id)
 
     -- Wait until on_exit returns.
     self:wait()
