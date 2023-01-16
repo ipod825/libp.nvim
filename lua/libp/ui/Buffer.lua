@@ -132,6 +132,7 @@ end
 function M:init(opts)
     opts = opts or {}
     vim.validate({
+        id = { opts.id, "n", true },
         filename = { opts.filename, "s", true },
         content = { opts.content, { "f", "t", "b" }, true },
         content_map_fn = { opts.content_map_fn, "f", true },
