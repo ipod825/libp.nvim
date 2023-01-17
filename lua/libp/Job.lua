@@ -190,7 +190,7 @@ function M:start(callback)
         if exit_code ~= 0 then
             if opts.stderr_dump_level ~= M.StderrDumpLevel.SILENT and not self.was_killed then
                 local cmd = type(opts.cmd) == "string" and opts.cmd or table.concat(opts.cmd, " ")
-                vimfn.error(("Error message from\n%s\n\n%s"):format(cmd, table.concat(stderr_lines, "\n")))
+                vimfn.error(vim.trim(("Error message from\n%s\n\n%s"):format(cmd, table.concat(stderr_lines, "\n"))))
             end
         end
 
@@ -198,7 +198,7 @@ function M:start(callback)
         -- case when the user wants to read stdout result while expecting the
         -- command to fail.
         if opts.on_stdout then
-            -- Remove EOF 
+            -- Remove EOF
             if stdout_lines[#stdout_lines] == "" then
                 stdout_lines = vim.list_slice(stdout_lines, 1, #stdout_lines - 1)
             end
@@ -206,9 +206,10 @@ function M:start(callback)
                 opts.on_stdout(stdout_lines)
             end
 
+            -- Log error (if haven't already) if it's ALWAYS log.
             local stderr_msg = table.concat(stderr_lines, "\n")
-            if opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_msg > 0 then
-                vimfn.warn(stderr_msg)
+            if exit_code == 0 and opts.stderr_dump_level == M.StderrDumpLevel.ALWAYS and #stderr_msg > 0 then
+                vimfn.warn(vim.trim(stderr_msg))
             end
         end
 
