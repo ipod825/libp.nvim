@@ -27,23 +27,21 @@ local args = require("libp.args")
 function M:init(filename, opts)
     if vim.fn.bufexists(filename) > 0 then
         self.id = vim.fn.bufadd(filename)
-        return self.id
+        return
     end
 
     -- For file smaller than 10Mb, use bufadd instead of async file loading
     -- implemented in FilePreviewBuffer, which would make the shada location
     -- information lost.
     local stat, err = uv.fs_stat(filename)
-    if err then
-        return
-    elseif stat.size < 10485760 then
+    if err or stat.size < 10485760 then
         self.id = vim.fn.bufadd(filename)
-        return self.id
+        return
     end
 
     opts = opts or {}
     opts.bo =
-        vim.tbl_extend("force", opts.bo or {}, { bufhidden = vim.o.hidden and "hide" or "unload", modifiable = true })
+    vim.tbl_extend("force", opts.bo or {}, { bufhidden = vim.o.hidden and "hide" or "unload", modifiable = true })
     opts.listed = args.get_default(opts.listed, true)
     opts.scratch = args.get_default(opts.scratch, false)
 
