@@ -1,18 +1,18 @@
 local V = require("libp.iter.V")
-local functional = require("libp.functional")
+local binary_op = require("libp.functional").binary_op
 
 describe("map filter", function()
     it("Maps then filters values", function()
         assert.are.same(
             { 2, 6 },
             V({ 1, 2, 3 })
-                :map(function(v)
-                    return v * 2
-                end)
-                :filter(function(v)
-                    return v % 4 ~= 0
-                end)
-                :collect()
+            :map(function(v)
+                return v * 2
+            end)
+            :filter(function(v)
+                return v % 4 ~= 0
+            end)
+            :collect()
         )
     end)
 end)
@@ -22,25 +22,24 @@ describe("filter map", function()
         assert.are.same(
             { 2, 6 },
             V({ 1, 2, 3 })
-                :filter(function(v)
-                    return v % 2 ~= 0
-                end)
-                :map(function(v)
-                    return v * 2
-                end)
-                :collect()
+            :filter(function(v)
+                return v % 2 ~= 0
+            end)
+            :map(function(v)
+                return v * 2
+            end)
+            :collect()
         )
     end)
 end)
 
 describe("fold", function()
-    local op = functional.binary_op
     it("Return starting value if empty", function()
-        assert.are.same(0, V({}):fold(0, op.add))
+        assert.are.same(0, V({}):fold(0, binary_op.add))
     end)
     it("Accumulates the elements", function()
-        assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, op.add))
-        assert.are.same(48, V({ 1, 2, 3, 4 }):fold(2, op.mult))
+        assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, binary_op.add))
+        assert.are.same(48, V({ 1, 2, 3, 4 }):fold(2, binary_op.mult))
     end)
 end)
 
@@ -78,5 +77,17 @@ end)
 describe("take", function()
     it("Takes first n elements", function()
         assert.are.same({ 1, 2 }, V({ 1, 2, 3 }):take(2):collect())
+    end)
+end)
+
+describe("scan", function()
+    it("Return emtpy if empty", function()
+        assert.are.same({}, V({}):scan({ 0, 0 }, binary_op.add):collect())
+    end)
+    it("simulates cumsum", function()
+        assert.are.same({ 1, 3, 6 }, V({ 1, 2, 3 }):scan(0, binary_op.add):collect())
+    end)
+    it("simulates cummult", function()
+        assert.are.same({ 2, 4, 12 }, V({ 1, 2, 3 }):scan(2, binary_op.mult):collect())
     end)
 end)

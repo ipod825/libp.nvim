@@ -118,21 +118,32 @@ end
 function M:next()
     local val
     self._control, val = self._next_fn(self._invariant, self._control)
-    return self:_select_entry(self._control, val)
+    return self:_key_value_to_entry(self._control, val)
 end
 
--- Given key, value. Returns one or two values that map & filter takes.
-function M:_select_entry(_, _)
+-- Jargon for the following functions:
+-- entry: k, v for KV; v for V
+-- packed entry: {k, v} for KV; v for V
+-- next_fn_output: next control, next value
+--
+-- Given key, value. Returns entry.
+function M:_key_value_to_entry(_, _)
     assert(false, "Must be implemented by child")
 end
 
--- Given the map result (k, v). Returns the outputs of next_fn.
-function M:_map_res_to_next_fn_output(_, _)
+function M:_key_value_to_packed_entry(_, _)
     assert(false, "Must be implemented by child")
 end
 
--- Given key, value. Returns one single table or value representing the entry.
-function M:_pack_entry(_, _)
+function M:_packed_entry_to_key_value()
+    assert(false, "Must be implemented by child")
+end
+
+function M:_entry_to_next_fn_output(_, _)
+    assert(false, "Must be implemented by child")
+end
+
+function M:_packed_entry_to_next_fn_output(_, _)
     assert(false, "Must be implemented by child")
 end
 
@@ -240,8 +251,8 @@ function M:map(map_fn)
         local k, v
         self._control, v = self._next_fn(self._invariant, self._control)
         if self._control then
-            k, v = map_fn(self:_select_entry(self._control, v))
-            return self:_map_res_to_next_fn_output(k, v)
+            k, v = map_fn(self:_key_value_to_entry(self._control, v))
+            return self:_entry_to_next_fn_output(k, v)
         end
     end)
 end
@@ -270,7 +281,7 @@ function M:filter(filter_fn)
         repeat
             local v
             self._control, v = self._next_fn(self._invariant, self._control)
-            if self._control and filter_fn(self:_select_entry(self._control, v)) then
+            if self._control and filter_fn(self:_key_value_to_entry(self._control, v)) then
                 return self._control, v
             end
         until not self._control
@@ -289,9 +300,8 @@ end
 --- Folds every element into an accumulator by applying an operation, returning
 -- the final result.
 -- @tparam any init The initial value of the accumulator
--- @tparam function(acc,curr)->acc op The accumulating function that takes the
--- accumulator and the current entry. It must modify the accumulator in-place
--- and return it.
+-- @tparam function(acc,curr)->acc op The accumulating function that returns
+-- accumulated value of the accumulator and the current entry.
 -- @treturn any
 -- @usage
 -- assert.are.same(10, V({ 1, 2, 3, 4 }):fold(0, require("libp.functional").binary_op.add))
@@ -306,10 +316,38 @@ end
 function M:fold(init, op)
     local acc = init
     for k, v in self:pairs() do
-        local entry = self:_pack_entry(k, v)
+        local entry = self:_key_value_to_packed_entry(k, v)
         acc = op(acc, entry)
     end
     return acc
+end
+
+--- Accumulates elements by applying an operation, producing all intermediate results as an iterator.
+-- @tparam any init The initial value of the accumulator
+-- @tparam function(acc,curr)->acc op The accumulating function that returns
+-- accumulated value of the accumulator and the current entry.
+-- @treturn any
+-- @usage
+-- assert.are.same({1, 3, 6, 10}, V({ 1, 2, 3, 4 }):fold(0, require("libp.functional").binary_op.add))
+-- assert.are.same(
+--     { [1] = 1, [3] = 3, [6] = 6, [10] = 10 },
+--     KV({ 1, 2, 3, 4 }):scan({ 0, 0 }, function(acc, curr)
+--         acc[1] = acc[1] + curr[1]
+--         acc[2] = acc[2] + curr[2]
+--         return acc
+--     end):collect()
+-- )
+function M:scan(init, op)
+    vim.validate({ op = { op, "f" } })
+    local acc = init
+    return self:CLASS()(nil, function()
+        local v
+        self._control, v = self._next_fn(self._invariant, self._control)
+        if self._control then
+            acc = op(acc, self:_key_value_to_packed_entry(self._control, v))
+            return self:_packed_entry_to_next_fn_output(acc)
+        end
+    end)
 end
 
 return M

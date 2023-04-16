@@ -9,15 +9,31 @@
 -- @classmod KV
 local M = require("libp.iter.Iter"):EXTEND()
 
-function M:_select_entry(k, v)
+function M:_key_value_to_entry(k, v)
     return k, v
 end
 
-function M:_map_res_to_next_fn_output(k, v)
+function M:_key_value_to_packed_entry(k, v)
+    return { k, v }
+end
+
+function M:_entry_to_packed_entry(k, v)
+    return { k, v }
+end
+
+function M:_packed_entry_to_key_value(entry)
+    return entry[1], entry[2]
+end
+
+function M:_entry_to_next_fn_output(k, v)
     return k, v
 end
 
-function M:_pack_entry(k, v)
+function M:_packed_entry_to_next_fn_output(kv)
+    return kv[1], kv[2]
+end
+
+function M:_make_entry_from_pairs(k, v)
     return { k, v }
 end
 
