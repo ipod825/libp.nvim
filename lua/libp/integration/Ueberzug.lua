@@ -96,8 +96,8 @@ function M:get_or_gen_preview(file_path, msg, gen_preview)
             local ori_modifiable = vim.bo[self.buf_id].modifiable
             vim.bo[self.buf_id].modifiable = true
             vim.api.nvim_buf_set_lines(self.buf_id, 0, -1, true, { ("Loading %s preview..."):format(msg) })
-            gen_preview(self.identifier)
             vim.bo[self.buf_id].modifiable = ori_modifiable
+            gen_preview(self.identifier)
 
             cache[file_path] = fs.list_dir(self.identifier)
                 :map(function(e)
